@@ -4,10 +4,10 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.webkit.WebView;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.xc.okhttp.EasyOkHttp;
@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
         okCall.enqueue(new UICallback<Weather>() {
             @Override
             public void onError(@NonNull BaseError error, int id) {
-                Log.e("print ", error.toString());
+                Toast.makeText(MainActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
 
             }
 
@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
         okCall.enqueue(new UICallback<String>() {
             @Override
             public void onError(@NonNull BaseError error, int id) {
-                Log.e("print ", error.toString());
+                Toast.makeText(MainActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
 
             }
 
@@ -68,7 +68,6 @@ public class MainActivity extends AppCompatActivity {
                 webView.loadData(response, "text/html", "utf-8");
             }
         });
-       // okCall.cancel();
     }
 
     public void bitmap(View view) {
@@ -77,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
         okCall.enqueue(new UICallback<Bitmap>() {
             @Override
             public void onError(@NonNull BaseError error, int id) {
-                Log.e("print ", error.toString());
+                Toast.makeText(MainActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
             }
 
             @Override
