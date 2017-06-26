@@ -107,7 +107,7 @@ easyOkHttp是基于okhttp的工具类库，简化okhttp发起请求的步骤，�
 
 后期更新Form表当提交 ，下载进度回调等，设置okhttps
 
-参考资料
+参考资料<br>
 [hongyang的okhttpUtils](https://github.com/hongyangAndroid/okhttputils)
 ![str](https://github.com/xchengDroid/EasyOkHttp/blob/master/screenshots/str2.png)
 ![json](https://github.com/xchengDroid/EasyOkHttp/blob/master/screenshots/json2.png)
