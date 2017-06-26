@@ -126,7 +126,7 @@ public class BeanParse<T> extends ResponseParse<T> {
 
 [hongyang的okhttpUtils](https://github.com/hongyangAndroid/okhttputils)
 
-![str2](https://github.com/xchengDroid/EasyOkHttp/blob/master/screenshots/string.png)
+![str2](https://github.com/xchengDroid/EasyOkHttp/blob/master/screenshots/str2.png)
 
 ![json2](https://github.com/xchengDroid/EasyOkHttp/blob/master/screenshots/json2.png)
 
