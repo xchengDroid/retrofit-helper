@@ -21,7 +21,13 @@
 ###### 初始化EasyOkHttp
 
 ```
-EasyOkHttp.init(new OkHttpClient(), "http://www.weather.com.cn/", StringParse.class, false);
+ OkConfig config = OkConfig.newBuilder()
+                .okHttpClient(new OkHttpClient())
+                .host("http://www.weather.com.cn/")
+                .parseClass(JsonParse.class)
+                .postUiIfCanceled(false)
+                .build();
+        EasyOkHttp.init(config);
 ```
 
 1. 设置OKHttpClient
