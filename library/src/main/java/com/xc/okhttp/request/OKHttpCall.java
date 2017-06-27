@@ -84,7 +84,7 @@ public final class OKHttpCall<T> implements OkCall<T> {
         if (okRequest.getOkHttpClient() != null) {
             delegate = okRequest.getOkHttpClient().newCall(request);
         } else {
-            delegate = EasyOkHttp.getClient().newCall(request);
+            delegate = EasyOkHttp.getOkConfig().getOkHttpClient().newCall(request);
         }
     }
 
@@ -225,7 +225,7 @@ public final class OKHttpCall<T> implements OkCall<T> {
             Class<? extends ResponseParse> respParseClass = okRequest.getResponseParse();
             if (respParseClass == null) {
                 //get default
-                respParseClass = EasyOkHttp.getResponseParseClass();
+                respParseClass = EasyOkHttp.getOkConfig().getParseClass();
             }
             return respParseClass.newInstance();
         } catch (InstantiationException e) {

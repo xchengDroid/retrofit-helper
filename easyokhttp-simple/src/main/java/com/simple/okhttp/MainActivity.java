@@ -13,11 +13,11 @@ import com.google.gson.Gson;
 import com.xc.okhttp.EasyOkHttp;
 import com.xc.okhttp.callback.BitmapParse;
 import com.xc.okhttp.callback.JsonParse;
-import com.xc.okhttp.callback.StringParse;
 import com.xc.okhttp.callback.UICallback;
 import com.xc.okhttp.error.BaseError;
 import com.xc.okhttp.request.GetRequest;
 import com.xc.okhttp.request.OKHttpCall;
+import com.xc.okhttp.request.OkConfig;
 
 import okhttp3.OkHttpClient;
 
@@ -31,7 +31,13 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         webView = (WebView) findViewById(R.id.web_easyokhttp);
         imageView = (ImageView) findViewById(R.id.iv_easyokhttp);
-        EasyOkHttp.init(new OkHttpClient(), "http://www.weather.com.cn/", StringParse.class, false);
+        OkConfig config = OkConfig.newBuilder()
+                .okHttpClient(new OkHttpClient())
+                .host("http://www.weather.com.cn/")
+                .parseClass(JsonParse.class)
+                .postUiIfCanceled(false)
+                .build();
+        EasyOkHttp.init(config);
     }
 
     public void json(View view) {

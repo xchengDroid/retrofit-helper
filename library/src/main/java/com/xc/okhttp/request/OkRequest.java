@@ -47,7 +47,7 @@ public abstract class OkRequest {
     protected void setUrl(String url) {
         OkExceptions.checkNotNull(url, "url==null");
         if (!url.startsWith("http")) {
-            url = EasyOkHttp.getHost() + url;
+            url = EasyOkHttp.getOkConfig().getHost() + url;
         }
         this.url = url;
     }

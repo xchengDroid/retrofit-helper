@@ -88,6 +88,6 @@ final class ExecutorCallback<T> extends UICallback<T> {
     }
 
     private boolean isPostUi() {
-        return !okCall.isCanceled() || EasyOkHttp.isPostUiIfCanceled();
+        return !okCall.isCanceled() || EasyOkHttp.getOkConfig().isPostUiIfCanceled();
     }
 }
