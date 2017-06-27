@@ -3,7 +3,6 @@ package com.xc.okhttp.request;
 import android.support.annotation.Nullable;
 
 import com.google.gson.reflect.TypeToken;
-import com.xc.okhttp.EasyOkHttp;
 import com.xc.okhttp.callback.ResponseParse;
 import com.xc.okhttp.utils.OkExceptions;
 
@@ -32,7 +31,7 @@ public abstract class OkRequest {
     private Class<? extends ResponseParse> responseParse;
 
     protected OkRequest(OkRequestBuilder<?> builder) {
-        setUrl(builder.url);
+        this.url=builder.url;
         this.tag = builder.tag;
         this.params = builder.params;
         this.headers = builder.headers;
@@ -42,14 +41,6 @@ public abstract class OkRequest {
         this.extraMap = builder.extraMap;
         this.typeToken = builder.typeToken;
         this.responseParse = builder.responseParse;
-    }
-
-    protected void setUrl(String url) {
-        OkExceptions.checkNotNull(url, "url==null");
-        if (!url.startsWith("http")) {
-            url = EasyOkHttp.getOkConfig().getHost() + url;
-        }
-        this.url = url;
     }
 
     public String getUrl() {
@@ -191,6 +182,10 @@ public abstract class OkRequest {
 
         protected Map<String, String> getParams() {
             return params;
+        }
+
+        protected String getUrl() {
+            return url;
         }
 
         public abstract OkRequest build();
