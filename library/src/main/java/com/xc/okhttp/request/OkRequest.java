@@ -31,7 +31,7 @@ public abstract class OkRequest {
     private Class<? extends ResponseParse> responseParse;
 
     protected OkRequest(OkRequestBuilder<?> builder) {
-        this.url=builder.url;
+        this.url = builder.url;
         this.tag = builder.tag;
         this.params = builder.params;
         this.headers = builder.headers;
@@ -83,7 +83,7 @@ public abstract class OkRequest {
         return progress;
     }
 
-    public abstract Request createRequest();
+    abstract Request createRequest();
 
     /**
      * Created by zhy on 15/12/14.
