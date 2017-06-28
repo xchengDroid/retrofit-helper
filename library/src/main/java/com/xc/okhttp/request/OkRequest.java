@@ -1,7 +1,5 @@
 package com.xc.okhttp.request;
 
-import android.support.annotation.Nullable;
-
 import com.google.gson.reflect.TypeToken;
 import com.xc.okhttp.callback.ResponseParse;
 import com.xc.okhttp.utils.OkExceptions;
@@ -21,7 +19,6 @@ public abstract class OkRequest {
     private Object tag;
     private int id;
     private Map<String, String> params;
-    @Nullable
     private Headers.Builder headers;
     private boolean progress;
     //发起请求 解析相关
@@ -83,7 +80,7 @@ public abstract class OkRequest {
         return progress;
     }
 
-    abstract Request createRequest();
+    protected abstract Request createRequest();
 
     /**
      * Created by zhy on 15/12/14.
