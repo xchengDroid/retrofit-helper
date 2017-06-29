@@ -1,5 +1,7 @@
 package com.xc.okhttp.request;
 
+import android.support.annotation.NonNull;
+
 import com.google.gson.reflect.TypeToken;
 import com.xc.okhttp.callback.ResponseParse;
 import com.xc.okhttp.utils.OkExceptions;
@@ -72,6 +74,7 @@ public abstract class OkRequest {
         return params;
     }
 
+    @NonNull
     public Headers.Builder getHeaders() {
         return headers;
     }
