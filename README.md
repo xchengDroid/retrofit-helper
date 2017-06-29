@@ -14,7 +14,13 @@
 
 5. 全局设置http解析器，host 
 
-   ​
+   ​## 用法
+
+    * #### Android Studio
+
+      `compile 'com.xcheng:easyokhttp:1.0.1'`
+
+      ​
 
 ## 配置EasyOkHttp
 
