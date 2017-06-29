@@ -155,7 +155,7 @@ public final class OKHttpCall<T> implements OkCall<T> {
                         responseError = okResponse.getError();
                     }
                     if (responseError == null) {
-                        responseError = BaseError.getNotFoundError("do not find error in " + responseParse.getClass().getName() + "parseNetworkResponse(OkCall<T> , Response , int ) , have you return it ?");
+                        responseError = BaseError.getNotFoundError("do not find error in " + responseParse.getClass().getName() + ".parseNetworkResponse(OkCall<T> , Response , int ) , have you return it ?");
                     }
                     sendFailResult(responseError, responseNoBody);
                 } catch (IOException e) {

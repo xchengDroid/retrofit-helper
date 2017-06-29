@@ -1,17 +1,19 @@
 apply plugin: 'com.android.library'
-
+apply plugin: 'com.novoda.bintray-release'
 android {
     compileSdkVersion 25
     buildToolsVersion "26.0.0"
-
+    android {
+        lintOptions {
+            abortOnError false
+        }
+    }
     defaultConfig {
-        minSdkVersion 15
+        minSdkVersion 14
         targetSdkVersion 25
         versionCode 1
         versionName "1.0"
-
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-
     }
     buildTypes {
         release {
@@ -23,11 +25,17 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
-        exclude group: 'com.android.support', module: 'support-annotations'
-    })
-    compile 'com.android.support:appcompat-v7:25.3.1'
-    testCompile 'junit:junit:4.12'
-    compile "com.squareup.okhttp3:okhttp:3.8.1"
-    compile "com.google.code.gson:gson:2.8.0"
+    provided 'com.android.support:support-annotations:25.3.1'
+    compile 'com.squareup.okhttp3:okhttp:3.8.1'
+    compile 'com.google.code.gson:gson:2.8.0'
+}
+//添加
+publish {
+    repoName = 'xcDroid'
+    userOrg = 'xcheng'//bintray.com用户名
+    groupId = 'com.xcheng'//jcenter上的路径
+    artifactId = 'easyokhttp'//项目名称
+    publishVersion = '1.0.1'//版本号
+    desc = 'make okhttp more simple'//描述，不重要
+    website = 'https://github.com/xchengDroid/EasyOkHttp'//网站，不重要；尽量模拟github上的地址，例如我这样的；当然你有地址最好了
 }
