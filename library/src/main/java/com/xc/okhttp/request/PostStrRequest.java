@@ -64,6 +64,9 @@ public class PostStrRequest extends OkRequest {
         }
 
         public OkRequest jsonObject(JSONObject jsonObject) {
+            if (jsonObject.length() == 0) {
+                OkExceptions.illegalArgument("jsonObject can not be empty");
+            }
             return json(jsonObject.toString());
         }
 

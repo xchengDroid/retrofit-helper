@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.xc.okhttp.request.GetRequest;
 import com.xc.okhttp.request.OkConfig;
+import com.xc.okhttp.request.PostFormRequest;
 import com.xc.okhttp.request.PostStrRequest;
 import com.xc.okhttp.utils.OkExceptions;
 
@@ -44,6 +45,10 @@ public class EasyOkHttp {
 
     public static PostStrRequest.Builder postStr(String url) {
         return new PostStrRequest.Builder().url(url);
+    }
+
+    public static PostFormRequest.Builder postForm(String url) {
+        return new PostFormRequest.Builder().url(url);
     }
 
     //取消请求

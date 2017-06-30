@@ -18,14 +18,14 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 
 /**
- * Created by zhy on 15/12/14.
+ * Created by cx on 17/6/22.
  */
 public class PostFormRequest extends OkRequest {
     private static MediaType MEDIA_TYPE_STREAM = MediaType.parse("application/octet-stream");
 
     private List<FileInput> fileInputs;
 
-    public PostFormRequest(Builder builder) {
+    protected PostFormRequest(Builder builder) {
         super(builder);
         this.fileInputs = builder.fileInputs;
     }
