@@ -31,6 +31,9 @@ public abstract class OkRequest {
 
     protected OkRequest(OkRequestBuilder<?> builder) {
         this.url = builder.url;
+        if (this.url == null) {
+            OkExceptions.illegalArgument("url can not be null.");
+        }
         this.tag = builder.tag;
         this.params = builder.params;
         this.headers = builder.headers;

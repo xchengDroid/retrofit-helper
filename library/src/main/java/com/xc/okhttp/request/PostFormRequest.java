@@ -105,7 +105,7 @@ public class PostFormRequest extends OkRequest {
         }
 
         @Override
-        public OkRequest build() {
+        public PostFormRequest build() {
             return new PostFormRequest(this);
         }
     }

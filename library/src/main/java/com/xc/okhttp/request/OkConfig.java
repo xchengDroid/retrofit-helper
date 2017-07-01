@@ -52,7 +52,7 @@ public class OkConfig {
         private boolean postUiIfCanceled;
         private Class<? extends ResponseParse> parseClass;
 
-        private Builder() {
+        public Builder() {
             okHttpClient = new OkHttpClient();
             postUiIfCanceled = false;
             parseClass = JsonParse.class;
