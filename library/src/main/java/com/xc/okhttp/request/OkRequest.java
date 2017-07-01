@@ -30,10 +30,10 @@ public abstract class OkRequest {
     private Class<? extends ResponseParse> responseParse;
 
     protected OkRequest(OkRequestBuilder<?> builder) {
-        this.url = builder.url;
-        if (this.url == null) {
+        if (builder.url == null) {
             OkExceptions.illegalArgument("url can not be null.");
         }
+        this.url = builder.url;
         this.tag = builder.tag;
         this.params = builder.params;
         this.headers = builder.headers;
