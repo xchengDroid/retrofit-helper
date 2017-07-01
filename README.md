@@ -18,7 +18,7 @@
 
 * #### Android Studio
 
-   `compile 'com.xcheng:easyokhttp:1.0.1'`
+   `compile 'com.xcheng:easyokhttp:1.0.4'`
 
       ​
 
