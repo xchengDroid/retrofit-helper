@@ -70,7 +70,7 @@ public final class OKHttpCall<T> implements OkCall<T> {
     private void buildCall() {
         Request request = originalRequest;
         RequestBody body = request.body();
-        if (executorCallback != null && okRequest.isProgress() && body != null) {
+        if (executorCallback != null && okRequest.isInProgress() && body != null) {
             Request.Builder builder = originalRequest.newBuilder();
             RequestBody requestBody = new CountingRequestBody(body, new CountingRequestBody.Listener() {
                 @Override

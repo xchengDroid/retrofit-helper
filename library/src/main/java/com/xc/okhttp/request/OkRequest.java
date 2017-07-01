@@ -22,7 +22,7 @@ public abstract class OkRequest {
     private int id;
     private Map<String, String> params;
     private Headers.Builder headers;
-    private boolean progress;
+    private boolean inProgress;
     //发起请求 解析相关
     private OkHttpClient okHttpClient;
     private Map<String, Object> extraMap;
@@ -35,7 +35,7 @@ public abstract class OkRequest {
         this.params = builder.params;
         this.headers = builder.headers;
         this.id = builder.id;
-        this.progress = builder.progress;
+        this.inProgress = builder.inProgress;
         this.okHttpClient = builder.okHttpClient;
         this.extraMap = builder.extraMap;
         this.typeToken = builder.typeToken;
@@ -79,8 +79,8 @@ public abstract class OkRequest {
         return headers;
     }
 
-    public boolean isProgress() {
-        return progress;
+    public boolean isInProgress() {
+        return inProgress;
     }
 
     protected abstract Request createRequest();
@@ -95,7 +95,7 @@ public abstract class OkRequest {
         private Headers.Builder headers;
         private Map<String, String> params;
         private int id;
-        private boolean progress;
+        private boolean inProgress;
 
         //发起请求 解析相关
         private OkHttpClient okHttpClient;
@@ -105,6 +105,7 @@ public abstract class OkRequest {
 
         public OkRequestBuilder() {
             headers = new Headers.Builder();
+            inProgress = false;
         }
 
         public T id(int id) {
@@ -112,8 +113,8 @@ public abstract class OkRequest {
             return (T) this;
         }
 
-        public T progress(boolean progress) {
-            this.progress = progress;
+        public T inProgress() {
+            this.inProgress = true;
             return (T) this;
         }
 
