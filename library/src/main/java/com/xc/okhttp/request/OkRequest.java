@@ -3,6 +3,7 @@ package com.xc.okhttp.request;
 import android.support.annotation.NonNull;
 
 import com.google.gson.reflect.TypeToken;
+import com.xc.okhttp.EasyOkHttp;
 import com.xc.okhttp.callback.ResponseParse;
 import com.xc.okhttp.utils.OkExceptions;
 
@@ -124,6 +125,9 @@ public abstract class OkRequest {
         public T url(String url) {
             if (url == null) {
                 OkExceptions.illegalArgument("url can not be null");
+            }
+            if (!url.startsWith("http")) {
+                url = EasyOkHttp.getOkConfig().getHost() + url;
             }
             this.url = url;
             return (T) this;
