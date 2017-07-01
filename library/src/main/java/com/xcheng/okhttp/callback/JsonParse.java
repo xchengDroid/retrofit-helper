@@ -15,7 +15,7 @@ import okhttp3.Response;
  * Created by chengxin on 2017/6/22.
  */
 
-public class JsonParse<T> extends ResponseParse<T> {
+public class JsonParse<T> extends SimpleParse<T> {
     @SuppressWarnings("unchecked")
     @NonNull
     @Override
@@ -29,6 +29,6 @@ public class JsonParse<T> extends ResponseParse<T> {
             T body = new Gson().fromJson(str, token.getType());
             return OkResponse.success(body);
         }
-        return OkResponse.error(BaseError.getNotFoundError("not success response"));
+        return OkResponse.error(BaseError.getNotFoundError("response error"));
     }
 }

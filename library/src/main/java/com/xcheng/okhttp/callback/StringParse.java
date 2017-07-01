@@ -12,14 +12,13 @@ import okhttp3.Response;
 /**
  * Created by chengxin on 2017/6/22.
  */
-public class StringParse extends ResponseParse<String> {
-
+public class StringParse extends SimpleParse<String> {
     @NonNull
     @Override
     public OkResponse<String> parseNetworkResponse(OkCall<String> okCall, Response response, int id) throws IOException {
         if (response.isSuccessful()) {
             return OkResponse.success(response.body().string());
         }
-        return OkResponse.error(BaseError.getNotFoundError("not success response"));
+        return OkResponse.error(BaseError.getNotFoundError("response error"));
     }
 }

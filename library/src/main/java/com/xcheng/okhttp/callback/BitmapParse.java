@@ -11,10 +11,7 @@ import java.io.IOException;
 
 import okhttp3.Response;
 
-/**
- * Created by zhy on 15/12/14.
- */
-public class BitmapParse extends ResponseParse<Bitmap> {
+public class BitmapParse extends SimpleParse<Bitmap> {
 
     @NonNull
     @Override
@@ -22,6 +19,6 @@ public class BitmapParse extends ResponseParse<Bitmap> {
         if (response.isSuccessful()) {
             return OkResponse.success(BitmapFactory.decodeStream(response.body().byteStream()));
         }
-        return OkResponse.error(BaseError.getNotFoundError("not success response"));
+        return OkResponse.error(BaseError.getNotFoundError("response error"));
     }
 }
