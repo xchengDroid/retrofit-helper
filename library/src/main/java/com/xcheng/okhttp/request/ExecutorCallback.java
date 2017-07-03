@@ -25,24 +25,24 @@ final class ExecutorCallback<T> extends UICallback<T> {
     }
 
     @Override
-    public void onBefore(int id) {
+    public void onBefore(final int id) {
         PLATFORM.execute(new Runnable() {
             @Override
             public void run() {
                 if (isPostUi()) {
-                    delegate.onBefore(okCall.getId());
+                    delegate.onBefore(id);
                 }
             }
         });
     }
 
     @Override
-    public void onAfter(int id) {
+    public void onAfter(final int id) {
         PLATFORM.execute(new Runnable() {
             @Override
             public void run() {
                 if (isPostUi()) {
-                    delegate.onAfter(okCall.getId());
+                    delegate.onAfter(id);
                 }
             }
         });

@@ -17,14 +17,12 @@ import okio.Sink;
  *
  * @author Leo Nikkilä
  */
-public class CountingRequestBody extends RequestBody {
+class CountingRequestBody extends RequestBody {
 
-    protected RequestBody delegate;
-    protected Listener listener;
+    private RequestBody delegate;
+    private Listener listener;
 
-    protected CountingSink countingSink;
-
-    public CountingRequestBody(RequestBody delegate, Listener listener) {
+    CountingRequestBody(RequestBody delegate, Listener listener) {
         this.delegate = delegate;
         this.listener = listener;
     }
@@ -46,20 +44,17 @@ public class CountingRequestBody extends RequestBody {
 
     @Override
     public void writeTo(BufferedSink sink) throws IOException {
-
-        countingSink = new CountingSink(sink);
+        CountingSink countingSink = new CountingSink(sink);
         BufferedSink bufferedSink = Okio.buffer(countingSink);
-
         delegate.writeTo(bufferedSink);
-
         bufferedSink.flush();
     }
 
-    protected final class CountingSink extends ForwardingSink {
+    private final class CountingSink extends ForwardingSink {
 
         private long bytesWritten = 0;
 
-        public CountingSink(Sink delegate) {
+        CountingSink(Sink delegate) {
             super(delegate);
         }
 
@@ -72,8 +67,7 @@ public class CountingRequestBody extends RequestBody {
 
     }
 
-    public static interface Listener {
-        public void onRequestProgress(long bytesWritten, long contentLength);
+    interface Listener {
+        void onRequestProgress(long bytesWritten, long contentLength);
     }
-
 }

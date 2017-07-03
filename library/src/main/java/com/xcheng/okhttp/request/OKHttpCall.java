@@ -38,7 +38,7 @@ public final class OKHttpCall<T> implements OkCall<T> {
     private Class<? extends UICallback> tokenClass;
     private ExecutorCallback<T> executorCallback;
 
-    private okhttp3.Call delegate;
+    private okhttp3.Call rawCall;
     private volatile boolean canceled;
     private boolean executed;
 
@@ -82,9 +82,9 @@ public final class OKHttpCall<T> implements OkCall<T> {
             request = builder.build();
         }
         if (okRequest.getOkHttpClient() != null) {
-            delegate = okRequest.getOkHttpClient().newCall(request);
+            rawCall = okRequest.getOkHttpClient().newCall(request);
         } else {
-            delegate = EasyOkHttp.getOkConfig().getOkHttpClient().newCall(request);
+            rawCall = EasyOkHttp.getOkConfig().getOkHttpClient().newCall(request);
         }
     }
 
@@ -111,9 +111,9 @@ public final class OKHttpCall<T> implements OkCall<T> {
             buildCall();
         }
         if (canceled) {
-            delegate.cancel();
+            rawCall.cancel();
         }
-        return responseParse.parseNetworkResponse(this, delegate.execute(), okRequest.getId());
+        return responseParse.parseNetworkResponse(this, rawCall.execute(), okRequest.getId());
     }
 
     @Override
@@ -128,9 +128,9 @@ public final class OKHttpCall<T> implements OkCall<T> {
         }
         executorCallback.onBefore(id);
         if (canceled) {
-            delegate.cancel();
+            rawCall.cancel();
         }
-        delegate.enqueue(new okhttp3.Callback() {
+        rawCall.enqueue(new okhttp3.Callback() {
             @Override
             public void onFailure(okhttp3.Call call, final IOException e) {
                 sendFailResult(responseParse.getError(e), null);
@@ -198,8 +198,8 @@ public final class OKHttpCall<T> implements OkCall<T> {
     public void cancel() {
         canceled = true;
         synchronized (this) {
-            if (delegate != null) {
-                delegate.cancel();
+            if (rawCall != null) {
+                rawCall.cancel();
             }
         }
 
@@ -211,7 +211,7 @@ public final class OKHttpCall<T> implements OkCall<T> {
             return true;
         }
         synchronized (this) {
-            return delegate != null && delegate.isCanceled();
+            return rawCall != null && rawCall.isCanceled();
         }
     }
 
