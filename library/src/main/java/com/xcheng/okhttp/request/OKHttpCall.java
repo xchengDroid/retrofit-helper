@@ -94,7 +94,7 @@ public final class OKHttpCall<T> implements OkCall<T> {
 
     private void sendFailResult(BaseError error, @Nullable Response responseNoBody) {
         if (error == null) {
-            error = BaseError.getNotFoundError("do not find defined error in " + getParseClass()+ ".getError(IOException) method");
+            error = BaseError.getNotFoundError("do not find defined error in " + getParseClass() + ".getError(IOException) method");
         }
         error.setResponseNoBody(responseNoBody);
         executorCallback.onError(error, id);
@@ -117,7 +117,7 @@ public final class OKHttpCall<T> implements OkCall<T> {
         if (canceled) {
             rawCall.cancel();
         }
-        return responseParse.parseNetworkResponse(this, rawCall.execute(), okRequest.getId());
+        return responseParse.parseNetworkResponse(this, rawCall.execute(), id);
     }
 
     @Override
