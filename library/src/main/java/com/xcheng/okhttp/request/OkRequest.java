@@ -28,7 +28,7 @@ public abstract class OkRequest {
     private OkHttpClient okHttpClient;
     private Map<String, Object> extraMap;
     private TypeToken<?> typeToken;
-    private Class<? extends ResponseParse> responseParse;
+    private Class<? extends ResponseParse> parseClass;
 
     protected OkRequest(OkRequestBuilder<?> builder) {
         if (builder.url == null) {
@@ -43,7 +43,7 @@ public abstract class OkRequest {
         this.okHttpClient = builder.okHttpClient;
         this.extraMap = builder.extraMap;
         this.typeToken = builder.typeToken;
-        this.responseParse = builder.responseParse;
+        this. parseClass = builder.parseClass;
     }
 
     public String getUrl() {
@@ -62,8 +62,8 @@ public abstract class OkRequest {
         return typeToken;
     }
 
-    public Class<? extends ResponseParse> getResponseParse() {
-        return responseParse;
+    public Class<? extends ResponseParse> getParseClass() {
+        return  parseClass;
     }
 
     public Object getTag() {
@@ -105,7 +105,7 @@ public abstract class OkRequest {
         private OkHttpClient okHttpClient;
         private Map<String, Object> extraMap;
         private TypeToken<?> typeToken;
-        private Class<? extends ResponseParse> responseParse;
+        private Class<? extends ResponseParse> parseClass;
 
         public OkRequestBuilder() {
             headers = new Headers.Builder();
@@ -180,11 +180,11 @@ public abstract class OkRequest {
             return (T) this;
         }
 
-        public T responseParse(Class<? extends ResponseParse> responseParse) {
-            if (responseParse == null) {
+        public T parseClass(Class<? extends ResponseParse> parseClass) {
+            if (parseClass == null) {
                 OkExceptions.illegalArgument("responseParseClass can not be null");
             }
-            this.responseParse = responseParse;
+            this.parseClass = parseClass;
             return (T) this;
         }
 

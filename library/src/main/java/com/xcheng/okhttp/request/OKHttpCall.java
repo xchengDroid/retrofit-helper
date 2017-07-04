@@ -222,7 +222,7 @@ public final class OKHttpCall<T> implements OkCall<T> {
 
     private ResponseParse<T> createResponseParse() {
         try {
-            Class<? extends ResponseParse> respParseClass = okRequest.getResponseParse();
+            Class<? extends ResponseParse> respParseClass = okRequest.getParseClass();
             if (respParseClass == null) {
                 //get default
                 respParseClass = EasyOkHttp.getOkConfig().getParseClass();
