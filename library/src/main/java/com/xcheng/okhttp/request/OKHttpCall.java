@@ -51,10 +51,14 @@ public final class OKHttpCall<T> implements OkCall<T> {
         this.responseParse = createResponseParse();
     }
 
-
     @Override
-    public ResponseParse<T> getResponseParse() {
-        return responseParse;
+    public Class<? extends ResponseParse> getParseClass() {
+        Class<? extends ResponseParse> respParseClass = okRequest.getParseClass();
+        if (respParseClass == null) {
+            //get default
+            respParseClass = EasyOkHttp.getOkConfig().getParseClass();
+        }
+        return respParseClass;
     }
 
     @Override
@@ -90,7 +94,7 @@ public final class OKHttpCall<T> implements OkCall<T> {
 
     private void sendFailResult(BaseError error, @Nullable Response responseNoBody) {
         if (error == null) {
-            error = BaseError.getNotFoundError("do not find defined error in "+responseParse.getClass()+".getError(IOException) method");
+            error = BaseError.getNotFoundError("do not find defined error in " + getParseClass()+ ".getError(IOException) method");
         }
         error.setResponseNoBody(responseNoBody);
         executorCallback.onError(error, id);
@@ -120,7 +124,7 @@ public final class OKHttpCall<T> implements OkCall<T> {
     public void enqueue(final UICallback<T> uiCallback) {
         OkExceptions.checkNotNull(uiCallback, "uiCallback can not be null");
         this.tokenClass = uiCallback.getClass();
-        this.executorCallback = new ExecutorCallback<>(uiCallback, this);
+        this.executorCallback = new ExecutorCallback<>(uiCallback, this, responseParse);
         synchronized (this) {
             if (executed) throw new IllegalStateException("Already executed.");
             executed = true;
@@ -155,7 +159,7 @@ public final class OKHttpCall<T> implements OkCall<T> {
                         responseError = okResponse.getError();
                     }
                     if (responseError == null) {
-                        responseError = BaseError.getNotFoundError("do not find error in " + responseParse.getClass().getName() + ".parseNetworkResponse(OkCall<T> , Response , int ) , have you return it ?");
+                        responseError = BaseError.getNotFoundError("do not find error in " + getParseClass() + ".parseNetworkResponse(OkCall<T> , Response , int ) , have you return it ?");
                     }
                     sendFailResult(responseError, responseNoBody);
                 } catch (IOException e) {
@@ -222,18 +226,13 @@ public final class OKHttpCall<T> implements OkCall<T> {
 
     private ResponseParse<T> createResponseParse() {
         try {
-            Class<? extends ResponseParse> respParseClass = okRequest.getParseClass();
-            if (respParseClass == null) {
-                //get default
-                respParseClass = EasyOkHttp.getOkConfig().getParseClass();
-            }
-            return respParseClass.newInstance();
+            return getParseClass().newInstance();
         } catch (InstantiationException e) {
             e.printStackTrace();
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
-        OkExceptions.illegalState(responseParse.getClass() + " must has a no zero argument constructor, class must be not private and abstract");
+        OkExceptions.illegalState(getParseClass() + " must has a no zero argument constructor, class must be not private and abstract");
         return null;
     }
 

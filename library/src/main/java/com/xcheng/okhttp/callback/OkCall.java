@@ -47,5 +47,5 @@ public interface OkCall<T> extends Cloneable {
 
     int getId();
 
-    ResponseParse<T> getResponseParse();
+    Class<? extends ResponseParse> getParseClass();
 }

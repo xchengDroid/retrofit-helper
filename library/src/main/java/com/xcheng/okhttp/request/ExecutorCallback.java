@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 
 import com.xcheng.okhttp.EasyOkHttp;
 import com.xcheng.okhttp.callback.OkCall;
+import com.xcheng.okhttp.callback.ResponseParse;
 import com.xcheng.okhttp.callback.UICallback;
 import com.xcheng.okhttp.error.BaseError;
 import com.xcheng.okhttp.utils.Platform;
@@ -18,10 +19,12 @@ final class ExecutorCallback<T> extends UICallback<T> {
     private static final Platform PLATFORM = Platform.get();
     private final UICallback<T> delegate;
     private final OkCall<T> okCall;
+    private final ResponseParse<T> responseParse;
 
-    ExecutorCallback(UICallback<T> delegate, OkCall<T> okCall) {
+    ExecutorCallback(UICallback<T> delegate, OkCall<T> okCall, ResponseParse<T> responseParse) {
         this.delegate = delegate;
         this.okCall = okCall;
+        this.responseParse = responseParse;
     }
 
     @Override
@@ -80,7 +83,11 @@ final class ExecutorCallback<T> extends UICallback<T> {
                 if (!okCall.isCanceled()) {
                     delegate.onSuccess(response, id);
                 } else {
-                    BaseError error = okCall.getResponseParse().getError(new IOException("Call Canceled, url=" + okCall.request().url()));
+                    String errorMsg = "Call Canceled, url=" + okCall.request().url();
+                    BaseError error = responseParse.getError(new IOException(errorMsg));
+                    if (error == null) {
+                        error = BaseError.getNotFoundError(errorMsg);
+                    }
                     onError(error, id);
                 }
             }
