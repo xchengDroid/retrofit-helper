@@ -38,7 +38,7 @@ public class PostStrRequest extends OkRequest {
     }
 
     @Override
-    public Request createRequest() {
+    protected Request createRequest() {
         return new Request.Builder().url(getUrl()).tag(getTag()).headers(getHeaders().build()).post(RequestBody.create(mediaType, content)).build();
     }
 
