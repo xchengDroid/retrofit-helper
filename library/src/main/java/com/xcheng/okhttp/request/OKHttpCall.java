@@ -90,7 +90,7 @@ public final class OKHttpCall<T> implements OkCall<T> {
 
     private void sendFailResult(BaseError error, @Nullable Response responseNoBody) {
         if (error == null) {
-            error = BaseError.getNotFoundError("do not find defined error in ResponseParse.getError(IOException) method");
+            error = BaseError.getNotFoundError("do not find defined error in "+responseParse.getClass()+".getError(IOException) method");
         }
         error.setResponseNoBody(responseNoBody);
         executorCallback.onError(error, id);
@@ -233,7 +233,7 @@ public final class OKHttpCall<T> implements OkCall<T> {
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
-        OkExceptions.illegalState("responseParseClass must has a no zero argument constructor, class must be not private and abstract");
+        OkExceptions.illegalState(responseParse.getClass() + " must has a no zero argument constructor, class must be not private and abstract");
         return null;
     }
 
