@@ -101,7 +101,7 @@ public final class OKHttpCall<T> implements OkCall<T> {
         executorCallback.onAfter(id);
     }
 
-    private void sendSuccessResult(final T t) {
+    private void sendSuccessResult(T t) {
         executorCallback.onSuccess(t, id);
         executorCallback.onAfter(id);
     }
@@ -121,7 +121,7 @@ public final class OKHttpCall<T> implements OkCall<T> {
     }
 
     @Override
-    public void enqueue(final UICallback<T> uiCallback) {
+    public void enqueue(UICallback<T> uiCallback) {
         OkExceptions.checkNotNull(uiCallback, "uiCallback can not be null");
         this.tokenClass = uiCallback.getClass();
         this.executorCallback = new ExecutorCallback<>(uiCallback, this, responseParse);
@@ -136,12 +136,12 @@ public final class OKHttpCall<T> implements OkCall<T> {
         }
         rawCall.enqueue(new okhttp3.Callback() {
             @Override
-            public void onFailure(okhttp3.Call call, final IOException e) {
+            public void onFailure(okhttp3.Call call, IOException e) {
                 sendFailResult(responseParse.getError(e), null);
             }
 
             @Override
-            public void onResponse(final okhttp3.Call call, final Response response) {
+            public void onResponse(okhttp3.Call call, final Response response) {
                 ResponseBody rawBody = response.body();
                 // Remove the body's source (the only stateful object) so we can pass the response along.
                 Response responseNoBody = response.newBuilder()
@@ -151,9 +151,8 @@ public final class OKHttpCall<T> implements OkCall<T> {
                     OkResponse<T> okResponse = responseParse.parseNetworkResponse(OKHttpCall.this, response, id);
                     BaseError responseError = null;
                     if (okResponse != null) {
-                        T body = okResponse.getBody();
-                        if (body != null) {
-                            sendSuccessResult(body);
+                        if (okResponse.isSuccess()) {
+                            sendSuccessResult(okResponse.getBody());
                             return;
                         }
                         responseError = okResponse.getError();
