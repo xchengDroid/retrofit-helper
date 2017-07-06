@@ -53,4 +53,14 @@ public final class OkResponse<T> {
     public T getBody() {
         return body;
     }
+
+    /**
+     * 判断http请求是否成功返回了body
+     *
+     * @return 是否成功
+     */
+    public boolean isSuccess() {
+        return body != null;
+    }
+
 }
