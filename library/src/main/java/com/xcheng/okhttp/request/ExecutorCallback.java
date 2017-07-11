@@ -47,6 +47,7 @@ final class ExecutorCallback<T> extends UICallback<T> {
                 if (isPostUi()) {
                     delegate.onAfter(id);
                 }
+                EasyOkHttp.finished(okCall);
             }
         });
     }
@@ -71,7 +72,6 @@ final class ExecutorCallback<T> extends UICallback<T> {
                 if (isPostUi()) {
                     delegate.onError(error, id);
                 }
-                EasyOkHttp.finished(okCall);
             }
         });
     }
@@ -86,7 +86,6 @@ final class ExecutorCallback<T> extends UICallback<T> {
                 } else {
                     onError(canceledError(), id);
                 }
-                EasyOkHttp.finished(okCall);
             }
         });
     }
