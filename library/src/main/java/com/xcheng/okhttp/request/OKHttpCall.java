@@ -235,7 +235,9 @@ public final class OKHttpCall<T> implements OkCall<T> {
 
     @Override
     public OkCall<T> clone() {
-        return new OKHttpCall<>(okRequest);
+        OKHttpCall<T> okCall = new OKHttpCall<>(okRequest);
+        okCall.typeToken = getTypeToken();
+        return okCall;
     }
 
     private ResponseParse<T> createResponseParse() {
