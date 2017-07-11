@@ -13,6 +13,9 @@ import com.xcheng.okhttp.utils.OkExceptions;
 import com.xcheng.okhttp.utils.ParamHelper;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import okhttp3.MediaType;
@@ -27,6 +30,7 @@ import okio.BufferedSource;
  * 发起http请求的封装类
  */
 public final class OKHttpCall<T> implements OkCall<T> {
+
     private final OkRequest okRequest;
     private final int id;
 
@@ -90,7 +94,7 @@ public final class OKHttpCall<T> implements OkCall<T> {
         } else {
             rawCall = EasyOkHttp.getOkConfig().getOkHttpClient().newCall(request);
         }
-        EasyOkHttp.addCall(this);
+        addCall(this);
     }
 
     private void sendFailResult(BaseError error, @Nullable Response responseNoBody) {
@@ -121,7 +125,7 @@ public final class OKHttpCall<T> implements OkCall<T> {
         try {
             return responseParse.parseNetworkResponse(this, rawCall.execute(), id);
         } finally {
-            EasyOkHttp.finished(this);
+            finished(this);
         }
     }
 
@@ -130,6 +134,12 @@ public final class OKHttpCall<T> implements OkCall<T> {
         OkExceptions.checkNotNull(uiCallback, "uiCallback can not be null");
         this.tokenClass = uiCallback.getClass();
         this.executorCallback = new ExecutorCallback<>(uiCallback, this, responseParse);
+        this.executorCallback.setOnAfterListener(new ExecutorCallback.OnAfterListener() {
+            @Override
+            public void onAfter(int id) {
+                finished(OKHttpCall.this);
+            }
+        });
         synchronized (this) {
             if (executed) throw new IllegalStateException("Already executed.");
             executed = true;
@@ -263,5 +273,19 @@ public final class OKHttpCall<T> implements OkCall<T> {
         public BufferedSource source() {
             throw new IllegalStateException("Cannot read raw response body of a converted body.");
         }
+    }
+
+    private static final List<OKHttpCall> ALLCALLS = new ArrayList<>();
+
+    private static synchronized void addCall(OKHttpCall call) {
+        ALLCALLS.add(call);
+    }
+
+    private static synchronized void finished(OKHttpCall call) {
+        ALLCALLS.remove(call);
+    }
+
+    public static synchronized List<OKHttpCall> getCalls() {
+        return Collections.unmodifiableList(ALLCALLS);
     }
 }

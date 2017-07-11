@@ -1,6 +1,7 @@
 package com.xcheng.okhttp.request;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.UiThread;
 
 import com.xcheng.okhttp.EasyOkHttp;
 import com.xcheng.okhttp.callback.OkCall;
@@ -20,6 +21,7 @@ final class ExecutorCallback<T> extends UICallback<T> {
     private final UICallback<T> delegate;
     private final OkCall<T> okCall;
     private final ResponseParse<T> responseParse;
+    private OnAfterListener onAfterListener;
 
     ExecutorCallback(UICallback<T> delegate, OkCall<T> okCall, ResponseParse<T> responseParse) {
         this.delegate = delegate;
@@ -47,7 +49,9 @@ final class ExecutorCallback<T> extends UICallback<T> {
                 if (isPostUi()) {
                     delegate.onAfter(id);
                 }
-                EasyOkHttp.finished(okCall);
+                if (onAfterListener != null) {
+                    onAfterListener.onAfter(id);
+                }
             }
         });
     }
@@ -95,11 +99,20 @@ final class ExecutorCallback<T> extends UICallback<T> {
     }
 
     private BaseError canceledError() {
-        String errorMsg = "Call Canceled, url=" + okCall.request().url();
+        String errorMsg = "Call Canceled, url= " + okCall.request().url();
         BaseError error = responseParse.getError(new IOException(errorMsg));
         if (error == null) {
             error = BaseError.getNotFoundError(errorMsg);
         }
         return error;
+    }
+
+    void setOnAfterListener(OnAfterListener onAfterListener) {
+        this.onAfterListener = onAfterListener;
+    }
+
+    interface OnAfterListener {
+        @UiThread
+        void onAfter(int id);
     }
 }

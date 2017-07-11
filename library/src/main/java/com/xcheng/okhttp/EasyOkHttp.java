@@ -5,20 +5,16 @@ import android.util.Log;
 
 import com.xcheng.okhttp.callback.OkCall;
 import com.xcheng.okhttp.request.GetRequest;
+import com.xcheng.okhttp.request.OKHttpCall;
 import com.xcheng.okhttp.request.OkConfig;
 import com.xcheng.okhttp.request.PostFormRequest;
 import com.xcheng.okhttp.request.PostStrRequest;
 import com.xcheng.okhttp.utils.OkExceptions;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Created by chengxin on 17/6/22
  */
 public class EasyOkHttp {
-    private static final List<OkCall> AllCALLS = new ArrayList<>();
-
     public static final long DEFAULT_MILLISECONDS = 10_000L;
     private static OkConfig sOkConfig;
     public static final String TAG = EasyOkHttp.class.getSimpleName();
@@ -53,24 +49,16 @@ public class EasyOkHttp {
         return new PostFormRequest.Builder().url(url);
     }
 
-    public static synchronized void addCall(OkCall call) {
-        AllCALLS.add(call);
-    }
-
-    public static synchronized void finished(OkCall call) {
-        AllCALLS.remove(call);
-    }
-
-    public static synchronized void cancel(Object tag) {
-        for (OkCall okCall : AllCALLS) {
-            if (tag.equals(okCall.request().tag())) {
+    public static void cancel(Object tag) {
+        for (OkCall okCall : OKHttpCall.getCalls()) {
+            if (okCall.request().tag().equals(tag)) {
                 okCall.cancel();
             }
         }
     }
 
-    public static synchronized void cancelAll() {
-        for (OkCall okCall : AllCALLS) {
+    public static void cancelAll() {
+        for (OkCall okCall : OKHttpCall.getCalls()) {
             okCall.cancel();
         }
     }
