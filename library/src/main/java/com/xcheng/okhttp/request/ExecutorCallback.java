@@ -71,6 +71,7 @@ final class ExecutorCallback<T> extends UICallback<T> {
                 if (isPostUi()) {
                     delegate.onError(error, id);
                 }
+                EasyOkHttp.finished(okCall);
             }
         });
     }
@@ -83,18 +84,23 @@ final class ExecutorCallback<T> extends UICallback<T> {
                 if (!okCall.isCanceled()) {
                     delegate.onSuccess(response, id);
                 } else {
-                    String errorMsg = "Call Canceled, url=" + okCall.request().url();
-                    BaseError error = responseParse.getError(new IOException(errorMsg));
-                    if (error == null) {
-                        error = BaseError.getNotFoundError(errorMsg);
-                    }
-                    onError(error, id);
+                    onError(canceledError(), id);
                 }
+                EasyOkHttp.finished(okCall);
             }
         });
     }
 
     private boolean isPostUi() {
         return !okCall.isCanceled() || EasyOkHttp.getOkConfig().isPostUiIfCanceled();
+    }
+
+    private BaseError canceledError() {
+        String errorMsg = "Call Canceled, url=" + okCall.request().url();
+        BaseError error = responseParse.getError(new IOException(errorMsg));
+        if (error == null) {
+            error = BaseError.getNotFoundError(errorMsg);
+        }
+        return error;
     }
 }

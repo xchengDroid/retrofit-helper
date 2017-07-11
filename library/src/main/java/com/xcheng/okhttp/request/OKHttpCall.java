@@ -90,6 +90,7 @@ public final class OKHttpCall<T> implements OkCall<T> {
         } else {
             rawCall = EasyOkHttp.getOkConfig().getOkHttpClient().newCall(request);
         }
+        EasyOkHttp.addCall(this);
     }
 
     private void sendFailResult(BaseError error, @Nullable Response responseNoBody) {
@@ -117,7 +118,11 @@ public final class OKHttpCall<T> implements OkCall<T> {
         if (canceled) {
             rawCall.cancel();
         }
-        return responseParse.parseNetworkResponse(this, rawCall.execute(), id);
+        try {
+            return responseParse.parseNetworkResponse(this, rawCall.execute(), id);
+        } finally {
+            EasyOkHttp.finished(this);
+        }
     }
 
     @Override
