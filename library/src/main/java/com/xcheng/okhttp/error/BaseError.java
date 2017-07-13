@@ -1,9 +1,7 @@
 package com.xcheng.okhttp.error;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-
-import okhttp3.Response;
+import android.util.Log;
 
 /**
  * 通用的错误信息，可继承添加一些自定义的error
@@ -12,7 +10,6 @@ import okhttp3.Response;
 public class BaseError {
     private int errorCode;
     private String message;
-    private Response responseNoBody;
 
     public BaseError(int errorCode, @NonNull String message) {
         this.errorCode = errorCode;
@@ -44,33 +41,12 @@ public class BaseError {
         this.message = message;
     }
 
-    boolean isResponseError() {
-        return responseNoBody != null;
-    }
-
-    /**
-     * 返回没有body的 response,可以获取httpCode header request message 等
-     *
-     * @return rawResponseNoBody
-     */
-    @Nullable
-    public Response getResponseNoBody() {
-        return responseNoBody;
-    }
-
-    public void setResponseNoBody(Response responseNoBody) {
-        this.responseNoBody = responseNoBody;
-    }
-
-    public int getCode() {
-        if (isResponseError()) {
-            return responseNoBody.code();
-        }
-        return -1;
+    public void log() {
+        Log.e(getClass().getSimpleName(), toString());
     }
 
     @Override
     public String toString() {
-        return "errorCode:" + errorCode + " ,message:" + message + " ,responseNoBody:" + responseNoBody;
+        return "[ errorCode: " + errorCode + ", message: " + message + " ]";
     }
 }

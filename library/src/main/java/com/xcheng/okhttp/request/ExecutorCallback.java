@@ -1,6 +1,7 @@
 package com.xcheng.okhttp.request;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
 
 import com.xcheng.okhttp.EasyOkHttp;
@@ -11,6 +12,8 @@ import com.xcheng.okhttp.error.BaseError;
 import com.xcheng.okhttp.utils.Platform;
 
 import java.io.IOException;
+
+import okhttp3.Response;
 
 /**
  * Created by chengxin on 2017/6/26.
@@ -69,12 +72,12 @@ final class ExecutorCallback<T> extends UICallback<T> {
     }
 
     @Override
-    public void onError(@NonNull final BaseError error, final int id) {
+    public void onError(@NonNull final BaseError error, @Nullable final Response noBody, final int id) {
         PLATFORM.execute(new Runnable() {
             @Override
             public void run() {
                 if (isPostUi()) {
-                    delegate.onError(error, id);
+                    delegate.onError(error, noBody, id);
                 }
             }
         });
@@ -88,7 +91,7 @@ final class ExecutorCallback<T> extends UICallback<T> {
                 if (!okCall.isCanceled()) {
                     delegate.onSuccess(response, id);
                 } else {
-                    onError(canceledError(), id);
+                    onError(canceledError(), null, id);
                 }
             }
         });

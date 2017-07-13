@@ -1,9 +1,12 @@
 package com.xcheng.okhttp.callback;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
 
 import com.xcheng.okhttp.error.BaseError;
+
+import okhttp3.Response;
 
 public abstract class UICallback<T> {
     @UiThread
@@ -27,7 +30,7 @@ public abstract class UICallback<T> {
     }
 
     @UiThread
-    public abstract void onError(@NonNull BaseError error, int id);
+    public abstract void onError(@NonNull BaseError error, @Nullable Response noBody, int id);
 
     @UiThread
     public abstract void onSuccess(@NonNull T response, int id);

@@ -29,7 +29,7 @@ import okio.BufferedSource;
  * Created by cx on 17/6/22.
  * 发起http请求的封装类
  */
-public final class OKHttpCall<T> implements OkCall<T> {
+public final class OkHttpCall<T> implements OkCall<T> {
 
     private final OkRequest okRequest;
     private final int id;
@@ -47,7 +47,7 @@ public final class OKHttpCall<T> implements OkCall<T> {
     private boolean executed;
 
     @SuppressWarnings("unchecked")
-    public OKHttpCall(@NonNull OkRequest okRequest) {
+    public OkHttpCall(@NonNull OkRequest okRequest) {
         this.okRequest = okRequest;
         this.id = okRequest.getId();
         this.typeToken = (TypeToken<T>) okRequest.getTypeToken();
@@ -101,8 +101,7 @@ public final class OKHttpCall<T> implements OkCall<T> {
         if (error == null) {
             error = BaseError.getNotFoundError("do not find defined error in " + getParseClass() + ".getError(IOException) method");
         }
-        error.setResponseNoBody(responseNoBody);
-        executorCallback.onError(error, id);
+        executorCallback.onError(error,responseNoBody, id);
         executorCallback.onAfter(id);
     }
 
@@ -137,7 +136,7 @@ public final class OKHttpCall<T> implements OkCall<T> {
         this.executorCallback.setOnAfterListener(new ExecutorCallback.OnAfterListener() {
             @Override
             public void onAfter(int id) {
-                finished(OKHttpCall.this);
+                finished(OkHttpCall.this);
             }
         });
         synchronized (this) {
@@ -163,7 +162,7 @@ public final class OKHttpCall<T> implements OkCall<T> {
                         .body(new NoContentResponseBody(rawBody.contentType(), rawBody.contentLength()))
                         .build();
                 try {
-                    OkResponse<T> okResponse = responseParse.parseNetworkResponse(OKHttpCall.this, response, id);
+                    OkResponse<T> okResponse = responseParse.parseNetworkResponse(OkHttpCall.this, response, id);
                     BaseError responseError = null;
                     if (okResponse != null) {
                         if (okResponse.isSuccess()) {
@@ -235,7 +234,7 @@ public final class OKHttpCall<T> implements OkCall<T> {
 
     @Override
     public OkCall<T> clone() {
-        OKHttpCall<T> okCall = new OKHttpCall<>(okRequest);
+        OkHttpCall<T> okCall = new OkHttpCall<>(okRequest);
         okCall.typeToken = getTypeToken();
         return okCall;
     }
@@ -277,17 +276,17 @@ public final class OKHttpCall<T> implements OkCall<T> {
         }
     }
 
-    private static final List<OKHttpCall> ALLCALLS = new ArrayList<>();
+    private static final List<OkHttpCall> ALLCALLS = new ArrayList<>();
 
-    private static synchronized void addCall(OKHttpCall call) {
+    private static synchronized void addCall(OkHttpCall call) {
         ALLCALLS.add(call);
     }
 
-    private static synchronized void finished(OKHttpCall call) {
+    private static synchronized void finished(OkHttpCall call) {
         ALLCALLS.remove(call);
     }
 
-    public static synchronized List<OKHttpCall> getCalls() {
+    public static synchronized List<OkHttpCall> getCalls() {
         return Collections.unmodifiableList(ALLCALLS);
     }
 }
