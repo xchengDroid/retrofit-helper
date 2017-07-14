@@ -49,15 +49,15 @@ public final class OkHttpCall<T> implements OkCall<T> {
     @SuppressWarnings("unchecked")
     public OkHttpCall(@NonNull OkRequest okRequest) {
         this.okRequest = okRequest;
-        this.id = okRequest.getId();
-        this.typeToken = (TypeToken<T>) okRequest.getTypeToken();
+        this.id = okRequest.id();
+        this.typeToken = (TypeToken<T>) okRequest.typeToken();
         this.originalRequest = okRequest.createRequest();
         this.responseParse = createResponseParse();
     }
 
     @Override
     public Class<? extends ResponseParse> getParseClass() {
-        Class<? extends ResponseParse> respParseClass = okRequest.getParseClass();
+        Class<? extends ResponseParse> respParseClass = okRequest.parseClass();
         if (respParseClass == null) {
             //get default
             respParseClass = EasyOkHttp.getOkConfig().getParseClass();
@@ -78,7 +78,7 @@ public final class OkHttpCall<T> implements OkCall<T> {
     private void buildCall() {
         Request request = originalRequest;
         RequestBody body = request.body();
-        if (executorCallback != null && okRequest.isInProgress() && body != null) {
+        if (executorCallback != null && okRequest.inProgress() && body != null) {
             Request.Builder builder = originalRequest.newBuilder();
             RequestBody requestBody = new CountingRequestBody(body, new CountingRequestBody.Listener() {
                 @Override
@@ -89,8 +89,8 @@ public final class OkHttpCall<T> implements OkCall<T> {
             builder.method(request.method(), requestBody);
             request = builder.build();
         }
-        if (okRequest.getOkHttpClient() != null) {
-            rawCall = okRequest.getOkHttpClient().newCall(request);
+        if (okRequest.okHttpClient() != null) {
+            rawCall = okRequest.okHttpClient().newCall(request);
         } else {
             rawCall = EasyOkHttp.getOkConfig().getOkHttpClient().newCall(request);
         }
@@ -191,7 +191,7 @@ public final class OkHttpCall<T> implements OkCall<T> {
     @SuppressWarnings("unchecked")
     @Override
     public <V> V getExtra(String key) {
-        Map<String, Object> extraMap = okRequest.getExtraMap();
+        Map<String, Object> extraMap = okRequest.extraMap();
         if (extraMap != null) {
             return (V) extraMap.get(key);
         }

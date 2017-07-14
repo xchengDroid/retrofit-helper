@@ -46,44 +46,44 @@ public abstract class OkRequest {
         this. parseClass = builder.parseClass;
     }
 
-    public String getUrl() {
+    public String url() {
         return url;
     }
 
-    public OkHttpClient getOkHttpClient() {
+    public OkHttpClient okHttpClient() {
         return okHttpClient;
     }
 
-    public Map<String, Object> getExtraMap() {
+    public Map<String, Object> extraMap() {
         return extraMap;
     }
 
-    public TypeToken<?> getTypeToken() {
+    public TypeToken<?> typeToken() {
         return typeToken;
     }
 
-    public Class<? extends ResponseParse> getParseClass() {
+    public Class<? extends ResponseParse> parseClass() {
         return  parseClass;
     }
 
-    public Object getTag() {
+    public Object tag() {
         return tag;
     }
 
-    public int getId() {
+    public int id() {
         return id;
     }
 
-    public Map<String, String> getParams() {
+    public Map<String, String> params() {
         return params;
     }
 
     @NonNull
-    public Headers.Builder getHeaders() {
+    public Headers.Builder headers() {
         return headers;
     }
 
-    public boolean isInProgress() {
+    public boolean inProgress() {
         return inProgress;
     }
 

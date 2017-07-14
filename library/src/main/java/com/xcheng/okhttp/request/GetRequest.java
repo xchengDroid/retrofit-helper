@@ -17,7 +17,7 @@ public class GetRequest extends OkRequest {
 
     @Override
     protected Request createRequest() {
-        return new Request.Builder().url(getUrl()).headers(getHeaders().build()).tag(getTag()).build();
+        return new Request.Builder().url(url()).headers(headers().build()).tag(tag()).build();
     }
 
     public static class Builder extends OkRequestBuilder<Builder> {

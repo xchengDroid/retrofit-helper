@@ -48,7 +48,7 @@ public class PostFormRequest extends OkRequest {
             }
             requestBody = builder.build();
         }
-        return new Request.Builder().url(getUrl()).tag(getTag()).headers(getHeaders().build()).post(requestBody).build();
+        return new Request.Builder().url(url()).tag(tag()).headers(headers().build()).post(requestBody).build();
     }
 
     private static String guessMimeType(String fileName) {
@@ -66,7 +66,7 @@ public class PostFormRequest extends OkRequest {
     }
 
     private void addParams(MultipartBody.Builder builder) {
-        Map<String, String> params = getParams();
+        Map<String, String> params = params();
         if (!ParamHelper.checkMapEmpty(params)) {
             for (String key : params.keySet()) {
                 builder.addFormDataPart(key, params.get(key));
@@ -75,7 +75,7 @@ public class PostFormRequest extends OkRequest {
     }
 
     private void addParams(FormBody.Builder builder) {
-        Map<String, String> params = getParams();
+        Map<String, String> params = params();
         if (!ParamHelper.checkMapEmpty(params)) {
             for (String key : params.keySet()) {
                 builder.add(key, params.get(key));
