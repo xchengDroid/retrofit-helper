@@ -35,7 +35,7 @@ public abstract class OkRequest {
             OkExceptions.illegalArgument("url can not be null.");
         }
         this.url = builder.url;
-        this.tag = builder.tag;
+        this.tag = builder.tag != null ? builder.tag : this;
         this.params = builder.params;
         this.headers = builder.headers;
         this.id = builder.id;
@@ -43,7 +43,7 @@ public abstract class OkRequest {
         this.okHttpClient = builder.okHttpClient;
         this.extraMap = builder.extraMap;
         this.typeToken = builder.typeToken;
-        this. parseClass = builder.parseClass;
+        this.parseClass = builder.parseClass;
     }
 
     public String url() {
@@ -63,7 +63,7 @@ public abstract class OkRequest {
     }
 
     public Class<? extends ResponseParse> parseClass() {
-        return  parseClass;
+        return parseClass;
     }
 
     public Object tag() {
