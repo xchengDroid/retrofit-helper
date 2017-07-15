@@ -19,7 +19,7 @@ public interface ResponseParse<T> {
 
     @WorkerThread
     @NonNull
-    OkResponse<T> parseNetworkResponse(OkCall<T> okCall, Response response, int id) throws IOException;
+    OkResponse<T> parseNetworkResponse(OkCall<T> okCall, Response response) throws IOException;
 
     /**
      * called by {@link okhttp3.Callback#onFailure(Call, IOException)}

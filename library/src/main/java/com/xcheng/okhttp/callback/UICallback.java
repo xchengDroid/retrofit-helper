@@ -1,38 +1,35 @@
 package com.xcheng.okhttp.callback;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
 
 import com.xcheng.okhttp.error.BaseError;
 
-import okhttp3.Response;
-
 public abstract class UICallback<T> {
     @UiThread
-    public void onBefore(int id) {
+    public void onBefore(OkCall<T> okCall) {
 
     }
 
     @UiThread
-    public void onAfter(int id) {
+    public void onAfter(OkCall<T> okCall) {
 
     }
 
     /**
      * UI Thread
      *
-     * @param progress
+     * @param progress 进度[0~1]
      */
     @UiThread
-    public void inProgress(float progress, long total, int id) {
+    public void inProgress(OkCall<T> okCall, float progress, long total) {
 
     }
 
     @UiThread
-    public abstract void onError(@NonNull BaseError error, @Nullable Response noBody, int id);
+    public abstract void onError(OkCall<T> okCall, @NonNull BaseError error);
 
     @UiThread
-    public abstract void onSuccess(@NonNull T response, int id);
+    public abstract void onSuccess(OkCall<T> okCall, @NonNull T response);
 
 }

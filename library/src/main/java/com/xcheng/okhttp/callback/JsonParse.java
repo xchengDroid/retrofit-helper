@@ -19,7 +19,7 @@ public class JsonParse<T> extends SimpleParse<T> {
     @SuppressWarnings("unchecked")
     @NonNull
     @Override
-    public OkResponse<T> parseNetworkResponse(OkCall<T> call, Response response, int id) throws IOException {
+    public OkResponse<T> parseNetworkResponse(OkCall<T> call, Response response) throws IOException {
         if (response.isSuccessful()) {
             TypeToken<T> token = call.getTypeToken();
             String str = response.body().string();

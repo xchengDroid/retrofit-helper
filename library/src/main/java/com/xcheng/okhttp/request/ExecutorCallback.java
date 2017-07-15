@@ -1,8 +1,6 @@
 package com.xcheng.okhttp.request;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.annotation.UiThread;
 
 import com.xcheng.okhttp.EasyOkHttp;
 import com.xcheng.okhttp.callback.OkCall;
@@ -12,8 +10,6 @@ import com.xcheng.okhttp.error.BaseError;
 import com.xcheng.okhttp.utils.Platform;
 
 import java.io.IOException;
-
-import okhttp3.Response;
 
 /**
  * Created by chengxin on 2017/6/26.
@@ -33,65 +29,65 @@ final class ExecutorCallback<T> extends UICallback<T> {
     }
 
     @Override
-    public void onBefore(final int id) {
+    public void onBefore(final OkCall<T> okCall) {
         PLATFORM.execute(new Runnable() {
             @Override
             public void run() {
                 if (isPostUi()) {
-                    delegate.onBefore(id);
+                    delegate.onBefore(okCall);
                 }
             }
         });
     }
 
     @Override
-    public void onAfter(final int id) {
+    public void onAfter(final OkCall<T> okCall) {
         PLATFORM.execute(new Runnable() {
             @Override
             public void run() {
                 if (isPostUi()) {
-                    delegate.onAfter(id);
+                    delegate.onAfter(okCall);
                 }
                 if (onAfterListener != null) {
-                    onAfterListener.onAfter(id);
+                    onAfterListener.onAfter();
                 }
             }
         });
     }
 
     @Override
-    public void inProgress(final float progress, final long total, final int id) {
+    public void inProgress(final OkCall<T> okCall, final float progress, final long total) {
         PLATFORM.execute(new Runnable() {
             @Override
             public void run() {
                 if (isPostUi()) {
-                    delegate.inProgress(progress, total, id);
+                    delegate.inProgress(okCall, progress, total);
                 }
             }
         });
     }
 
     @Override
-    public void onError(@NonNull final BaseError error, @Nullable final Response noBody, final int id) {
+    public void onError(final OkCall<T> okCall, @NonNull final BaseError error) {
         PLATFORM.execute(new Runnable() {
             @Override
             public void run() {
                 if (isPostUi()) {
-                    delegate.onError(error, noBody, id);
+                    delegate.onError(okCall, error);
                 }
             }
         });
     }
 
     @Override
-    public void onSuccess(@NonNull final T response, final int id) {
+    public void onSuccess(final OkCall<T> okCall, @NonNull final T response) {
         PLATFORM.execute(new Runnable() {
             @Override
             public void run() {
                 if (!okCall.isCanceled()) {
-                    delegate.onSuccess(response, id);
+                    delegate.onSuccess(okCall, response);
                 } else {
-                    onError(canceledError(), null, id);
+                    onError(okCall, canceledError());
                 }
             }
         });
@@ -115,7 +111,6 @@ final class ExecutorCallback<T> extends UICallback<T> {
     }
 
     interface OnAfterListener {
-        @UiThread
-        void onAfter(int id);
+        void onAfter();
     }
 }

@@ -1,11 +1,10 @@
 package com.xcheng.okhttp.callback;
 
 import com.google.gson.reflect.TypeToken;
+import com.xcheng.okhttp.request.OkRequest;
 import com.xcheng.okhttp.request.OkResponse;
 
 import java.io.IOException;
-
-import okhttp3.Request;
 
 public interface OkCall<T> extends Cloneable {
 
@@ -39,13 +38,8 @@ public interface OkCall<T> extends Cloneable {
     /**
      * The original HTTP request.
      */
-    Request request();
+    OkRequest request();
 
-    <V> V getExtra(String key);
 
     TypeToken<T> getTypeToken();
-
-    int getId();
-
-    Class<? extends ResponseParse> getParseClass();
 }

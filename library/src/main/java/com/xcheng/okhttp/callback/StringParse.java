@@ -15,7 +15,7 @@ import okhttp3.Response;
 public class StringParse extends SimpleParse<String> {
     @NonNull
     @Override
-    public OkResponse<String> parseNetworkResponse(OkCall<String> okCall, Response response, int id) throws IOException {
+    public OkResponse<String> parseNetworkResponse(OkCall<String> okCall, Response response) throws IOException {
         if (response.isSuccessful()) {
             return OkResponse.success(response.body().string());
         }

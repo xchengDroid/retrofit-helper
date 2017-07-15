@@ -15,7 +15,7 @@ public class BitmapParse extends SimpleParse<Bitmap> {
 
     @NonNull
     @Override
-    public OkResponse<Bitmap> parseNetworkResponse(OkCall<Bitmap> okCall, Response response, int id) throws IOException {
+    public OkResponse<Bitmap> parseNetworkResponse(OkCall<Bitmap> okCall, Response response) throws IOException {
         if (response.isSuccessful()) {
             return OkResponse.success(BitmapFactory.decodeStream(response.body().byteStream()));
         }

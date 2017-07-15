@@ -40,10 +40,10 @@ public abstract class OkRequest {
         this.headers = builder.headers;
         this.id = builder.id;
         this.inProgress = builder.inProgress;
-        this.okHttpClient = builder.okHttpClient;
+        this.okHttpClient = builder.okHttpClient != null ? builder.okHttpClient : EasyOkHttp.getOkConfig().getOkHttpClient();
         this.extraMap = builder.extraMap;
         this.typeToken = builder.typeToken;
-        this.parseClass = builder.parseClass;
+        this.parseClass = builder.parseClass != null ? builder.parseClass : EasyOkHttp.getOkConfig().getParseClass();
     }
 
     public String url() {
@@ -52,6 +52,14 @@ public abstract class OkRequest {
 
     public OkHttpClient okHttpClient() {
         return okHttpClient;
+    }
+
+    @SuppressWarnings("unchecked")
+    public <V> V extra(String key) {
+        if (extraMap != null) {
+            return (V) extraMap.get(key);
+        }
+        return null;
     }
 
     public Map<String, Object> extraMap() {

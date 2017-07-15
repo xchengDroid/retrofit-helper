@@ -1,10 +1,8 @@
 package com.xcheng.okhttp.request;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import com.google.gson.reflect.TypeToken;
-import com.xcheng.okhttp.EasyOkHttp;
 import com.xcheng.okhttp.callback.OkCall;
 import com.xcheng.okhttp.callback.ResponseParse;
 import com.xcheng.okhttp.callback.UICallback;
@@ -16,14 +14,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
-import okhttp3.MediaType;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-import okhttp3.ResponseBody;
-import okio.BufferedSource;
 
 /**
  * Created by cx on 17/6/22.
@@ -32,12 +26,8 @@ import okio.BufferedSource;
 public final class OkHttpCall<T> implements OkCall<T> {
 
     private final OkRequest okRequest;
-    private final int id;
-
     //发起请求 解析相关
-    private final Request originalRequest;
     private final ResponseParse<T> responseParse;
-
     private TypeToken<T> typeToken;
     private Class<? extends UICallback> tokenClass;
     private ExecutorCallback<T> executorCallback;
@@ -49,67 +39,45 @@ public final class OkHttpCall<T> implements OkCall<T> {
     @SuppressWarnings("unchecked")
     public OkHttpCall(@NonNull OkRequest okRequest) {
         this.okRequest = okRequest;
-        this.id = okRequest.id();
         this.typeToken = (TypeToken<T>) okRequest.typeToken();
-        this.originalRequest = okRequest.createRequest();
         this.responseParse = createResponseParse();
     }
 
     @Override
-    public Class<? extends ResponseParse> getParseClass() {
-        Class<? extends ResponseParse> respParseClass = okRequest.parseClass();
-        if (respParseClass == null) {
-            //get default
-            respParseClass = EasyOkHttp.getOkConfig().getParseClass();
-        }
-        return respParseClass;
-    }
-
-    @Override
-    public int getId() {
-        return id;
-    }
-
-    @Override
-    public Request request() {
-        return originalRequest;
+    public OkRequest request() {
+        return okRequest;
     }
 
     private void buildCall() {
-        Request request = originalRequest;
+        Request request = okRequest.createRequest();
         RequestBody body = request.body();
         if (executorCallback != null && okRequest.inProgress() && body != null) {
-            Request.Builder builder = originalRequest.newBuilder();
+            Request.Builder builder = request.newBuilder();
             RequestBody requestBody = new CountingRequestBody(body, new CountingRequestBody.Listener() {
                 @Override
                 public void onRequestProgress(final long bytesWritten, final long contentLength) {
-                    executorCallback.inProgress(bytesWritten * 1.0f / contentLength, contentLength, id);
+                    executorCallback.inProgress(OkHttpCall.this, bytesWritten * 1.0f / contentLength, contentLength);
                 }
             });
             builder.method(request.method(), requestBody);
             request = builder.build();
         }
-        if (okRequest.okHttpClient() != null) {
-            rawCall = okRequest.okHttpClient().newCall(request);
-        } else {
-            rawCall = EasyOkHttp.getOkConfig().getOkHttpClient().newCall(request);
-        }
+        rawCall = okRequest.okHttpClient().newCall(request);
         addCall(this);
     }
 
-    private void sendFailResult(BaseError error, @Nullable Response responseNoBody) {
+    private void sendFailResult(BaseError error) {
         if (error == null) {
-            error = BaseError.getNotFoundError("do not find defined error in " + getParseClass() + ".getError(IOException) method");
+            error = BaseError.getNotFoundError("do not find defined error in " + okRequest.parseClass() + ".getError(IOException) method");
         }
-        executorCallback.onError(error,responseNoBody, id);
-        executorCallback.onAfter(id);
+        executorCallback.onError(this, error);
+        executorCallback.onAfter(this);
     }
 
     private void sendSuccessResult(T t) {
-        executorCallback.onSuccess(t, id);
-        executorCallback.onAfter(id);
+        executorCallback.onSuccess(this, t);
+        executorCallback.onAfter(this);
     }
-
 
     @Override
     public OkResponse<T> execute() throws IOException {
@@ -122,7 +90,7 @@ public final class OkHttpCall<T> implements OkCall<T> {
             rawCall.cancel();
         }
         try {
-            return responseParse.parseNetworkResponse(this, rawCall.execute(), id);
+            return responseParse.parseNetworkResponse(this, rawCall.execute());
         } finally {
             finished(this);
         }
@@ -135,7 +103,7 @@ public final class OkHttpCall<T> implements OkCall<T> {
         this.executorCallback = new ExecutorCallback<>(uiCallback, this, responseParse);
         this.executorCallback.setOnAfterListener(new ExecutorCallback.OnAfterListener() {
             @Override
-            public void onAfter(int id) {
+            public void onAfter() {
                 finished(OkHttpCall.this);
             }
         });
@@ -144,25 +112,20 @@ public final class OkHttpCall<T> implements OkCall<T> {
             executed = true;
             buildCall();
         }
-        executorCallback.onBefore(id);
+        executorCallback.onBefore(this);
         if (canceled) {
             rawCall.cancel();
         }
         rawCall.enqueue(new okhttp3.Callback() {
             @Override
             public void onFailure(okhttp3.Call call, IOException e) {
-                sendFailResult(responseParse.getError(e), null);
+                sendFailResult(responseParse.getError(e));
             }
 
             @Override
             public void onResponse(okhttp3.Call call, final Response response) {
-                ResponseBody rawBody = response.body();
-                // Remove the body's source (the only stateful object) so we can pass the response along.
-                Response responseNoBody = response.newBuilder()
-                        .body(new NoContentResponseBody(rawBody.contentType(), rawBody.contentLength()))
-                        .build();
                 try {
-                    OkResponse<T> okResponse = responseParse.parseNetworkResponse(OkHttpCall.this, response, id);
+                    OkResponse<T> okResponse = responseParse.parseNetworkResponse(OkHttpCall.this, response);
                     BaseError responseError = null;
                     if (okResponse != null) {
                         if (okResponse.isSuccess()) {
@@ -172,30 +135,17 @@ public final class OkHttpCall<T> implements OkCall<T> {
                         responseError = okResponse.getError();
                     }
                     if (responseError == null) {
-                        responseError = BaseError.getNotFoundError("do not find error in " + getParseClass() + ".parseNetworkResponse(OkCall<T> , Response , int ) , have you return it ?");
+                        responseError = BaseError.getNotFoundError("do not find error in " + okRequest.parseClass() + ".parseNetworkResponse(OkCall<T> , Response , int ) , have you return it ?");
                     }
-                    sendFailResult(responseError, responseNoBody);
+                    sendFailResult(responseError);
                 } catch (IOException e) {
                     e.printStackTrace();
-                    sendFailResult(responseParse.getError(e), responseNoBody);
+                    sendFailResult(responseParse.getError(e));
                 } finally {
-                    ResponseBody body = response.body();
-                    if (body != null) {
-                        body.close();
-                    }
+                    response.body().close();
                 }
             }
         });
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public <V> V getExtra(String key) {
-        Map<String, Object> extraMap = okRequest.extraMap();
-        if (extraMap != null) {
-            return (V) extraMap.get(key);
-        }
-        return null;
     }
 
     @Override
@@ -241,39 +191,14 @@ public final class OkHttpCall<T> implements OkCall<T> {
 
     private ResponseParse<T> createResponseParse() {
         try {
-            return getParseClass().newInstance();
+            return okRequest.parseClass().newInstance();
         } catch (InstantiationException e) {
             e.printStackTrace();
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
-        OkExceptions.illegalState(getParseClass() + " must has a no zero argument constructor, class must be not private and abstract");
+        OkExceptions.illegalState(okRequest.parseClass() + " must has a no zero argument constructor, class must be not private and abstract");
         return null;
-    }
-
-    private static final class NoContentResponseBody extends ResponseBody {
-        private final MediaType contentType;
-        private final long contentLength;
-
-        NoContentResponseBody(MediaType contentType, long contentLength) {
-            this.contentType = contentType;
-            this.contentLength = contentLength;
-        }
-
-        @Override
-        public MediaType contentType() {
-            return contentType;
-        }
-
-        @Override
-        public long contentLength() {
-            return contentLength;
-        }
-
-        @Override
-        public BufferedSource source() {
-            throw new IllegalStateException("Cannot read raw response body of a converted body.");
-        }
     }
 
     private static final List<OkHttpCall> ALLCALLS = new ArrayList<>();
