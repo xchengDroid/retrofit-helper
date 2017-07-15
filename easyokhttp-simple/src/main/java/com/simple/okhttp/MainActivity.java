@@ -3,7 +3,6 @@ package com.simple.okhttp;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.webkit.WebView;
@@ -14,6 +13,7 @@ import com.google.gson.Gson;
 import com.xcheng.okhttp.EasyOkHttp;
 import com.xcheng.okhttp.callback.BitmapParse;
 import com.xcheng.okhttp.callback.JsonParse;
+import com.xcheng.okhttp.callback.OkCall;
 import com.xcheng.okhttp.callback.UICallback;
 import com.xcheng.okhttp.error.BaseError;
 import com.xcheng.okhttp.request.GetRequest;
@@ -21,13 +21,12 @@ import com.xcheng.okhttp.request.OkConfig;
 import com.xcheng.okhttp.request.OkHttpCall;
 
 import okhttp3.OkHttpClient;
-import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity {
     private WebView webView;
     ImageView imageView;
 
-     @Override
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -47,16 +46,17 @@ public class MainActivity extends AppCompatActivity {
         OkHttpCall<Weather> okCall = new OkHttpCall<>(getRequest);
         okCall.enqueue(new UICallback<Weather>() {
             @Override
-            public void onError(@NonNull BaseError error, @Nullable Response noBody, int id) {
+            public void onError(OkCall<Weather> okCall, @NonNull BaseError error) {
                 Toast.makeText(MainActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
+
             }
 
             @Override
-            public void onSuccess(@NonNull Weather response, int id) {
+            public void onSuccess(OkCall<Weather> okCall, @NonNull Weather response) {
                 webView.loadData(new Gson().toJson(response), "text/html", "utf-8");
+
             }
         });
-        EasyOkHttp.cancel(1);
     }
 
     public void string(View view) {
@@ -64,13 +64,13 @@ public class MainActivity extends AppCompatActivity {
         OkHttpCall<String> okCall = new OkHttpCall<>(getRequest);
         okCall.enqueue(new UICallback<String>() {
             @Override
-            public void onError(@NonNull BaseError error, @Nullable Response noBody, int id) {
+            public void onError(OkCall<String> okCall, @NonNull BaseError error) {
                 Toast.makeText(MainActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
 
             }
 
             @Override
-            public void onSuccess(@NonNull String response, int id) {
+            public void onSuccess(OkCall<String> okCall, @NonNull String response) {
                 imageView.setVisibility(View.GONE);
                 webView.setVisibility(View.VISIBLE);
                 webView.loadData(response, "text/html", "utf-8");
@@ -83,12 +83,12 @@ public class MainActivity extends AppCompatActivity {
         OkHttpCall<Bitmap> okCall = new OkHttpCall<>(getRequest);
         okCall.enqueue(new UICallback<Bitmap>() {
             @Override
-            public void onError(@NonNull BaseError error, @Nullable Response noBody, int id) {
+            public void onError(OkCall<Bitmap> okCall, @NonNull BaseError error) {
                 Toast.makeText(MainActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
             }
 
             @Override
-            public void onSuccess(@NonNull Bitmap response, int id) {
+            public void onSuccess(OkCall<Bitmap> okCall, @NonNull Bitmap response) {
                 webView.setVisibility(View.GONE);
                 imageView.setVisibility(View.VISIBLE);
                 imageView.setImageBitmap(response);
