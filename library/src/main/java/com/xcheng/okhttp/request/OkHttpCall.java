@@ -66,7 +66,7 @@ public final class OkHttpCall<T> implements OkCall<T> {
         addCall(this);
     }
 
-    private void sendFailResult(BaseError error) {
+    private void callFailure(BaseError error) {
         if (error == null) {
             error = BaseError.getNotFoundError("do not find defined error in " + okRequest.parseClass() + ".getError(IOException) method");
         }
@@ -74,7 +74,7 @@ public final class OkHttpCall<T> implements OkCall<T> {
         executorCallback.onAfter(this);
     }
 
-    private void sendSuccessResult(T t) {
+    private void callSuccess(T t) {
         executorCallback.onSuccess(this, t);
         executorCallback.onAfter(this);
     }
@@ -119,7 +119,7 @@ public final class OkHttpCall<T> implements OkCall<T> {
         rawCall.enqueue(new okhttp3.Callback() {
             @Override
             public void onFailure(okhttp3.Call call, IOException e) {
-                sendFailResult(responseParse.getError(e));
+                callFailure(responseParse.getError(e));
             }
 
             @Override
@@ -129,7 +129,7 @@ public final class OkHttpCall<T> implements OkCall<T> {
                     BaseError responseError = null;
                     if (okResponse != null) {
                         if (okResponse.isSuccess()) {
-                            sendSuccessResult(okResponse.getBody());
+                            callSuccess(okResponse.getBody());
                             return;
                         }
                         responseError = okResponse.getError();
@@ -137,10 +137,10 @@ public final class OkHttpCall<T> implements OkCall<T> {
                     if (responseError == null) {
                         responseError = BaseError.getNotFoundError("do not find error in " + okRequest.parseClass() + ".parseNetworkResponse(OkCall<T> , Response , int ) , have you return it ?");
                     }
-                    sendFailResult(responseError);
+                    callFailure(responseError);
                 } catch (IOException e) {
                     e.printStackTrace();
-                    sendFailResult(responseParse.getError(e));
+                    callFailure(responseParse.getError(e));
                 } finally {
                     response.body().close();
                 }
