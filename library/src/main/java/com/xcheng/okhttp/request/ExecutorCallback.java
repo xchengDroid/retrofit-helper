@@ -1,7 +1,5 @@
 package com.xcheng.okhttp.request;
 
-import android.support.annotation.NonNull;
-
 import com.xcheng.okhttp.EasyOkHttp;
 import com.xcheng.okhttp.callback.OkCall;
 import com.xcheng.okhttp.callback.ResponseParse;
@@ -68,7 +66,7 @@ final class ExecutorCallback<T> extends UICallback<T> {
     }
 
     @Override
-    public void onError(final OkCall<T> okCall, @NonNull final BaseError error) {
+    public void onError(final OkCall<T> okCall, final BaseError error) {
         PLATFORM.execute(new Runnable() {
             @Override
             public void run() {
@@ -80,7 +78,7 @@ final class ExecutorCallback<T> extends UICallback<T> {
     }
 
     @Override
-    public void onSuccess(final OkCall<T> okCall, @NonNull final T response) {
+    public void onSuccess(final OkCall<T> okCall, final T response) {
         PLATFORM.execute(new Runnable() {
             @Override
             public void run() {
