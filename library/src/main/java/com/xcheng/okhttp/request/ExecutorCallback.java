@@ -1,11 +1,14 @@
 package com.xcheng.okhttp.request;
 
+import android.support.annotation.NonNull;
+
 import com.xcheng.okhttp.callback.OkCall;
 import com.xcheng.okhttp.callback.UICallback;
 import com.xcheng.okhttp.error.BaseError;
 import com.xcheng.okhttp.utils.Platform;
 
 /**
+ * UICallBack 处理类
  * Created by chengxin on 2017/6/26.
  */
 
@@ -13,9 +16,11 @@ final class ExecutorCallback<T> extends UICallback<T> {
     private static final Platform PLATFORM = Platform.get();
     private final UICallback<T> delegate;
     private OnAfterListener onAfterListener;
+    private BaseError canceledError;
 
-    ExecutorCallback(UICallback<T> delegate) {
+    ExecutorCallback(UICallback<T> delegate, @NonNull BaseError canceledError) {
         this.delegate = delegate;
+        this.canceledError = canceledError;
     }
 
     @Override
@@ -77,7 +82,7 @@ final class ExecutorCallback<T> extends UICallback<T> {
                 if (!okCall.isCanceled()) {
                     delegate.onSuccess(okCall, response);
                 } else {
-                    onError(okCall, BaseError.createDefaultError("Call Canceled, url= " + okCall.request().url()));
+                    onError(okCall, canceledError);
                 }
             }
         });

@@ -101,7 +101,7 @@ public final class OkHttpCall<T> implements OkCall<T> {
     public void enqueue(UICallback<T> uiCallback) {
         OkExceptions.checkNotNull(uiCallback, "uiCallback can not be null");
         this.tokenClass = uiCallback.getClass();
-        this.executorCallback = new ExecutorCallback<>(uiCallback);
+        this.executorCallback = new ExecutorCallback<>(uiCallback, canceledError());
         this.executorCallback.setOnAfterListener(new ExecutorCallback.OnAfterListener() {
             @Override
             public void onAfter() {
@@ -160,6 +160,15 @@ public final class OkHttpCall<T> implements OkCall<T> {
     @Override
     public boolean isPostUi() {
         return !isCanceled() || EasyOkHttp.getOkConfig().isPostUiIfCanceled();
+    }
+
+    private BaseError canceledError() {
+        String errorMsg = "Call Canceled, url= " + request().url();
+        BaseError error = responseParse.getError(new IOException(errorMsg));
+        if (error == null) {
+            error = BaseError.createDefaultError(errorMsg);
+        }
+        return error;
     }
 
     @Override
