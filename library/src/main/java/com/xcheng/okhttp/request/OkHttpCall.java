@@ -64,7 +64,7 @@ public final class OkHttpCall<T> implements OkCall<T> {
             request = builder.build();
         }
         rawCall = okRequest.okHttpClient().newCall(request);
-        addCall(this);
+        addCall(OkHttpCall.this);
     }
 
     private void callFailure(BaseError error) {
@@ -93,7 +93,7 @@ public final class OkHttpCall<T> implements OkCall<T> {
         try {
             return responseParse.parseNetworkResponse(this, rawCall.execute());
         } finally {
-            finished(this);
+            finished(OkHttpCall.this);
         }
     }
 
@@ -101,11 +101,21 @@ public final class OkHttpCall<T> implements OkCall<T> {
     public void enqueue(UICallback<T> uiCallback) {
         OkExceptions.checkNotNull(uiCallback, "uiCallback can not be null");
         this.tokenClass = uiCallback.getClass();
-        this.executorCallback = new ExecutorCallback<>(uiCallback, canceledError());
-        this.executorCallback.setOnAfterListener(new ExecutorCallback.OnAfterListener() {
+        this.executorCallback = new ExecutorCallback<>(uiCallback, new ExecutorCallback.OnExecutorListener() {
             @Override
             public void onAfter() {
                 finished(OkHttpCall.this);
+            }
+
+            @NonNull
+            @Override
+            public BaseError canceledError() {
+                String errorMsg = "Call Canceled, url= " + request().url();
+                BaseError error = responseParse.getError(new IOException(errorMsg));
+                if (error == null) {
+                    error = BaseError.createDefaultError(errorMsg);
+                }
+                return error;
             }
         });
         synchronized (this) {
@@ -160,15 +170,6 @@ public final class OkHttpCall<T> implements OkCall<T> {
     @Override
     public boolean isPostUi() {
         return !isCanceled() || EasyOkHttp.getOkConfig().isPostUiIfCanceled();
-    }
-
-    private BaseError canceledError() {
-        String errorMsg = "Call Canceled, url= " + request().url();
-        BaseError error = responseParse.getError(new IOException(errorMsg));
-        if (error == null) {
-            error = BaseError.createDefaultError(errorMsg);
-        }
-        return error;
     }
 
     @Override

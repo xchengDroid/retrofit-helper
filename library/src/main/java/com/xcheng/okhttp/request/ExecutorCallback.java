@@ -15,12 +15,11 @@ import com.xcheng.okhttp.utils.Platform;
 final class ExecutorCallback<T> extends UICallback<T> {
     private static final Platform PLATFORM = Platform.get();
     private final UICallback<T> delegate;
-    private OnAfterListener onAfterListener;
-    private BaseError canceledError;
+    private OnExecutorListener listener;
 
-    ExecutorCallback(UICallback<T> delegate, @NonNull BaseError canceledError) {
+    ExecutorCallback(UICallback<T> delegate, @NonNull OnExecutorListener listener) {
         this.delegate = delegate;
-        this.canceledError = canceledError;
+        this.listener = listener;
     }
 
     @Override
@@ -43,9 +42,7 @@ final class ExecutorCallback<T> extends UICallback<T> {
                 if (okCall.isPostUi()) {
                     delegate.onAfter(okCall);
                 }
-                if (onAfterListener != null) {
-                    onAfterListener.onAfter();
-                }
+                listener.onAfter();
             }
         });
     }
@@ -82,17 +79,21 @@ final class ExecutorCallback<T> extends UICallback<T> {
                 if (!okCall.isCanceled()) {
                     delegate.onSuccess(okCall, response);
                 } else {
-                    onError(okCall, canceledError);
+                    onError(okCall, listener.canceledError());
                 }
             }
         });
     }
 
-    void setOnAfterListener(OnAfterListener onAfterListener) {
-        this.onAfterListener = onAfterListener;
-    }
-
-    interface OnAfterListener {
+    interface OnExecutorListener {
         void onAfter();
+
+        /**
+         * 如果请求被取消，获取所需的Canceled Error
+         *
+         * @return canceledError
+         */
+        @NonNull
+        BaseError canceledError();
     }
 }
