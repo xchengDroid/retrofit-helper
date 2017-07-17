@@ -182,6 +182,7 @@ public final class OkHttpCall<T> implements OkCall<T> {
         }
     }
 
+    @SuppressWarnings("CloneDoesntCallSuperClone")
     @Override
     public OkCall<T> clone() {
         OkHttpCall<T> okCall = new OkHttpCall<>(okRequest);
