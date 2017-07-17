@@ -16,7 +16,7 @@ public class BaseError {
         this.message = message;
     }
 
-    public static BaseError getNotFoundError(String message) {
+    public static BaseError createDefaultError(String message) {
         return new BaseError(Integer.MIN_VALUE, message);
     }
 

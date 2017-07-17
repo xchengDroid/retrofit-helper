@@ -29,6 +29,6 @@ public class JsonParse<T> extends SimpleParse<T> {
             T body = new Gson().fromJson(str, token.getType());
             return OkResponse.success(body);
         }
-        return OkResponse.error(BaseError.getNotFoundError("response error"));
+        return OkResponse.error(BaseError.createDefaultError("response error"));
     }
 }

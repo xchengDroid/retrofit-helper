@@ -42,4 +42,6 @@ public interface OkCall<T> extends Cloneable {
 
 
     TypeToken<T> getTypeToken();
+
+    boolean isPostUi();
 }

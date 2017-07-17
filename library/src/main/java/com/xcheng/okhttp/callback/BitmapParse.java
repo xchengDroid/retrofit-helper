@@ -19,6 +19,6 @@ public class BitmapParse extends SimpleParse<Bitmap> {
         if (response.isSuccessful()) {
             return OkResponse.success(BitmapFactory.decodeStream(response.body().byteStream()));
         }
-        return OkResponse.error(BaseError.getNotFoundError("response error"));
+        return OkResponse.error(BaseError.createDefaultError("response error"));
     }
 }

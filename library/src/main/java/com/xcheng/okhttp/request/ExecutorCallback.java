@@ -1,13 +1,9 @@
 package com.xcheng.okhttp.request;
 
-import com.xcheng.okhttp.EasyOkHttp;
 import com.xcheng.okhttp.callback.OkCall;
-import com.xcheng.okhttp.callback.ResponseParse;
 import com.xcheng.okhttp.callback.UICallback;
 import com.xcheng.okhttp.error.BaseError;
 import com.xcheng.okhttp.utils.Platform;
-
-import java.io.IOException;
 
 /**
  * Created by chengxin on 2017/6/26.
@@ -16,14 +12,10 @@ import java.io.IOException;
 final class ExecutorCallback<T> extends UICallback<T> {
     private static final Platform PLATFORM = Platform.get();
     private final UICallback<T> delegate;
-    private final OkCall<T> okCall;
-    private final ResponseParse<T> responseParse;
     private OnAfterListener onAfterListener;
 
-    ExecutorCallback(UICallback<T> delegate, OkCall<T> okCall, ResponseParse<T> responseParse) {
+    ExecutorCallback(UICallback<T> delegate) {
         this.delegate = delegate;
-        this.okCall = okCall;
-        this.responseParse = responseParse;
     }
 
     @Override
@@ -31,7 +23,7 @@ final class ExecutorCallback<T> extends UICallback<T> {
         PLATFORM.execute(new Runnable() {
             @Override
             public void run() {
-                if (isPostUi()) {
+                if (okCall.isPostUi()) {
                     delegate.onBefore(okCall);
                 }
             }
@@ -43,7 +35,7 @@ final class ExecutorCallback<T> extends UICallback<T> {
         PLATFORM.execute(new Runnable() {
             @Override
             public void run() {
-                if (isPostUi()) {
+                if (okCall.isPostUi()) {
                     delegate.onAfter(okCall);
                 }
                 if (onAfterListener != null) {
@@ -58,7 +50,7 @@ final class ExecutorCallback<T> extends UICallback<T> {
         PLATFORM.execute(new Runnable() {
             @Override
             public void run() {
-                if (isPostUi()) {
+                if (okCall.isPostUi()) {
                     delegate.inProgress(okCall, progress, total);
                 }
             }
@@ -70,7 +62,7 @@ final class ExecutorCallback<T> extends UICallback<T> {
         PLATFORM.execute(new Runnable() {
             @Override
             public void run() {
-                if (isPostUi()) {
+                if (okCall.isPostUi()) {
                     delegate.onError(okCall, error);
                 }
             }
@@ -85,23 +77,10 @@ final class ExecutorCallback<T> extends UICallback<T> {
                 if (!okCall.isCanceled()) {
                     delegate.onSuccess(okCall, response);
                 } else {
-                    onError(okCall, canceledError());
+                    onError(okCall, BaseError.createDefaultError("Call Canceled, url= " + okCall.request().url()));
                 }
             }
         });
-    }
-
-    private boolean isPostUi() {
-        return !okCall.isCanceled() || EasyOkHttp.getOkConfig().isPostUiIfCanceled();
-    }
-
-    private BaseError canceledError() {
-        String errorMsg = "Call Canceled, url= " + okCall.request().url();
-        BaseError error = responseParse.getError(new IOException(errorMsg));
-        if (error == null) {
-            error = BaseError.getNotFoundError(errorMsg);
-        }
-        return error;
     }
 
     void setOnAfterListener(OnAfterListener onAfterListener) {

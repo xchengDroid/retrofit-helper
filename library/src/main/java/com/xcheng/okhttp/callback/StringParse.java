@@ -19,6 +19,6 @@ public class StringParse extends SimpleParse<String> {
         if (response.isSuccessful()) {
             return OkResponse.success(response.body().string());
         }
-        return OkResponse.error(BaseError.getNotFoundError("response error"));
+        return OkResponse.error(BaseError.createDefaultError("response error"));
     }
 }

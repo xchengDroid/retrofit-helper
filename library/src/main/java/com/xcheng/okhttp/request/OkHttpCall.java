@@ -3,6 +3,7 @@ package com.xcheng.okhttp.request;
 import android.support.annotation.NonNull;
 
 import com.google.gson.reflect.TypeToken;
+import com.xcheng.okhttp.EasyOkHttp;
 import com.xcheng.okhttp.callback.OkCall;
 import com.xcheng.okhttp.callback.ResponseParse;
 import com.xcheng.okhttp.callback.UICallback;
@@ -68,7 +69,7 @@ public final class OkHttpCall<T> implements OkCall<T> {
 
     private void callFailure(BaseError error) {
         if (error == null) {
-            error = BaseError.getNotFoundError("do not find defined error in " + okRequest.parseClass() + ".getError(IOException) method");
+            error = BaseError.createDefaultError("do not find defined error in " + okRequest.parseClass() + ".getError(IOException) method");
         }
         executorCallback.onError(this, error);
         executorCallback.onAfter(this);
@@ -100,7 +101,7 @@ public final class OkHttpCall<T> implements OkCall<T> {
     public void enqueue(UICallback<T> uiCallback) {
         OkExceptions.checkNotNull(uiCallback, "uiCallback can not be null");
         this.tokenClass = uiCallback.getClass();
-        this.executorCallback = new ExecutorCallback<>(uiCallback, this, responseParse);
+        this.executorCallback = new ExecutorCallback<>(uiCallback);
         this.executorCallback.setOnAfterListener(new ExecutorCallback.OnAfterListener() {
             @Override
             public void onAfter() {
@@ -135,7 +136,7 @@ public final class OkHttpCall<T> implements OkCall<T> {
                         responseError = okResponse.getError();
                     }
                     if (responseError == null) {
-                        responseError = BaseError.getNotFoundError("do not find error in " + okRequest.parseClass() + ".parseNetworkResponse(OkCall<T> , Response , int ) , have you return it ?");
+                        responseError = BaseError.createDefaultError("do not find error in " + okRequest.parseClass() + ".parseNetworkResponse(OkCall<T> , Response) , have you return it ?");
                     }
                     callFailure(responseError);
                 } catch (IOException e) {
@@ -157,6 +158,11 @@ public final class OkHttpCall<T> implements OkCall<T> {
     }
 
     @Override
+    public boolean isPostUi() {
+        return !isCanceled() || EasyOkHttp.getOkConfig().isPostUiIfCanceled();
+    }
+
+    @Override
     public synchronized boolean isExecuted() {
         return executed;
     }
@@ -169,7 +175,6 @@ public final class OkHttpCall<T> implements OkCall<T> {
                 rawCall.cancel();
             }
         }
-
     }
 
     @Override
