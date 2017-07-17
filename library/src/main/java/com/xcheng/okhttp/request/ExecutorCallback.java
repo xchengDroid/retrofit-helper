@@ -17,7 +17,7 @@ final class ExecutorCallback<T> extends UICallback<T> {
     private final UICallback<T> delegate;
     private OnExecutorListener listener;
 
-    ExecutorCallback(UICallback<T> delegate, @NonNull OnExecutorListener listener) {
+    ExecutorCallback(UICallback<T> delegate, OnExecutorListener listener) {
         this.delegate = delegate;
         this.listener = listener;
     }
