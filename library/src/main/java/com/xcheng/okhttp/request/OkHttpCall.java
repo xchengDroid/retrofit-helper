@@ -228,6 +228,6 @@ public final class OkHttpCall<T> implements OkCall<T> {
     }
 
     public static synchronized List<OkHttpCall> getCalls() {
-        return Collections.unmodifiableList(ALLCALLS);
+        return Collections.unmodifiableList(new ArrayList<>(ALLCALLS));
     }
 }
