@@ -17,12 +17,13 @@ import okio.Sink;
  *
  * @author Leo Nikkilä
  */
-class CountingRequestBody extends RequestBody {
+class ProgressRequestBody extends RequestBody {
 
     private RequestBody delegate;
     private Listener listener;
+    private BufferedSink bufferedSink;
 
-    CountingRequestBody(RequestBody delegate, Listener listener) {
+    ProgressRequestBody(RequestBody delegate, Listener listener) {
         this.delegate = delegate;
         this.listener = listener;
     }
@@ -44,30 +45,32 @@ class CountingRequestBody extends RequestBody {
 
     @Override
     public void writeTo(BufferedSink sink) throws IOException {
-        CountingSink countingSink = new CountingSink(sink);
-        BufferedSink bufferedSink = Okio.buffer(countingSink);
+        if (bufferedSink == null) {
+            bufferedSink = Okio.buffer(sink(sink));
+        }
         delegate.writeTo(bufferedSink);
         bufferedSink.flush();
     }
 
-    private final class CountingSink extends ForwardingSink {
+    private Sink sink(Sink sink) {
+        return new ForwardingSink(sink) {
+            private long bytesWritten = 0L;
+            private long contentLength = -1L;
 
-        private long bytesWritten = 0;
-
-        CountingSink(Sink delegate) {
-            super(delegate);
-        }
-
-        @Override
-        public void write(Buffer source, long byteCount) throws IOException {
-            super.write(source, byteCount);
-            bytesWritten += byteCount;
-            listener.onRequestProgress(bytesWritten, contentLength());
-        }
-
+            @Override
+            public void write(Buffer source, long byteCount) throws IOException {
+                super.write(source, byteCount);
+                bytesWritten += byteCount;
+                if (contentLength == -1) {
+                    //避免多次调用
+                    contentLength = contentLength();
+                }
+                listener.onRequestProgress(bytesWritten, contentLength, bytesWritten == contentLength);
+            }
+        };
     }
 
     interface Listener {
-        void onRequestProgress(long bytesWritten, long contentLength);
+        void onRequestProgress(long bytesWritten, long contentLength, boolean done);
     }
 }

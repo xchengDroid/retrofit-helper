@@ -48,12 +48,24 @@ final class ExecutorCallback<T> extends UICallback<T> {
     }
 
     @Override
-    public void inProgress(final OkCall<T> okCall, final float progress, final long total) {
+    public void inProgress(final OkCall<T> okCall, final float progress, final long total, final boolean done) {
         PLATFORM.execute(new Runnable() {
             @Override
             public void run() {
                 if (okCall.isPostUi()) {
-                    delegate.inProgress(okCall, progress, total);
+                    delegate.inProgress(okCall, progress, total, done);
+                }
+            }
+        });
+    }
+
+    @Override
+    public void outProgress(final OkCall<T> okCall, final float progress, final long total, final boolean done) {
+        PLATFORM.execute(new Runnable() {
+            @Override
+            public void run() {
+                if (okCall.isPostUi()) {
+                    delegate.outProgress(okCall, progress, total, done);
                 }
             }
         });

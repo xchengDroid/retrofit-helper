@@ -24,6 +24,8 @@ public abstract class OkRequest {
     private Map<String, String> params;
     private Headers.Builder headers;
     private boolean inProgress;
+    private boolean outProgress;
+
     //发起请求 解析相关
     private OkHttpClient okHttpClient;
     private Map<String, Object> extraMap;
@@ -40,6 +42,7 @@ public abstract class OkRequest {
         this.headers = builder.headers;
         this.id = builder.id;
         this.inProgress = builder.inProgress;
+        this.outProgress = builder.outProgress;
         this.okHttpClient = builder.okHttpClient != null ? builder.okHttpClient : EasyOkHttp.getOkConfig().getOkHttpClient();
         this.extraMap = builder.extraMap;
         this.typeToken = builder.typeToken;
@@ -95,6 +98,10 @@ public abstract class OkRequest {
         return inProgress;
     }
 
+    public boolean outProgress() {
+        return outProgress;
+    }
+
     protected abstract Request createRequest();
 
     /**
@@ -108,6 +115,7 @@ public abstract class OkRequest {
         private Map<String, String> params;
         private int id;
         private boolean inProgress;
+        private boolean outProgress;
 
         //发起请求 解析相关
         private OkHttpClient okHttpClient;
@@ -116,8 +124,9 @@ public abstract class OkRequest {
         private Class<? extends ResponseParse> parseClass;
 
         public OkRequestBuilder() {
-            headers = new Headers.Builder();
-            inProgress = false;
+            this.headers = new Headers.Builder();
+            this.inProgress = false;
+            this.outProgress = false;
         }
 
         public T id(int id) {
@@ -127,6 +136,11 @@ public abstract class OkRequest {
 
         public T inProgress() {
             this.inProgress = true;
+            return (T) this;
+        }
+
+        public T outProgress() {
+            this.outProgress = true;
             return (T) this;
         }
 

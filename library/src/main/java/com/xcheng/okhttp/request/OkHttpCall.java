@@ -19,6 +19,7 @@ import java.util.List;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import okhttp3.ResponseBody;
 
 /**
  * Created by cx on 17/6/22.
@@ -53,12 +54,14 @@ public final class OkHttpCall<T> implements OkCall<T> {
     private void buildCall() {
         Request request = okRequest.createRequest();
         RequestBody body = request.body();
-        if (executorCallback != null && okRequest.inProgress() && body != null) {
+        if (okRequest.inProgress() && body != null && executorCallback != null) {
             Request.Builder builder = request.newBuilder();
-            RequestBody requestBody = new CountingRequestBody(body, new CountingRequestBody.Listener() {
+            RequestBody requestBody = new ProgressRequestBody(body, new ProgressRequestBody.Listener() {
+
                 @Override
-                public void onRequestProgress(final long bytesWritten, final long contentLength) {
-                    executorCallback.inProgress(OkHttpCall.this, bytesWritten * 1.0f / contentLength, contentLength);
+                public void onRequestProgress(long bytesWritten, long contentLength, boolean done) {
+                    executorCallback.inProgress(OkHttpCall.this, bytesWritten * 1.0f / contentLength, contentLength, done);
+
                 }
             });
             builder.method(request.method(), requestBody);
@@ -135,8 +138,9 @@ public final class OkHttpCall<T> implements OkCall<T> {
             }
 
             @Override
-            public void onResponse(okhttp3.Call call, final Response response) {
+            public void onResponse(okhttp3.Call call, Response response) {
                 try {
+                    response = wrapResponse(response);
                     OkResponse<T> okResponse = responseParse.parseNetworkResponse(OkHttpCall.this, response);
                     BaseError responseError = null;
                     if (okResponse != null) {
@@ -158,6 +162,20 @@ public final class OkHttpCall<T> implements OkCall<T> {
                 }
             }
         });
+    }
+
+    private Response wrapResponse(Response response) {
+        if (okRequest.outProgress() && executorCallback != null) {
+            ResponseBody wrapBody = new ProgressResponseBody(response.body(), new ProgressResponseBody.Listener() {
+                @Override
+                public void onResponseProgress(long bytesRead, long contentLength, boolean done) {
+                    executorCallback.outProgress(OkHttpCall.this, bytesRead * 1.0f / contentLength, contentLength, done);
+                }
+            });
+            response = response.newBuilder()
+                    .body(wrapBody).build();
+        }
+        return response;
     }
 
     @Override
