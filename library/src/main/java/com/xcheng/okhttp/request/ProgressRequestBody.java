@@ -18,10 +18,8 @@ import okio.Sink;
  * @author Leo Nikkilä
  */
 class ProgressRequestBody extends RequestBody {
-
     private RequestBody delegate;
     private Listener listener;
-    private BufferedSink bufferedSink;
 
     ProgressRequestBody(RequestBody delegate, Listener listener) {
         this.delegate = delegate;
@@ -34,20 +32,13 @@ class ProgressRequestBody extends RequestBody {
     }
 
     @Override
-    public long contentLength() {
-        try {
-            return delegate.contentLength();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return -1;
+    public long contentLength() throws IOException {
+        return delegate.contentLength();
     }
 
     @Override
     public void writeTo(BufferedSink sink) throws IOException {
-        if (bufferedSink == null) {
-            bufferedSink = Okio.buffer(sink(sink));
-        }
+        BufferedSink bufferedSink = Okio.buffer(sink(sink));
         delegate.writeTo(bufferedSink);
         bufferedSink.flush();
     }
