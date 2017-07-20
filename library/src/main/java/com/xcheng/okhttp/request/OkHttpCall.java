@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import okhttp3.Call;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
@@ -35,7 +36,7 @@ public final class OkHttpCall<T> implements OkCall<T> {
     private Class<? extends UICallback> tokenClass;
     private ExecutorCallback<T> executorCallback;
 
-    private okhttp3.Call rawCall;
+    private Call rawCall;
     private volatile boolean canceled;
     private boolean executed;
 
@@ -51,7 +52,7 @@ public final class OkHttpCall<T> implements OkCall<T> {
         return okRequest;
     }
 
-    private void buildCall() {
+    private Call createRawCall() {
         Request request = okRequest.createRequest();
         RequestBody body = request.body();
         if (okRequest.inProgress() && body != null && executorCallback != null) {
@@ -67,8 +68,7 @@ public final class OkHttpCall<T> implements OkCall<T> {
             builder.method(request.method(), requestBody);
             request = builder.build();
         }
-        rawCall = okRequest.okHttpClient().newCall(request);
-        addCall(OkHttpCall.this);
+        return okRequest.okHttpClient().newCall(request);
     }
 
     private void callFailure(BaseError error) {
@@ -89,8 +89,9 @@ public final class OkHttpCall<T> implements OkCall<T> {
         synchronized (this) {
             if (executed) throw new IllegalStateException("Already executed.");
             executed = true;
-            buildCall();
+            rawCall = createRawCall();
         }
+        addCall(this);
         if (canceled) {
             rawCall.cancel();
         }
@@ -125,8 +126,9 @@ public final class OkHttpCall<T> implements OkCall<T> {
         synchronized (this) {
             if (executed) throw new IllegalStateException("Already executed.");
             executed = true;
-            buildCall();
+            rawCall = createRawCall();
         }
+        addCall(this);
         executorCallback.onBefore(this);
         if (canceled) {
             rawCall.cancel();
