@@ -2,11 +2,12 @@ package com.simple.okhttp;
 
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.webkit.WebView;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
@@ -42,17 +43,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void json(View view) {
-        GetRequest getRequest = EasyOkHttp.get("data/cityinfo/101010100.html").tag(1).parseClass(JsonParse.class).build();
+        GetRequest getRequest = EasyOkHttp.get("data/cityinfo/101010100.html")
+                .parseClass(JsonParse.class).build();
         OkHttpCall<Weather> okCall = new OkHttpCall<>(getRequest);
         okCall.enqueue(new UICallback<Weather>() {
             @Override
-            public void onError(OkCall<Weather> okCall, @NonNull BaseError error) {
+            public void onError(OkCall<Weather> okCall, BaseError error) {
                 Toast.makeText(MainActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
-
             }
 
             @Override
-            public void onSuccess(OkCall<Weather> okCall, @NonNull Weather response) {
+            public void onSuccess(OkCall<Weather> okCall, Weather response) {
                 webView.loadData(new Gson().toJson(response), "text/html", "utf-8");
 
             }
@@ -60,17 +61,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void string(View view) {
-        GetRequest getRequest = EasyOkHttp.get("https://github.com/").build();
+        GetRequest getRequest = EasyOkHttp.get("https://github.com/").outProgress().build();
         OkHttpCall<String> okCall = new OkHttpCall<>(getRequest);
         okCall.enqueue(new UICallback<String>() {
+
             @Override
-            public void onError(OkCall<String> okCall, @NonNull BaseError error) {
+            public void onError(OkCall<String> okCall, BaseError error) {
                 Toast.makeText(MainActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
 
             }
 
             @Override
-            public void onSuccess(OkCall<String> okCall, @NonNull String response) {
+            public void onSuccess(OkCall<String> okCall, String response) {
                 imageView.setVisibility(View.GONE);
                 webView.setVisibility(View.VISIBLE);
                 webView.loadData(response, "text/html", "utf-8");
@@ -78,17 +80,29 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    public void bitmap(View view) {
-        GetRequest getRequest = EasyOkHttp.get("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1499010173&di=9599915fd6f9eb51f527cbbf62a84bd6&imgtype=jpg&er=1&src=http%3A%2F%2F4493bz.1985t.com%2Fuploads%2Fallimg%2F160119%2F5-16011Z92519.jpg").parseClass(BitmapParse.class).build();
+    public void bitmap(final View view) {
+        GetRequest getRequest = EasyOkHttp.get("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1499010173&di=9599915fd6f9eb51f527cbbf62a84bd6&imgtype=jpg&er=1&src=http%3A%2F%2F4493bz.1985t.com%2Fuploads%2Fallimg%2F160119%2F5-16011Z92519.jpg")
+                .parseClass(BitmapParse.class)
+                .outProgress()
+                .build();
         OkHttpCall<Bitmap> okCall = new OkHttpCall<>(getRequest);
         okCall.enqueue(new UICallback<Bitmap>() {
+
             @Override
-            public void onError(OkCall<Bitmap> okCall, @NonNull BaseError error) {
+            public void outProgress(OkCall<Bitmap> okCall, float progress, long total, boolean done) {
+                super.outProgress(okCall, progress, total, done);
+                TextView textView = (TextView) view;
+                textView.setText(progress * 100 + "%");
+                Log.e("print", progress + "==" + total + "==" + done);
+            }
+
+            @Override
+            public void onError(OkCall<Bitmap> okCall, BaseError error) {
                 Toast.makeText(MainActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
             }
 
             @Override
-            public void onSuccess(OkCall<Bitmap> okCall, @NonNull Bitmap response) {
+            public void onSuccess(OkCall<Bitmap> okCall, Bitmap response) {
                 webView.setVisibility(View.GONE);
                 imageView.setVisibility(View.VISIBLE);
                 imageView.setImageBitmap(response);
