@@ -3,7 +3,6 @@ package com.xcheng.okhttp.utils;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
-import com.google.gson.internal.$Gson$Types;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.ParameterizedType;
@@ -37,7 +36,7 @@ public class ParamHelper {
     public static Type getType(Class<?> clazz) {
         String clsName = clazz.getName();
         if (clsName.startsWith("android.") || clsName.startsWith("java."))
-            return TypeToken.get(Object.class).getType();
+            return Object.class;
         Type superType = clazz.getGenericSuperclass();
         if (superType instanceof ParameterizedType) {
             return getSuperclassTypeParameter(clazz);
@@ -52,13 +51,12 @@ public class ParamHelper {
             throw new RuntimeException("Missing type parameter.");
         }
         ParameterizedType parameterized = (ParameterizedType) superclass;
-        return $Gson$Types.canonicalize(parameterized.getActualTypeArguments()[0]);
+        return parameterized.getActualTypeArguments()[0];
     }
 
     @SuppressWarnings("unchecked")
     public static <C> TypeToken<List<C>> createListTypeToken(@NonNull Class<?> tokenClazz) {
-        return (TypeToken<List<C>>) TypeToken.getParameterized(new TypeToken<List>() {
-        }.getRawType(), getType(tokenClazz));
+        return (TypeToken<List<C>>) TypeToken.getParameterized(List.class, getType(tokenClazz));
     }
 
     @SuppressWarnings("unchecked")
