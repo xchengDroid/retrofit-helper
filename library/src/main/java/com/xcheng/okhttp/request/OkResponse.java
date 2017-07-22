@@ -25,7 +25,6 @@ import com.xcheng.okhttp.error.BaseError;
  */
 public final class OkResponse<T> {
 
-
     public static <T> OkResponse<T> success(@NonNull T body) {
         return new OkResponse<>(body, null);
     }
