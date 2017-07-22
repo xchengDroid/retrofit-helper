@@ -32,7 +32,7 @@ public abstract class OkRequest {
     private TypeToken<?> typeToken;
     private Class<? extends ResponseParse> parseClass;
 
-    protected OkRequest(OkRequestBuilder<?> builder) {
+    protected OkRequest(Builder<?> builder) {
         if (builder.url == null) {
             OkExceptions.illegalArgument("url can not be null.");
         }
@@ -108,7 +108,7 @@ public abstract class OkRequest {
      * Created by zhy on 15/12/14.
      */
     @SuppressWarnings("unchecked")
-    public static abstract class OkRequestBuilder<T extends OkRequestBuilder> {
+    public static abstract class Builder<T extends Builder> {
         private String url;
         private Object tag;
         private Headers.Builder headers;
@@ -123,7 +123,7 @@ public abstract class OkRequest {
         private TypeToken<?> typeToken;
         private Class<? extends ResponseParse> parseClass;
 
-        public OkRequestBuilder() {
+        public Builder() {
             this.headers = new Headers.Builder();
             this.inProgress = false;
             this.outProgress = false;

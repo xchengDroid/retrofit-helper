@@ -42,7 +42,7 @@ public class PostStrRequest extends OkRequest {
         return new Request.Builder().url(url()).tag(tag()).headers(headers().build()).post(RequestBody.create(mediaType, content)).build();
     }
 
-    public static class Builder extends OkRequestBuilder<Builder> {
+    public static class Builder extends OkRequest.Builder<Builder> {
         private MediaType mediaType;
         private String content;
 

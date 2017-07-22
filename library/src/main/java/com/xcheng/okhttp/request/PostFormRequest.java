@@ -44,7 +44,7 @@ public class PostFormRequest extends OkRequest {
             for (int i = 0; i < fileInputs.size(); i++) {
                 FileInput fileInput = fileInputs.get(i);
                 RequestBody fileBody = RequestBody.create(fileInput.mediaType, fileInput.file);
-                builder.addFormDataPart(fileInput.key, fileInput.file.getName(), fileBody);
+                builder.addFormDataPart(fileInput.name, fileInput.file.getName(), fileBody);
             }
             requestBody = builder.build();
         }
@@ -83,7 +83,7 @@ public class PostFormRequest extends OkRequest {
         }
     }
 
-    public static class Builder extends OkRequestBuilder<Builder> {
+    public static class Builder extends OkRequest.Builder<Builder> {
         private final List<FileInput> fileInputs = new ArrayList<>();
 
         public Builder addFileInput(FileInput fileInput) {
@@ -111,18 +111,18 @@ public class PostFormRequest extends OkRequest {
     }
 
     public static class FileInput {
-        private String key;
+        private String name;
         private MediaType mediaType;
         private File file;
 
         public FileInput(String name, File file) {
-            this.key = name;
+            this.name = name;
             this.mediaType = MediaType.parse(guessMimeType(file.getName()));
             this.file = file;
         }
 
         public FileInput(String name, MediaType mediaType, File file) {
-            this.key = name;
+            this.name = name;
             this.mediaType = mediaType;
             this.file = file;
         }
@@ -130,7 +130,7 @@ public class PostFormRequest extends OkRequest {
         @Override
         public String toString() {
             return "FileInput{" +
-                    "key='" + key + '\'' +
+                    "name='" + name + '\'' +
                     ", mediaType='" + mediaType + '\'' +
                     ", file=" + file +
                     '}';

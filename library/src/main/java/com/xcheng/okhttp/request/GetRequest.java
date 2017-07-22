@@ -20,7 +20,7 @@ public class GetRequest extends OkRequest {
         return new Request.Builder().url(url()).headers(headers().build()).tag(tag()).build();
     }
 
-    public static class Builder extends OkRequestBuilder<Builder> {
+    public static class Builder extends OkRequest.Builder<Builder> {
         @Override
         public GetRequest build() {
             String url = getUrl();
