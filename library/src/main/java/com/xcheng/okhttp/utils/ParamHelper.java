@@ -11,7 +11,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-/**http请求参数帮助类
+/**
+ * http请求参数帮助类
  * Created by chengxin on 2017/6/22.
  */
 
@@ -28,7 +29,7 @@ public class ParamHelper {
         return builder.build().toString();
     }
 
-    public static boolean checkMapEmpty(Map map) {
+    public static boolean checkMapEmpty(Map<?, ?> map) {
         return map == null || map.isEmpty();
     }
 

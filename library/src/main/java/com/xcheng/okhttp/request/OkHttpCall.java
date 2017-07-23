@@ -27,7 +27,7 @@ import okhttp3.ResponseBody;
  * 发起http请求的封装类
  */
 public final class OkHttpCall<T> implements OkCall<T> {
-    private static final List<OkHttpCall> ALL_CALLS = new ArrayList<>();
+    private static final List<OkHttpCall<?>> ALL_CALLS = new ArrayList<>();
 
     private final OkRequest okRequest;
     //发起请求 解析相关
@@ -239,15 +239,15 @@ public final class OkHttpCall<T> implements OkCall<T> {
     }
 
 
-    private static synchronized void addCall(OkHttpCall call) {
+    private static synchronized void addCall(OkHttpCall<?> call) {
         ALL_CALLS.add(call);
     }
 
-    private static synchronized void finished(OkHttpCall call) {
+    private static synchronized void finished(OkHttpCall<?> call) {
         ALL_CALLS.remove(call);
     }
 
-    public static synchronized List<OkHttpCall> getCalls() {
+    public static synchronized List<OkHttpCall<?>> getCalls() {
         return Collections.unmodifiableList(new ArrayList<>(ALL_CALLS));
     }
 }

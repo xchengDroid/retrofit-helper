@@ -50,7 +50,7 @@ public class EasyOkHttp {
     }
 
     public static void cancel(Object tag) {
-        for (OkCall okCall : OkHttpCall.getCalls()) {
+        for (OkCall<?> okCall : OkHttpCall.getCalls()) {
             if (okCall.request().tag().equals(tag)) {
                 okCall.cancel();
             }
@@ -58,7 +58,7 @@ public class EasyOkHttp {
     }
 
     public static void cancelAll() {
-        for (OkCall okCall : OkHttpCall.getCalls()) {
+        for (OkCall<?> okCall : OkHttpCall.getCalls()) {
             okCall.cancel();
         }
     }
