@@ -7,6 +7,8 @@ import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -31,6 +33,19 @@ public class ParamHelper {
 
     public static boolean checkMapEmpty(Map<?, ?> map) {
         return map == null || map.isEmpty();
+    }
+
+    /**
+     * Returns an immutable copy of {@code Map}.
+     */
+    public static <K, V> Map<K, V> immutableMap(Map<K, V> map) {
+        return Collections.unmodifiableMap(map);
+    }
+    /**
+     * Returns an immutable copy of {@code list}.
+     */
+    public static <T> List<T> immutableList(List<T> list) {
+        return Collections.unmodifiableList(new ArrayList<>(list));
     }
 
     @SuppressWarnings("unchecked")
