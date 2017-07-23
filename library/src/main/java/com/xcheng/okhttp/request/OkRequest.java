@@ -7,7 +7,6 @@ import com.xcheng.okhttp.EasyOkHttp;
 import com.xcheng.okhttp.callback.ResponseParse;
 import com.xcheng.okhttp.utils.OkExceptions;
 
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -19,19 +18,19 @@ import okhttp3.Request;
  * Created by cx on 17/6/22.
  */
 public abstract class OkRequest {
-    private String url;
-    private Object tag;
-    private int id;
-    private Map<String, String> params;
-    private Headers headers;
-    private boolean inProgress;
-    private boolean outProgress;
+    private final String url;
+    private final Object tag;
+    private final int id;
+    private final Map<String, String> params;
+    private final Headers headers;
+    private final boolean inProgress;
+    private final boolean outProgress;
 
     //发起请求 解析相关
-    private OkHttpClient okHttpClient;
-    private Map<String, Object> extraMap;
-    private TypeToken<?> typeToken;
-    private Class<? extends ResponseParse> parseClass;
+    private final OkHttpClient okHttpClient;
+    private final Map<String, Object> extraMap;
+    private final TypeToken<?> typeToken;
+    private final Class<? extends ResponseParse> parseClass;
 
     protected OkRequest(Builder<?> builder) {
         if (builder.url == null) {
@@ -60,14 +59,11 @@ public abstract class OkRequest {
 
     @SuppressWarnings("unchecked")
     public <V> V extra(String key) {
-        if (extraMap != null) {
-            return (V) extraMap.get(key);
-        }
-        return null;
+        return (V) extraMap.get(key);
     }
 
     public Map<String, Object> extraMap() {
-        return Collections.unmodifiableMap(new LinkedHashMap<>(extraMap));
+        return extraMap;
     }
 
     public TypeToken<?> typeToken() {
@@ -87,7 +83,7 @@ public abstract class OkRequest {
     }
 
     public Map<String, String> params() {
-        return Collections.unmodifiableMap(new LinkedHashMap<>(params));
+        return params;
     }
 
     @NonNull
@@ -106,21 +102,21 @@ public abstract class OkRequest {
     protected abstract Request createRequest();
 
     /**
-     * Created by zhy on 15/12/14.
+     * Created by cx on 17/6/22.
      */
     @SuppressWarnings("unchecked")
     public static abstract class Builder<T extends Builder> {
         private String url;
         private Object tag;
         private Headers.Builder headers;
-        private Map<String, String> params;
+        private final Map<String, String> params = new LinkedHashMap<>();
         private int id;
         private boolean inProgress;
         private boolean outProgress;
 
         //发起请求 解析相关
         private OkHttpClient okHttpClient;
-        private Map<String, Object> extraMap;
+        private final Map<String, Object> extraMap = new LinkedHashMap<>();
         private TypeToken<?> typeToken;
         private Class<? extends ResponseParse> parseClass;
 
@@ -173,14 +169,14 @@ public abstract class OkRequest {
         }
 
         public T params(Map<String, String> params) {
-            this.params = params;
+            if (!this.params.isEmpty()) {
+                this.params.clear();
+            }
+            this.params.putAll(params);
             return (T) this;
         }
 
         public T param(String key, String value) {
-            if (this.params == null) {
-                params = new LinkedHashMap<>();
-            }
             params.put(key, value);
             return (T) this;
         }
@@ -204,9 +200,6 @@ public abstract class OkRequest {
         }
 
         public T parseClass(Class<? extends ResponseParse> parseClass) {
-            if (parseClass == null) {
-                OkExceptions.illegalArgument("responseParseClass can not be null");
-            }
             this.parseClass = parseClass;
             return (T) this;
         }
@@ -217,9 +210,6 @@ public abstract class OkRequest {
         }
 
         public T extra(String key, Object val) {
-            if (this.extraMap == null) {
-                extraMap = new LinkedHashMap<>();
-            }
             extraMap.put(key, val);
             return (T) this;
         }

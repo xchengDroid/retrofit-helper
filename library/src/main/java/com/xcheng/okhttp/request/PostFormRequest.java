@@ -1,6 +1,6 @@
 package com.xcheng.okhttp.request;
 
-import com.xcheng.okhttp.utils.ParamHelper;
+import com.xcheng.okhttp.utils.Util;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
@@ -72,7 +72,7 @@ public class PostFormRequest extends OkRequest {
 
     private void addParams(MultipartBody.Builder builder) {
         Map<String, String> params = params();
-        if (!ParamHelper.checkMapEmpty(params)) {
+        if (!Util.isEmpty(params)) {
             for (String key : params.keySet()) {
                 builder.addFormDataPart(key, params.get(key));
             }
@@ -81,7 +81,7 @@ public class PostFormRequest extends OkRequest {
 
     private void addParams(FormBody.Builder builder) {
         Map<String, String> params = params();
-        if (!ParamHelper.checkMapEmpty(params)) {
+        if (!Util.isEmpty(params)) {
             for (String key : params.keySet()) {
                 builder.add(key, params.get(key));
             }

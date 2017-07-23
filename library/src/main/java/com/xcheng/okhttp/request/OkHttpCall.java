@@ -9,7 +9,7 @@ import com.xcheng.okhttp.callback.ResponseParse;
 import com.xcheng.okhttp.callback.UICallback;
 import com.xcheng.okhttp.error.BaseError;
 import com.xcheng.okhttp.utils.OkExceptions;
-import com.xcheng.okhttp.utils.ParamHelper;
+import com.xcheng.okhttp.utils.Util;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -183,7 +183,7 @@ public final class OkHttpCall<T> implements OkCall<T> {
     @Override
     public TypeToken<T> getTypeToken() {
         if (typeToken == null && tokenClass != null) {
-            typeToken = ParamHelper.createTypeToken(tokenClass);
+            typeToken = Util.createTypeToken(tokenClass);
         }
         return typeToken;
     }

@@ -1,7 +1,7 @@
 package com.xcheng.okhttp.request;
 
 import com.xcheng.okhttp.utils.OkExceptions;
-import com.xcheng.okhttp.utils.ParamHelper;
+import com.xcheng.okhttp.utils.Util;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -80,7 +80,7 @@ public class PostStrRequest extends OkRequest {
 
         public OkRequest jsonParams() {
             Map<String, String> params = getParams();
-            if (ParamHelper.checkMapEmpty(params)) {
+            if (Util.isEmpty(params)) {
                 OkExceptions.illegalArgument("params can not be null or empty");
             }
             JSONObject jsonObject = new JSONObject();

@@ -1,7 +1,7 @@
 package com.xcheng.okhttp.request;
 
 import com.xcheng.okhttp.utils.OkExceptions;
-import com.xcheng.okhttp.utils.ParamHelper;
+import com.xcheng.okhttp.utils.Util;
 
 import okhttp3.Request;
 
@@ -25,7 +25,7 @@ public class GetRequest extends OkRequest {
         public GetRequest build() {
             String url = getUrl();
             OkExceptions.checkNotNull(url, "url==null");
-            url = ParamHelper.appendParams(url, getParams());
+            url = Util.appendParams(url, getParams());
             url(url);
             return new GetRequest(this);
         }
