@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-/**
+/**http请求参数帮助类
  * Created by chengxin on 2017/6/22.
  */
 
