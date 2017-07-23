@@ -7,6 +7,7 @@ import com.xcheng.okhttp.EasyOkHttp;
 import com.xcheng.okhttp.callback.ResponseParse;
 import com.xcheng.okhttp.utils.OkExceptions;
 
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -66,7 +67,7 @@ public abstract class OkRequest {
     }
 
     public Map<String, Object> extraMap() {
-        return extraMap;
+        return Collections.unmodifiableMap(new LinkedHashMap<>(extraMap));
     }
 
     public TypeToken<?> typeToken() {
@@ -86,7 +87,7 @@ public abstract class OkRequest {
     }
 
     public Map<String, String> params() {
-        return params;
+        return Collections.unmodifiableMap(new LinkedHashMap<>(params));
     }
 
     @NonNull
