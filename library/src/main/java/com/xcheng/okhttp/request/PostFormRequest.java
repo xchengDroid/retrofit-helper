@@ -8,6 +8,7 @@ import java.net.FileNameMap;
 import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -30,6 +31,10 @@ public class PostFormRequest extends OkRequest {
         this.fileInputs = builder.fileInputs;
     }
 
+    public List<FileInput> getFileInputs() {
+        return Collections.unmodifiableList(new ArrayList<>(fileInputs));
+    }
+
     @Override
     protected Request createRequest() {
         RequestBody requestBody;
@@ -48,7 +53,7 @@ public class PostFormRequest extends OkRequest {
             }
             requestBody = builder.build();
         }
-        return new Request.Builder().url(url()).tag(tag()).headers(headers().build()).post(requestBody).build();
+        return new Request.Builder().url(url()).tag(tag()).headers(headers()).post(requestBody).build();
     }
 
     private static String guessMimeType(String fileName) {

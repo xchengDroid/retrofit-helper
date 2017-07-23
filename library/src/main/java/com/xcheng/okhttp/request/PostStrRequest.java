@@ -37,9 +37,17 @@ public class PostStrRequest extends OkRequest {
         }
     }
 
+    public String getContent() {
+        return content;
+    }
+
+    public MediaType getMediaType() {
+        return mediaType;
+    }
+
     @Override
     protected Request createRequest() {
-        return new Request.Builder().url(url()).tag(tag()).headers(headers().build()).post(RequestBody.create(mediaType, content)).build();
+        return new Request.Builder().url(url()).tag(tag()).headers(headers()).post(RequestBody.create(mediaType, content)).build();
     }
 
     public static class Builder extends OkRequest.Builder<Builder> {

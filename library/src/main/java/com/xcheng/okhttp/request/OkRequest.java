@@ -22,7 +22,7 @@ public abstract class OkRequest {
     private Object tag;
     private int id;
     private Map<String, String> params;
-    private Headers.Builder headers;
+    private Headers headers;
     private boolean inProgress;
     private boolean outProgress;
 
@@ -39,7 +39,7 @@ public abstract class OkRequest {
         this.url = builder.url;
         this.tag = builder.tag != null ? builder.tag : this;
         this.params = builder.params;
-        this.headers = builder.headers;
+        this.headers = builder.headers.build();
         this.id = builder.id;
         this.inProgress = builder.inProgress;
         this.outProgress = builder.outProgress;
@@ -90,7 +90,7 @@ public abstract class OkRequest {
     }
 
     @NonNull
-    public Headers.Builder headers() {
+    public Headers headers() {
         return headers;
     }
 
