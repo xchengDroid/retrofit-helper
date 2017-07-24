@@ -1,7 +1,6 @@
 package com.xcheng.okhttp.callback;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.WorkerThread;
 
 import com.xcheng.okhttp.error.BaseError;
 import com.xcheng.okhttp.request.OkResponse;
@@ -17,7 +16,6 @@ import okhttp3.Response;
  */
 public interface ResponseParse<T> {
 
-    @WorkerThread
     @NonNull
     OkResponse<T> parseNetworkResponse(OkCall<T> okCall, Response response) throws IOException;
 
@@ -27,6 +25,6 @@ public interface ResponseParse<T> {
      * @param e IO错误
      * @return BaseError  对应IOException的error信息
      */
-    @WorkerThread
+    @NonNull
     BaseError getError(IOException e);
 }

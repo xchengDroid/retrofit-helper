@@ -1,6 +1,6 @@
 package com.xcheng.okhttp.callback;
 
-import android.support.annotation.WorkerThread;
+import android.support.annotation.NonNull;
 
 import com.xcheng.okhttp.error.BaseError;
 
@@ -17,7 +17,7 @@ import java.net.UnknownHostException;
  */
 public abstract class SimpleParse<T> implements ResponseParse<T> {
 
-    @WorkerThread
+    @NonNull
     public BaseError getError(IOException e) {
         if (e instanceof UnknownHostException) {
             return new BaseError(-101, e.getMessage());
