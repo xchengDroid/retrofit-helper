@@ -174,6 +174,15 @@ public abstract class OkRequest {
             return (T) this;
         }
 
+        /**
+         * Set a field with the specified value. If the field is not found, it is added. If the field is
+         * found, the existing values are replaced.
+         */
+        public T setHeader(String key, String value) {
+            headers.set(key, value);
+            return (T) this;
+        }
+
         public T params(Map<String, String> map) {
             if (!this.params.isEmpty()) {
                 this.params.clear();
