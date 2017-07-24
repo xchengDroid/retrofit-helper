@@ -7,7 +7,6 @@ import com.google.gson.reflect.TypeToken;
 import com.xcheng.okhttp.EasyOkHttp;
 import com.xcheng.okhttp.callback.ResponseParse;
 import com.xcheng.okhttp.utils.OkExceptions;
-import com.xcheng.okhttp.utils.Util;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -41,13 +40,13 @@ public abstract class OkRequest {
         }
         this.url = builder.url;
         this.tag = builder.tag != null ? builder.tag : this;
-        this.params = Util.immutableMap(builder.params);
+        this.params = builder.params;
         this.headers = builder.headers.build();
         this.id = builder.id;
         this.inProgress = builder.inProgress;
         this.outProgress = builder.outProgress;
         this.okHttpClient = builder.okHttpClient != null ? builder.okHttpClient : EasyOkHttp.getOkConfig().getOkHttpClient();
-        this.extraMap = builder.extraMap != null ? Util.immutableMap(builder.extraMap) : null;
+        this.extraMap = builder.extraMap;
         this.typeToken = builder.typeToken;
         this.parseClass = builder.parseClass != null ? builder.parseClass : EasyOkHttp.getOkConfig().getParseClass();
     }
