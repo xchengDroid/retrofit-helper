@@ -8,7 +8,6 @@ import java.net.FileNameMap;
 import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -28,17 +27,17 @@ public class PostFormRequest extends OkRequest {
 
     protected PostFormRequest(Builder builder) {
         super(builder);
-        this.fileInputs = builder.fileInputs;
+        this.fileInputs = Util.immutableList(builder.fileInputs);
     }
 
     public List<FileInput> getFileInputs() {
-        return Collections.unmodifiableList(new ArrayList<>(fileInputs));
+        return fileInputs;
     }
 
     @Override
     protected Request createRequest() {
         RequestBody requestBody;
-        if (fileInputs == null || fileInputs.isEmpty()) {
+        if (Util.isEmpty(fileInputs)) {
             FormBody.Builder builder = new FormBody.Builder();
             addParams(builder);
             requestBody = builder.build();

@@ -1,11 +1,13 @@
 package com.xcheng.okhttp.request;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.google.gson.reflect.TypeToken;
 import com.xcheng.okhttp.EasyOkHttp;
 import com.xcheng.okhttp.callback.ResponseParse;
 import com.xcheng.okhttp.utils.OkExceptions;
+import com.xcheng.okhttp.utils.Util;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -15,6 +17,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 
 /**
+ * 构造OkHttp请求相关参数
  * Created by cx on 17/6/22.
  */
 public abstract class OkRequest {
@@ -38,13 +41,13 @@ public abstract class OkRequest {
         }
         this.url = builder.url;
         this.tag = builder.tag != null ? builder.tag : this;
-        this.params = builder.params;
+        this.params = Util.immutableMap(builder.params);
         this.headers = builder.headers.build();
         this.id = builder.id;
         this.inProgress = builder.inProgress;
         this.outProgress = builder.outProgress;
         this.okHttpClient = builder.okHttpClient != null ? builder.okHttpClient : EasyOkHttp.getOkConfig().getOkHttpClient();
-        this.extraMap = builder.extraMap;
+        this.extraMap = builder.extraMap != null ? Util.immutableMap(builder.extraMap) : null;
         this.typeToken = builder.typeToken;
         this.parseClass = builder.parseClass != null ? builder.parseClass : EasyOkHttp.getOkConfig().getParseClass();
     }
@@ -59,9 +62,13 @@ public abstract class OkRequest {
 
     @SuppressWarnings("unchecked")
     public <V> V extra(String key) {
-        return (V) extraMap.get(key);
+        if (extraMap != null) {
+            return (V) extraMap.get(key);
+        }
+        return null;
     }
 
+    @Nullable
     public Map<String, Object> extraMap() {
         return extraMap;
     }
@@ -116,7 +123,7 @@ public abstract class OkRequest {
 
         //发起请求 解析相关
         private OkHttpClient okHttpClient;
-        private final Map<String, Object> extraMap = new LinkedHashMap<>();
+        private Map<String, Object> extraMap;
         private TypeToken<?> typeToken;
         private Class<? extends ResponseParse> parseClass;
 
@@ -168,11 +175,11 @@ public abstract class OkRequest {
             return (T) this;
         }
 
-        public T params(Map<String, String> params) {
+        public T params(Map<String, String> map) {
             if (!this.params.isEmpty()) {
                 this.params.clear();
             }
-            this.params.putAll(params);
+            this.params.putAll(map);
             return (T) this;
         }
 
@@ -210,7 +217,11 @@ public abstract class OkRequest {
         }
 
         public T extra(String key, Object val) {
-            extraMap.put(key, val);
+            //Lazy Initialization
+            if (this.extraMap == null) {
+                this.extraMap = new LinkedHashMap<>();
+            }
+            this.extraMap.put(key, val);
             return (T) this;
         }
 

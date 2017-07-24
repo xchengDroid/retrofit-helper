@@ -13,7 +13,6 @@ import com.xcheng.okhttp.utils.Util;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import okhttp3.Call;
@@ -248,6 +247,6 @@ public final class OkHttpCall<T> implements OkCall<T> {
     }
 
     public static synchronized List<OkHttpCall<?>> getCalls() {
-        return Collections.unmodifiableList(new ArrayList<>(ALL_CALLS));
+        return Util.immutableList(ALL_CALLS);
     }
 }

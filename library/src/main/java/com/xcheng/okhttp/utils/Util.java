@@ -7,6 +7,9 @@ import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -31,6 +34,24 @@ public class Util {
 
     public static boolean isEmpty(Map<?, ?> map) {
         return map == null || map.isEmpty();
+    }
+
+    public static boolean isEmpty(List<?> list) {
+        return list == null || list.isEmpty();
+    }
+
+    /**
+     * Returns an immutable copy of {@code list}.
+     */
+    public static <T> List<T> immutableList(List<T> list) {
+        return Collections.unmodifiableList(new ArrayList<>(list));
+    }
+
+    /**
+     * Returns an immutable copy of {@code map}.
+     */
+    public static <K, V> Map<K, V> immutableMap(Map<K, V> map) {
+        return Collections.unmodifiableMap(new LinkedHashMap<>(map));
     }
 
     @SuppressWarnings("unchecked")
