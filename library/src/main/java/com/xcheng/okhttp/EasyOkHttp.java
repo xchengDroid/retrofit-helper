@@ -9,7 +9,7 @@ import com.xcheng.okhttp.request.OkHttpCall;
 import com.xcheng.okhttp.request.OkConfig;
 import com.xcheng.okhttp.request.PostFormRequest;
 import com.xcheng.okhttp.request.PostStrRequest;
-import com.xcheng.okhttp.utils.OkExceptions;
+import com.xcheng.okhttp.util.OkExceptions;
 
 /**
  * Created by chengxin on 17/6/22

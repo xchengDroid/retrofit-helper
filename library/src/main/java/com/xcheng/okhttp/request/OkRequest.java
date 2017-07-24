@@ -6,7 +6,7 @@ import android.support.annotation.Nullable;
 import com.google.gson.reflect.TypeToken;
 import com.xcheng.okhttp.EasyOkHttp;
 import com.xcheng.okhttp.callback.ResponseParse;
-import com.xcheng.okhttp.utils.OkExceptions;
+import com.xcheng.okhttp.util.OkExceptions;
 
 import java.util.LinkedHashMap;
 import java.util.Map;

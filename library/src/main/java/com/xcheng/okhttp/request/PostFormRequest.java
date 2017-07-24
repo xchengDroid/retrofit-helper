@@ -1,6 +1,6 @@
 package com.xcheng.okhttp.request;
 
-import com.xcheng.okhttp.utils.Util;
+import com.xcheng.okhttp.util.ParamUtil;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
@@ -27,7 +27,7 @@ public class PostFormRequest extends OkRequest {
 
     protected PostFormRequest(Builder builder) {
         super(builder);
-        this.fileInputs = Util.immutableList(builder.fileInputs);
+        this.fileInputs = ParamUtil.immutableList(builder.fileInputs);
     }
 
     public List<FileInput> getFileInputs() {
@@ -37,7 +37,7 @@ public class PostFormRequest extends OkRequest {
     @Override
     protected Request createRequest() {
         RequestBody requestBody;
-        if (Util.isEmpty(fileInputs)) {
+        if (ParamUtil.isEmpty(fileInputs)) {
             FormBody.Builder builder = new FormBody.Builder();
             addParams(builder);
             requestBody = builder.build();
@@ -71,7 +71,7 @@ public class PostFormRequest extends OkRequest {
 
     private void addParams(MultipartBody.Builder builder) {
         Map<String, String> params = params();
-        if (!Util.isEmpty(params)) {
+        if (!ParamUtil.isEmpty(params)) {
             for (String key : params.keySet()) {
                 builder.addFormDataPart(key, params.get(key));
             }
@@ -80,7 +80,7 @@ public class PostFormRequest extends OkRequest {
 
     private void addParams(FormBody.Builder builder) {
         Map<String, String> params = params();
-        if (!Util.isEmpty(params)) {
+        if (!ParamUtil.isEmpty(params)) {
             for (String key : params.keySet()) {
                 builder.add(key, params.get(key));
             }

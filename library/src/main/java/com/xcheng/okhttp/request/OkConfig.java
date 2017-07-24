@@ -2,7 +2,7 @@ package com.xcheng.okhttp.request;
 
 import com.xcheng.okhttp.callback.JsonParse;
 import com.xcheng.okhttp.callback.ResponseParse;
-import com.xcheng.okhttp.utils.OkExceptions;
+import com.xcheng.okhttp.util.OkExceptions;
 
 import okhttp3.OkHttpClient;
 

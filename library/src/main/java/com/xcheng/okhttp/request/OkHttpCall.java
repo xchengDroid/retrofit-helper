@@ -8,8 +8,8 @@ import com.xcheng.okhttp.callback.OkCall;
 import com.xcheng.okhttp.callback.ResponseParse;
 import com.xcheng.okhttp.callback.UICallback;
 import com.xcheng.okhttp.error.BaseError;
-import com.xcheng.okhttp.utils.OkExceptions;
-import com.xcheng.okhttp.utils.Util;
+import com.xcheng.okhttp.util.OkExceptions;
+import com.xcheng.okhttp.util.ParamUtil;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -182,7 +182,7 @@ public final class OkHttpCall<T> implements OkCall<T> {
     @Override
     public TypeToken<T> getTypeToken() {
         if (typeToken == null && tokenClass != null) {
-            typeToken = Util.createTypeToken(tokenClass);
+            typeToken = ParamUtil.createTypeToken(tokenClass);
         }
         return typeToken;
     }
@@ -247,6 +247,6 @@ public final class OkHttpCall<T> implements OkCall<T> {
     }
 
     public static synchronized List<OkHttpCall<?>> getCalls() {
-        return Util.immutableList(ALL_CALLS);
+        return ParamUtil.immutableList(ALL_CALLS);
     }
 }

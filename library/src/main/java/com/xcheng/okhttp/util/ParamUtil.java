@@ -1,4 +1,4 @@
-package com.xcheng.okhttp.utils;
+package com.xcheng.okhttp.util;
 
 import android.net.Uri;
 import android.support.annotation.NonNull;
@@ -18,7 +18,7 @@ import java.util.Set;
  * Created by chengxin on 2017/6/22.
  */
 
-public class Util {
+public class ParamUtil {
     public static String appendParams(String url, Map<String, String> params) {
         if (url == null || isEmpty(params)) {
             return url;

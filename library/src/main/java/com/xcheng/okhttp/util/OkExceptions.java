@@ -1,4 +1,4 @@
-package com.xcheng.okhttp.utils;
+package com.xcheng.okhttp.util;
 
 import android.support.annotation.Nullable;
 

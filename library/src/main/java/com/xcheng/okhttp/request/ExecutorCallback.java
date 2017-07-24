@@ -5,7 +5,7 @@ import android.support.annotation.NonNull;
 import com.xcheng.okhttp.callback.OkCall;
 import com.xcheng.okhttp.callback.UICallback;
 import com.xcheng.okhttp.error.BaseError;
-import com.xcheng.okhttp.utils.Platform;
+import com.xcheng.okhttp.util.Platform;
 
 /**
  * UICallBack 处理类
