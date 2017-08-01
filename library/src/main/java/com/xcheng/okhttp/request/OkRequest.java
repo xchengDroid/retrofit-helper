@@ -35,10 +35,7 @@ public abstract class OkRequest {
     private final Class<? extends ResponseParse> parseClass;
 
     protected OkRequest(Builder<?> builder) {
-        if (builder.url == null) {
-            OkExceptions.illegalArgument("url can not be null.");
-        }
-        this.url = builder.url;
+        this.url = OkExceptions.checkNotNull(builder.url, "url==null");
         this.tag = builder.tag != null ? builder.tag : this;
         this.params = builder.params;
         this.headers = builder.headers.build();
@@ -152,7 +149,16 @@ public abstract class OkRequest {
                 OkExceptions.illegalArgument("url can not be null");
             }
             if (!url.startsWith("http")) {
-                url = EasyOkHttp.getOkConfig().getHost() + url;
+                String host = EasyOkHttp.getOkConfig().getHost();
+                boolean hostStart = host.endsWith("/");
+                boolean urlStart = url.startsWith("/");
+                if (hostStart && urlStart) {
+                    url = host + url.substring(1);
+                } else if (!hostStart && !urlStart) {
+                    url = host + "/" + url;
+                } else {
+                    url = host + url;
+                }
             }
             this.url = url;
             return (T) this;
