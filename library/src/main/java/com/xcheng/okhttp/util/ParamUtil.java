@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * http请求参数帮助类
@@ -24,9 +23,8 @@ public class ParamUtil {
             return url;
         }
         Uri.Builder builder = Uri.parse(url).buildUpon();
-        Set<String> keys = params.keySet();
-        for (String key : keys) {
-            builder.appendQueryParameter(key, params.get(key));
+        for (Map.Entry<String, String> entry : params.entrySet()) {
+            builder.appendQueryParameter(entry.getKey(), entry.getValue());
         }
         return builder.build().toString();
     }
