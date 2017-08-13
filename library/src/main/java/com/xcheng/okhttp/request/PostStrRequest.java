@@ -27,14 +27,9 @@ public class PostStrRequest extends OkRequest {
 
     protected PostStrRequest(Builder builder) {
         super(builder);
+        OkExceptions.checkState(builder.content == null, "content==null,it must have a request body.");
         content = builder.content;
-        mediaType = builder.mediaType;
-        if (this.content == null) {
-            OkExceptions.illegalArgument("the content can not be null !");
-        }
-        if (mediaType == null) {
-            mediaType = MEDIA_TYPE_PLAIN;
-        }
+        mediaType = ParamUtil.defValueIfNull(builder.mediaType, MEDIA_TYPE_PLAIN);
     }
 
     public String getContent() {
@@ -72,17 +67,13 @@ public class PostStrRequest extends OkRequest {
         }
 
         public OkRequest jsonObject(JSONObject jsonObject) {
-            if (jsonObject.length() == 0) {
-                OkExceptions.illegalArgument("jsonObject can not be empty");
-            }
+            OkExceptions.checkArgument(jsonObject.length() == 0, "jsonObject.length() == 0");
             return json(jsonObject.toString());
         }
 
         public OkRequest jsonParams() {
             Map<String, String> params = getParams();
-            if (ParamUtil.isEmpty(params)) {
-                OkExceptions.illegalArgument("params can not be null or empty");
-            }
+            OkExceptions.checkArgument(ParamUtil.isEmpty(params), "params can not be null or empty");
             JSONObject jsonObject = new JSONObject();
             for (String key : params.keySet()) {
                 try {

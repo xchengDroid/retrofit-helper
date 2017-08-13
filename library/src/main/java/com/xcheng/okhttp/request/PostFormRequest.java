@@ -1,5 +1,7 @@
 package com.xcheng.okhttp.request;
 
+import android.support.annotation.NonNull;
+
 import com.xcheng.okhttp.util.ParamUtil;
 
 import java.io.File;
@@ -88,6 +90,7 @@ public class PostFormRequest extends OkRequest {
     }
 
     public static class Builder extends OkRequest.Builder<Builder> {
+        @NonNull
         private final List<FileInput> fileInputs = new ArrayList<>();
 
         public Builder addFileInput(FileInput fileInput) {

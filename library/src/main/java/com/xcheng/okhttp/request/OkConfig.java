@@ -32,9 +32,7 @@ public class OkConfig {
     }
 
     public String getHost() {
-        if (host == null) {
-            OkExceptions.illegalState("host==null,have you init it in OkConfig");
-        }
+        OkExceptions.checkState(host == null, "host==null,have you init it in OkConfig");
         return host;
     }
 
@@ -59,14 +57,12 @@ public class OkConfig {
         }
 
         public Builder host(String host) {
-            OkExceptions.checkNotNull(host, "host==null");
-            this.host = host;
+            this.host = OkExceptions.checkNotNull(host, "host==null");
             return this;
         }
 
         public Builder okHttpClient(OkHttpClient okHttpClient) {
-            OkExceptions.checkNotNull(okHttpClient, "okHttpClient==null");
-            this.okHttpClient = okHttpClient;
+            this.okHttpClient = OkExceptions.checkNotNull(okHttpClient, "okHttpClient==null");
             return this;
         }
 
@@ -76,8 +72,7 @@ public class OkConfig {
         }
 
         public Builder parseClass(Class<? extends ResponseParse> parseClass) {
-            OkExceptions.checkNotNull(postUiIfCanceled, "parseClass==null");
-            this.parseClass = parseClass;
+            this.parseClass = OkExceptions.checkNotNull(parseClass, "parseClass==null");
             return this;
         }
 

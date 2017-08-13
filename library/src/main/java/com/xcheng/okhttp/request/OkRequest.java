@@ -7,6 +7,7 @@ import com.google.gson.reflect.TypeToken;
 import com.xcheng.okhttp.EasyOkHttp;
 import com.xcheng.okhttp.callback.ResponseParse;
 import com.xcheng.okhttp.util.OkExceptions;
+import com.xcheng.okhttp.util.ParamUtil;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -35,17 +36,18 @@ public abstract class OkRequest {
     private final Class<? extends ResponseParse> parseClass;
 
     protected OkRequest(Builder<?> builder) {
-        this.url = OkExceptions.checkNotNull(builder.url, "url==null");
-        this.tag = builder.tag != null ? builder.tag : this;
+        OkExceptions.checkState(builder.url == null, "url==null");
+        this.url = builder.url;
+        this.tag = ParamUtil.defValueIfNull(builder.tag, this);
         this.params = builder.params;
         this.headers = builder.headers.build();
         this.id = builder.id;
         this.inProgress = builder.inProgress;
         this.outProgress = builder.outProgress;
-        this.okHttpClient = builder.okHttpClient != null ? builder.okHttpClient : EasyOkHttp.getOkConfig().getOkHttpClient();
+        this.okHttpClient = ParamUtil.defValueIfNull(builder.okHttpClient, EasyOkHttp.getOkConfig().getOkHttpClient());
         this.extraMap = builder.extraMap;
         this.typeToken = builder.typeToken;
-        this.parseClass = builder.parseClass != null ? builder.parseClass : EasyOkHttp.getOkConfig().getParseClass();
+        this.parseClass = ParamUtil.defValueIfNull(builder.parseClass, EasyOkHttp.getOkConfig().getParseClass());
     }
 
     public String url() {
@@ -85,6 +87,7 @@ public abstract class OkRequest {
         return id;
     }
 
+    @NonNull
     public Map<String, String> params() {
         return params;
     }
@@ -145,9 +148,7 @@ public abstract class OkRequest {
         }
 
         public T url(String url) {
-            if (url == null) {
-                OkExceptions.illegalArgument("url can not be null");
-            }
+            OkExceptions.checkNotNull(url, "url==null");
             if (!url.startsWith("http")) {
                 String host = EasyOkHttp.getOkConfig().getHost();
                 boolean hostStart = host.endsWith("/");

@@ -20,20 +20,16 @@ public class EasyOkHttp {
     public static final String TAG = EasyOkHttp.class.getSimpleName();
 
     public synchronized static void init(OkConfig okConfig) {
-        if (okConfig == null) {
-            OkExceptions.illegalArgument("OkConfig  can not be initialized with null");
-        }
         if (sOkConfig != null) {
             Log.e(TAG, "try to initialize OkConfig which had already been initialized before");
             return;
         }
+        OkExceptions.checkNotNull(okConfig, "okConfig==null");
         sOkConfig = okConfig;
     }
 
     public static OkConfig getOkConfig() {
-        if (sOkConfig == null) {
-            OkExceptions.illegalState("EasyOkHttp must be init with OkConfig before using");
-        }
+        OkExceptions.checkState(sOkConfig == null, "EasyOkHttp must be init with OkConfig before using");
         return sOkConfig;
     }
 

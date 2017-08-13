@@ -24,7 +24,7 @@ public class GetRequest extends OkRequest {
         @Override
         public GetRequest build() {
             String url = getUrl();
-            OkExceptions.checkNotNull(url, "url==null");
+            OkExceptions.checkState(url == null, "url==null");
             url = ParamUtil.appendParams(url, getParams());
             url(url);
             return new GetRequest(this);

@@ -233,7 +233,7 @@ public final class OkHttpCall<T> implements OkCall<T> {
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
-        OkExceptions.illegalState(okRequest.parseClass() + " must has a no zero argument constructor, class must be not private and abstract");
+        OkExceptions.checkState(true, okRequest.parseClass() + " must has a no zero argument constructor, class must be not private and abstract");
         return null;
     }
 

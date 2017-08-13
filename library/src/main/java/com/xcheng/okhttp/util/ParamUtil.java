@@ -42,7 +42,7 @@ public class ParamUtil {
      *
      * @return 不为空的对象
      */
-    public static <T> T defaultIfNull(T checkValue, @NonNull T defValue) {
+    public static <T> T defValueIfNull(T checkValue, @NonNull T defValue) {
         return checkValue != null ? checkValue : defValue;
     }
 
