@@ -13,7 +13,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 
 /**
- * 提交字符串
+ * 提交字text,json等
  * Created by chengxin on 2017/6/22.
  */
 
@@ -25,7 +25,7 @@ public class PostStrRequest extends OkRequest {
     private String content;
     private MediaType mediaType;
 
-    protected PostStrRequest(Builder builder) {
+    private PostStrRequest(Builder builder) {
         super(builder);
         OkExceptions.checkState(builder.content == null, "content==null,it must have a request body.");
         content = builder.content;

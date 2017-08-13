@@ -24,8 +24,7 @@ public class EasyOkHttp {
             Log.e(TAG, "try to initialize OkConfig which had already been initialized before");
             return;
         }
-        OkExceptions.checkNotNull(okConfig, "okConfig==null");
-        sOkConfig = okConfig;
+        sOkConfig = OkExceptions.checkNotNull(okConfig, "okConfig==null");
     }
 
     public static OkConfig getOkConfig() {

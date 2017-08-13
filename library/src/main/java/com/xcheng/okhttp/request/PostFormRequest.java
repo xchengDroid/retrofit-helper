@@ -20,6 +20,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 
 /**
+ * 提交Form表单
  * Created by cx on 17/6/22.
  */
 public class PostFormRequest extends OkRequest {
@@ -27,7 +28,7 @@ public class PostFormRequest extends OkRequest {
 
     private List<FileInput> fileInputs;
 
-    protected PostFormRequest(Builder builder) {
+    private PostFormRequest(Builder builder) {
         super(builder);
         this.fileInputs = ParamUtil.immutableList(builder.fileInputs);
     }
@@ -65,10 +66,7 @@ public class PostFormRequest extends OkRequest {
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        if (contentTypeFor == null) {
-            contentTypeFor = MEDIA_TYPE_STREAM.toString();
-        }
-        return contentTypeFor;
+        return ParamUtil.defValueIfNull(contentTypeFor, MEDIA_TYPE_STREAM.toString());
     }
 
     private void addParams(MultipartBody.Builder builder) {

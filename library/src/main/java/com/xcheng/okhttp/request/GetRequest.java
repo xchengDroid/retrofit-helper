@@ -11,7 +11,7 @@ import okhttp3.Request;
 
 public class GetRequest extends OkRequest {
 
-    protected GetRequest(Builder builder) {
+    private GetRequest(Builder builder) {
         super(builder);
     }
 
