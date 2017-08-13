@@ -38,6 +38,15 @@ public class ParamUtil {
     }
 
     /**
+     * 如果checkValue 为null返回defValue
+     *
+     * @return 不为空的对象
+     */
+    public static <T> T defaultIfNull(T checkValue, @NonNull T defValue) {
+        return checkValue != null ? checkValue : defValue;
+    }
+
+    /**
      * Returns an immutable copy of {@code list}.
      */
     public static <T> List<T> immutableList(List<T> list) {
