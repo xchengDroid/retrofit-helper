@@ -11,10 +11,10 @@ import okhttp3.OkHttpClient;
  */
 
 public class OkConfig {
-    private OkHttpClient okHttpClient;
-    private String host;
-    private Class<? extends ResponseParse> parseClass;
-    private boolean postUiIfCanceled;
+    private final OkHttpClient okHttpClient;
+    private final String host;
+    private final Class<? extends ResponseParse> parseClass;
+    private final boolean postUiIfCanceled;
 
     public static Builder newBuilder() {
         return new Builder();
