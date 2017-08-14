@@ -33,7 +33,20 @@ public class Https {
         public X509TrustManager trustManager;
     }
 
-    public static SSLParams getSslSocketFactory(InputStream[] certificates, InputStream bksFile, String password) {
+    /**
+     * https单向认证
+     * 用含有服务端公钥的证书校验服务端证书
+     */
+    public static SSLParams getSslSocketFactory(InputStream... certificates) {
+        return getSslSocketFactory(null, null, certificates);
+    }
+
+    /**
+     * https双向认证
+     * bksFile 和 password -> 客户端使用bks证书校验服务端证书
+     * certificates -> 用含有服务端公钥的证书校验服务端证书
+     */
+    public static SSLParams getSslSocketFactory(InputStream bksFile, String password, InputStream... certificates) {
         SSLParams sslParams = new SSLParams();
         try {
             TrustManager[] trustManagers = prepareTrustManager(certificates);
