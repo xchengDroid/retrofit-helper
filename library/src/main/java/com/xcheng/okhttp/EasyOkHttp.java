@@ -16,19 +16,29 @@ import com.xcheng.okhttp.util.OkExceptions;
  */
 public class EasyOkHttp {
     public static final long DEFAULT_MILLISECONDS = 10_000L;
-    private static OkConfig sOkConfig;
+    private volatile static OkConfig sOkConfig;
     public static final String TAG = EasyOkHttp.class.getSimpleName();
 
-    public synchronized static void init(OkConfig okConfig) {
-        if (sOkConfig != null) {
-            Log.e(TAG, "try to initialize OkConfig which had already been initialized before");
-            return;
+    //be private
+    private EasyOkHttp() {
+    }
+
+    public static void init(OkConfig okConfig) {
+        synchronized (EasyOkHttp.class) {
+            if (sOkConfig != null) {
+                Log.e(TAG, "try to initialize OkConfig which had already been initialized before");
+                return;
+            }
+            sOkConfig = OkExceptions.checkNotNull(okConfig, "okConfig==null");
         }
-        sOkConfig = OkExceptions.checkNotNull(okConfig, "okConfig==null");
     }
 
     public static OkConfig getOkConfig() {
-        OkExceptions.checkState(sOkConfig == null, "EasyOkHttp must be init with OkConfig before using");
+        if (sOkConfig == null) {
+            synchronized (EasyOkHttp.class) {
+                OkExceptions.checkState(sOkConfig == null, "EasyOkHttp must be init with OkConfig before using");
+            }
+        }
         return sOkConfig;
     }
 
