@@ -23,6 +23,9 @@ public class EasyOkHttp {
     private EasyOkHttp() {
     }
 
+    /**
+     * init EasyOkHttp with okConfig
+     */
     public static void init(OkConfig okConfig) {
         synchronized (EasyOkHttp.class) {
             if (sOkConfig != null) {
@@ -33,6 +36,10 @@ public class EasyOkHttp {
         }
     }
 
+
+    /**
+     * like  JobManager.create(this) JobManager.instance()
+     */
     public static OkConfig getOkConfig() {
         if (sOkConfig == null) {
             synchronized (EasyOkHttp.class) {
