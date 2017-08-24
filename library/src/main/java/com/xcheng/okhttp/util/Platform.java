@@ -9,18 +9,17 @@ import java.util.concurrent.Executor;
 
 public class Platform implements Executor {
     private static final Platform PLATFORM = new Platform();
-    private final Handler UIHandler = new Handler(Looper.getMainLooper());
+    private final Handler mainHandler = new Handler(Looper.getMainLooper());
 
     private Platform() {
     }
 
+    /**
+     * 保证在Handler消息队列中按顺序执行
+     */
     @Override
     public void execute(@NonNull Runnable command) {
-        if (isUiThread()) {
-            command.run();
-        } else {
-            UIHandler.post(command);
-        }
+        mainHandler.post(command);
     }
 
     public static Platform get() {
@@ -28,7 +27,17 @@ public class Platform implements Executor {
         return PLATFORM;
     }
 
-    public static boolean isUiThread() {
+    /**
+     * Returns {@code true} if called on the main thread, {@code false} otherwise.
+     */
+    public static boolean isOnMainThread() {
         return Looper.myLooper() == Looper.getMainLooper();
+    }
+
+    /**
+     * Returns {@code true} if called on the main thread, {@code false} otherwise.
+     */
+    public static boolean isOnBackgroundThread() {
+        return !isOnMainThread();
     }
 }
