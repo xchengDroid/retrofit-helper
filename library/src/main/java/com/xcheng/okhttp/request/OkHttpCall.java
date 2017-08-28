@@ -225,16 +225,24 @@ public final class OkHttpCall<T> implements OkCall<T> {
         return okCall;
     }
 
+    static private class InstantiationException extends RuntimeException {
+        private InstantiationException(String msg, Exception cause) {
+            super(msg, cause);
+        }
+    }
+
     private ResponseParse<T> createResponseParse() {
         try {
             return okRequest.parseClass().newInstance();
-        } catch (InstantiationException e) {
-            e.printStackTrace();
+        } catch (java.lang.InstantiationException e) {
+            throw new InstantiationException("Unable to instantiate ResponseParse " + okRequest.parseClass().getName()
+                    + ": make sure class name exists, is public, and has an"
+                    + " empty constructor that is public", e);
         } catch (IllegalAccessException e) {
-            e.printStackTrace();
+            throw new InstantiationException("Unable to instantiate ResponseParse " + okRequest.parseClass().getName()
+                    + ": make sure class name exists, is public, and has an"
+                    + " empty constructor that is public", e);
         }
-        OkExceptions.checkState(true, okRequest.parseClass() + " must has a no zero argument constructor, class must be not private and abstract");
-        return null;
     }
 
 
