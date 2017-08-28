@@ -2,7 +2,7 @@ package com.xcheng.okhttp.callback;
 
 import android.support.annotation.NonNull;
 
-import com.xcheng.okhttp.error.BaseError;
+import com.xcheng.okhttp.error.EasyError;
 import com.xcheng.okhttp.request.OkResponse;
 
 import java.io.IOException;
@@ -19,6 +19,6 @@ public class StringParse extends SimpleParse<String> {
         if (response.isSuccessful()) {
             return OkResponse.success(response.body().string());
         }
-        return OkResponse.error(BaseError.createDefaultError("response error"));
+        return OkResponse.error(EasyError.createDefaultError("response error"));
     }
 }

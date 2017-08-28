@@ -2,7 +2,7 @@ package com.xcheng.okhttp.callback;
 
 import android.support.annotation.NonNull;
 
-import com.xcheng.okhttp.error.BaseError;
+import com.xcheng.okhttp.error.EasyError;
 
 import java.io.IOException;
 import java.net.ConnectException;
@@ -18,16 +18,16 @@ import java.net.UnknownHostException;
 public abstract class SimpleParse<T> implements ResponseParse<T> {
 
     @NonNull
-    public BaseError getError(IOException e) {
+    public EasyError getError(IOException e) {
         if (e instanceof UnknownHostException) {
-            return new BaseError(-101, e.getMessage());
+            return new EasyError(-101, e.getMessage());
         } else if (e instanceof ConnectException) {
-            return new BaseError(-102, e.getMessage());
+            return new EasyError(-102, e.getMessage());
         } else if (e instanceof SocketException) {
-            return new BaseError(-103, e.getMessage());
+            return new EasyError(-103, e.getMessage());
         } else if (e instanceof SocketTimeoutException) {
-            return new BaseError(-104, e.getMessage());
+            return new EasyError(-104, e.getMessage());
         }
-        return new BaseError(-105, e.getMessage());
+        return new EasyError(-105, e.getMessage());
     }
 }

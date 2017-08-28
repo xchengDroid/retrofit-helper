@@ -16,7 +16,7 @@ import com.xcheng.okhttp.callback.BitmapParse;
 import com.xcheng.okhttp.callback.JsonParse;
 import com.xcheng.okhttp.callback.OkCall;
 import com.xcheng.okhttp.callback.UICallback;
-import com.xcheng.okhttp.error.BaseError;
+import com.xcheng.okhttp.error.EasyError;
 import com.xcheng.okhttp.request.GetRequest;
 import com.xcheng.okhttp.request.OkConfig;
 import com.xcheng.okhttp.request.OkHttpCall;
@@ -43,12 +43,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void json(View view) {
-        GetRequest getRequest = EasyOkHttp.get("data/cityinfo/101010100.html")
-                .parseClass(JsonParse.class).build();
+        GetRequest getRequest = new GetRequest.Builder().build();
+//                EasyOkHttp.get("/data/cityinfo/101010100.html")
+//                .parseClass(JsonParse.class).build();
         OkHttpCall<Weather> okCall = new OkHttpCall<>(getRequest);
         okCall.enqueue(new UICallback<Weather>() {
             @Override
-            public void onError(OkCall<Weather> okCall, BaseError error) {
+            public void onError(OkCall<Weather> okCall, EasyError error) {
                 Toast.makeText(MainActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
             }
 
@@ -66,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
         okCall.enqueue(new UICallback<String>() {
 
             @Override
-            public void onError(OkCall<String> okCall, BaseError error) {
+            public void onError(OkCall<String> okCall, EasyError error) {
                 Toast.makeText(MainActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
 
             }
@@ -97,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onError(OkCall<Bitmap> okCall, BaseError error) {
+            public void onError(OkCall<Bitmap> okCall, EasyError error) {
                 Toast.makeText(MainActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
             }
 

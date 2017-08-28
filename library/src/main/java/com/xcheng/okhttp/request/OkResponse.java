@@ -18,7 +18,7 @@ package com.xcheng.okhttp.request;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.xcheng.okhttp.error.BaseError;
+import com.xcheng.okhttp.error.EasyError;
 
 /**
  * An HTTP response.
@@ -29,23 +29,23 @@ public final class OkResponse<T> {
         return new OkResponse<>(body, null);
     }
 
-    public static <T> OkResponse<T> error(@NonNull BaseError baseError) {
-        return new OkResponse<>(null, baseError);
+    public static <T> OkResponse<T> error(@NonNull EasyError easyError) {
+        return new OkResponse<>(null, easyError);
     }
 
     @Nullable
-    private final BaseError baseError;
+    private final EasyError easyError;
     @Nullable
     private final T body;
 
-    private OkResponse(@Nullable T body, @Nullable BaseError baseError) {
-        this.baseError = baseError;
+    private OkResponse(@Nullable T body, @Nullable EasyError easyError) {
+        this.easyError = easyError;
         this.body = body;
     }
 
     @Nullable
-    public BaseError getError() {
-        return baseError;
+    public EasyError getError() {
+        return easyError;
     }
 
     @Nullable

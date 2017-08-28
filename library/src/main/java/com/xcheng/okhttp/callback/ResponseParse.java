@@ -2,7 +2,7 @@ package com.xcheng.okhttp.callback;
 
 import android.support.annotation.NonNull;
 
-import com.xcheng.okhttp.error.BaseError;
+import com.xcheng.okhttp.error.EasyError;
 import com.xcheng.okhttp.request.OkResponse;
 
 import java.io.IOException;
@@ -23,8 +23,8 @@ public interface ResponseParse<T> {
      * called by {@link okhttp3.Callback#onFailure(Call, IOException)}
      *
      * @param e IO错误
-     * @return BaseError  对应IOException的error信息
+     * @return EasyError  对应IOException的error信息
      */
     @NonNull
-    BaseError getError(IOException e);
+    EasyError getError(IOException e);
 }

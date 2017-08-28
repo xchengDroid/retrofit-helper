@@ -2,7 +2,7 @@ package com.xcheng.okhttp.callback;
 
 import android.support.annotation.UiThread;
 
-import com.xcheng.okhttp.error.BaseError;
+import com.xcheng.okhttp.error.EasyError;
 
 public abstract class UICallback<T> {
     @UiThread
@@ -36,7 +36,7 @@ public abstract class UICallback<T> {
     }
 
     @UiThread
-    public abstract void onError(OkCall<T> okCall, BaseError error);
+    public abstract void onError(OkCall<T> okCall, EasyError error);
 
     @UiThread
     public abstract void onSuccess(OkCall<T> okCall, T response);

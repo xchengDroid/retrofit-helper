@@ -4,7 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.annotation.NonNull;
 
-import com.xcheng.okhttp.error.BaseError;
+import com.xcheng.okhttp.error.EasyError;
 import com.xcheng.okhttp.request.OkResponse;
 
 import java.io.IOException;
@@ -19,6 +19,6 @@ public class BitmapParse extends SimpleParse<Bitmap> {
         if (response.isSuccessful()) {
             return OkResponse.success(BitmapFactory.decodeStream(response.body().byteStream()));
         }
-        return OkResponse.error(BaseError.createDefaultError("response error"));
+        return OkResponse.error(EasyError.createDefaultError("response error"));
     }
 }

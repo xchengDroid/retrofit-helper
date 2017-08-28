@@ -4,7 +4,7 @@ import android.support.annotation.NonNull;
 
 import com.xcheng.okhttp.callback.OkCall;
 import com.xcheng.okhttp.callback.UICallback;
-import com.xcheng.okhttp.error.BaseError;
+import com.xcheng.okhttp.error.EasyError;
 import com.xcheng.okhttp.util.Platform;
 
 /**
@@ -72,7 +72,7 @@ final class ExecutorCallback<T> extends UICallback<T> {
     }
 
     @Override
-    public void onError(final OkCall<T> okCall, final BaseError error) {
+    public void onError(final OkCall<T> okCall, final EasyError error) {
         PLATFORM.execute(new Runnable() {
             @Override
             public void run() {
@@ -106,6 +106,6 @@ final class ExecutorCallback<T> extends UICallback<T> {
          * @return canceledError
          */
         @NonNull
-        BaseError canceledError();
+        EasyError canceledError();
     }
 }

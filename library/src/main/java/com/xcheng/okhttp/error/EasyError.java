@@ -7,17 +7,17 @@ import android.util.Log;
  * 通用的错误信息，可继承添加一些自定义的error
  * Created by chengxin on 2017/6/22.
  */
-public class BaseError {
+public class EasyError {
     private int errorCode;
     private String message;
 
-    public BaseError(int errorCode, @NonNull String message) {
+    public EasyError(int errorCode, @NonNull String message) {
         this.errorCode = errorCode;
         this.message = message;
     }
 
-    public static BaseError createDefaultError(String message) {
-        return new BaseError(Integer.MIN_VALUE, message);
+    public static EasyError createDefaultError(String message) {
+        return new EasyError(Integer.MIN_VALUE, message);
     }
 
     /**

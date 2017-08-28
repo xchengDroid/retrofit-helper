@@ -7,7 +7,7 @@ import com.xcheng.okhttp.EasyOkHttp;
 import com.xcheng.okhttp.callback.OkCall;
 import com.xcheng.okhttp.callback.ResponseParse;
 import com.xcheng.okhttp.callback.UICallback;
-import com.xcheng.okhttp.error.BaseError;
+import com.xcheng.okhttp.error.EasyError;
 import com.xcheng.okhttp.util.OkExceptions;
 import com.xcheng.okhttp.util.ParamUtil;
 
@@ -70,9 +70,9 @@ public final class OkHttpCall<T> implements OkCall<T> {
         return okRequest.okHttpClient().newCall(request);
     }
 
-    private void callFailure(BaseError error) {
+    private void callFailure(EasyError error) {
         if (error == null) {
-            error = BaseError.createDefaultError("do not find defined error in " + okRequest.parseClass() + ".getError(IOException) method");
+            error = EasyError.createDefaultError("do not find defined error in " + okRequest.parseClass() + ".getError(IOException) method");
         }
         executorCallback.onError(this, error);
         executorCallback.onAfter(this);
@@ -113,11 +113,11 @@ public final class OkHttpCall<T> implements OkCall<T> {
 
             @NonNull
             @Override
-            public BaseError canceledError() {
+            public EasyError canceledError() {
                 String errorMsg = "Call Canceled, url= " + request().url();
-                BaseError error = responseParse.getError(new IOException(errorMsg));
+                EasyError error = responseParse.getError(new IOException(errorMsg));
                 if (error == null) {
-                    error = BaseError.createDefaultError(errorMsg);
+                    error = EasyError.createDefaultError(errorMsg);
                 }
                 return error;
             }
@@ -143,7 +143,7 @@ public final class OkHttpCall<T> implements OkCall<T> {
                 try {
                     response = wrapResponse(response);
                     OkResponse<T> okResponse = responseParse.parseNetworkResponse(OkHttpCall.this, response);
-                    BaseError responseError = null;
+                    EasyError responseError = null;
                     if (okResponse != null) {
                         if (okResponse.isSuccess()) {
                             callSuccess(okResponse.getBody());
@@ -152,7 +152,7 @@ public final class OkHttpCall<T> implements OkCall<T> {
                         responseError = okResponse.getError();
                     }
                     if (responseError == null) {
-                        responseError = BaseError.createDefaultError("do not find error in " + okRequest.parseClass() + ".parseNetworkResponse(OkCall<T> , Response) , have you return it ?");
+                        responseError = EasyError.createDefaultError("do not find error in " + okRequest.parseClass() + ".parseNetworkResponse(OkCall<T> , Response) , have you return it ?");
                     }
                     callFailure(responseError);
                 } catch (IOException e) {

@@ -4,7 +4,7 @@ import android.support.annotation.NonNull;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.xcheng.okhttp.error.BaseError;
+import com.xcheng.okhttp.error.EasyError;
 import com.xcheng.okhttp.request.OkResponse;
 
 import java.io.IOException;
@@ -29,6 +29,6 @@ public class JsonParse<T> extends SimpleParse<T> {
             T body = new Gson().fromJson(str, token.getType());
             return OkResponse.success(body);
         }
-        return OkResponse.error(BaseError.createDefaultError("response error"));
+        return OkResponse.error(EasyError.createDefaultError("response error"));
     }
 }
