@@ -1,12 +1,18 @@
 package com.xcheng.okhttp.util;
 
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 
-public class OkExceptions {
+public class OkHttpPreconditions {
+
+    private OkHttpPreconditions() {
+        throw new UnsupportedOperationException();
+    }
+
     /**
      * 如果condition为true 抛出 IllegalStateException
      *
-     * @param condition
+     * @param condition 抛出异常的条件
      * @param message   异常错误信息
      */
     public static void checkState(boolean condition, String message) {
@@ -25,12 +31,27 @@ public class OkExceptions {
     /**
      * 如果 condition 为true 抛出异常 IllegalArgumentException
      *
-     * @param condition
+     * @param condition 抛出异常的条件
      * @param message   异常错误信息
      */
     public static void checkArgument(boolean condition, String message) {
         if (condition) {
             throw new IllegalArgumentException(message);
         }
+    }
+
+    /**
+     * Ensures that a CharSequence passed as a parameter to the calling method is
+     * not null and not empty.
+     *
+     * @param reference an CharSequence reference
+     * @return the non-empty reference that was validated
+     * @throws IllegalArgumentException if {@code reference} was null or empty
+     */
+    public static <T extends CharSequence> T checkNotEmpty(final T reference, String message) {
+        if (TextUtils.isEmpty(reference)) {
+            throw new IllegalArgumentException(message);
+        }
+        return reference;
     }
 }
