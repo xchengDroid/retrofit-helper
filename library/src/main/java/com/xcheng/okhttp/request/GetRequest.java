@@ -1,6 +1,6 @@
 package com.xcheng.okhttp.request;
 
-import com.xcheng.okhttp.util.OkExceptions;
+import com.xcheng.okhttp.util.OkHttpPreconditions;
 import com.xcheng.okhttp.util.ParamUtil;
 
 import okhttp3.Request;
@@ -24,7 +24,7 @@ public class GetRequest extends OkRequest {
         @Override
         public GetRequest build() {
             String url = getUrl();
-            OkExceptions.checkState(url == null, "url==null");
+            OkHttpPreconditions.checkState(url == null, "url==null");
             url = ParamUtil.appendParams(url, getParams());
             url(url);
             return new GetRequest(this);

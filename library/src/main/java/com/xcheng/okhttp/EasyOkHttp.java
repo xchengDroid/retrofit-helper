@@ -9,7 +9,7 @@ import com.xcheng.okhttp.request.OkHttpCall;
 import com.xcheng.okhttp.request.OkConfig;
 import com.xcheng.okhttp.request.PostFormRequest;
 import com.xcheng.okhttp.request.PostStrRequest;
-import com.xcheng.okhttp.util.OkExceptions;
+import com.xcheng.okhttp.util.OkHttpPreconditions;
 
 /**
  * Created by chengxin on 17/6/22
@@ -32,7 +32,7 @@ public class EasyOkHttp {
                 Log.e(TAG, "try to initialize OkConfig which had already been initialized before");
                 return;
             }
-            sOkConfig = OkExceptions.checkNotNull(okConfig, "okConfig==null");
+            sOkConfig = OkHttpPreconditions.checkNotNull(okConfig, "okConfig==null");
         }
     }
 
@@ -43,7 +43,7 @@ public class EasyOkHttp {
     public static OkConfig getOkConfig() {
         if (sOkConfig == null) {
             synchronized (EasyOkHttp.class) {
-                OkExceptions.checkState(sOkConfig == null, "EasyOkHttp must be init with OkConfig before using");
+                OkHttpPreconditions.checkState(sOkConfig == null, "EasyOkHttp must be init with OkConfig before using");
             }
         }
         return sOkConfig;

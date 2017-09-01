@@ -1,6 +1,6 @@
 package com.xcheng.okhttp.request;
 
-import com.xcheng.okhttp.util.OkExceptions;
+import com.xcheng.okhttp.util.OkHttpPreconditions;
 import com.xcheng.okhttp.util.ParamUtil;
 
 import org.json.JSONException;
@@ -27,7 +27,7 @@ public class PostStrRequest extends OkRequest {
 
     private PostStrRequest(Builder builder) {
         super(builder);
-        OkExceptions.checkState(builder.content == null, "content==null,it must have a request body.");
+        OkHttpPreconditions.checkState(builder.content == null, "content==null,it must have a request body.");
         content = builder.content;
         mediaType = ParamUtil.defValueIfNull(builder.mediaType, MEDIA_TYPE_PLAIN);
     }
@@ -67,13 +67,13 @@ public class PostStrRequest extends OkRequest {
         }
 
         public OkRequest jsonObject(JSONObject jsonObject) {
-            OkExceptions.checkArgument(jsonObject.length() == 0, "jsonObject.length() == 0");
+            OkHttpPreconditions.checkArgument(jsonObject.length() == 0, "jsonObject.length() == 0");
             return json(jsonObject.toString());
         }
 
         public OkRequest jsonParams() {
             Map<String, String> params = getParams();
-            OkExceptions.checkArgument(ParamUtil.isEmpty(params), "params can not be null or empty");
+            OkHttpPreconditions.checkArgument(ParamUtil.isEmpty(params), "params can not be null or empty");
             JSONObject jsonObject = new JSONObject();
             for (String key : params.keySet()) {
                 try {
