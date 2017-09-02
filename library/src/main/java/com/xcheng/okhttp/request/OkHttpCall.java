@@ -8,7 +8,7 @@ import com.xcheng.okhttp.callback.OkCall;
 import com.xcheng.okhttp.callback.ResponseParse;
 import com.xcheng.okhttp.callback.UICallback;
 import com.xcheng.okhttp.error.EasyError;
-import com.xcheng.okhttp.util.OkHttpPreconditions;
+import com.xcheng.okhttp.util.EasyPreconditions;
 import com.xcheng.okhttp.util.ParamUtil;
 
 import java.io.IOException;
@@ -103,7 +103,7 @@ public final class OkHttpCall<T> implements OkCall<T> {
 
     @Override
     public void enqueue(UICallback<T> uiCallback) {
-        OkHttpPreconditions.checkNotNull(uiCallback, "uiCallback can not be null");
+        EasyPreconditions.checkNotNull(uiCallback, "uiCallback can not be null");
         this.tokenClass = uiCallback.getClass();
         this.executorCallback = new ExecutorCallback<>(uiCallback, new ExecutorCallback.OnExecutorListener() {
             @Override

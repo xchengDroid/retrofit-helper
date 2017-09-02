@@ -6,7 +6,7 @@ import android.support.annotation.Nullable;
 import com.google.gson.reflect.TypeToken;
 import com.xcheng.okhttp.EasyOkHttp;
 import com.xcheng.okhttp.callback.ResponseParse;
-import com.xcheng.okhttp.util.OkHttpPreconditions;
+import com.xcheng.okhttp.util.EasyPreconditions;
 import com.xcheng.okhttp.util.ParamUtil;
 
 import java.util.LinkedHashMap;
@@ -36,7 +36,7 @@ public abstract class OkRequest {
     private final Class<? extends ResponseParse> parseClass;
 
     protected OkRequest(Builder<?> builder) {
-        OkHttpPreconditions.checkState(builder.url == null, "url==null");
+        EasyPreconditions.checkState(builder.url != null, "url==null");
         this.url = builder.url;
         this.tag = ParamUtil.defValueIfNull(builder.tag, this);
         this.params = builder.params;
@@ -148,7 +148,7 @@ public abstract class OkRequest {
         }
 
         public T url(String url) {
-            OkHttpPreconditions.checkNotNull(url, "url==null");
+            EasyPreconditions.checkNotNull(url, "url==null");
             if (!url.startsWith("http")) {
                 String host = EasyOkHttp.getOkConfig().getHost();
                 boolean hostStart = host.endsWith("/");

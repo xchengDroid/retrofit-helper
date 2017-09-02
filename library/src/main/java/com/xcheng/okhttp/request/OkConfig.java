@@ -2,7 +2,7 @@ package com.xcheng.okhttp.request;
 
 import com.xcheng.okhttp.callback.JsonParse;
 import com.xcheng.okhttp.callback.ResponseParse;
-import com.xcheng.okhttp.util.OkHttpPreconditions;
+import com.xcheng.okhttp.util.EasyPreconditions;
 
 import okhttp3.OkHttpClient;
 
@@ -32,7 +32,7 @@ public class OkConfig {
     }
 
     public String getHost() {
-        OkHttpPreconditions.checkState(host == null, "host==null,have you init it in OkConfig");
+        EasyPreconditions.checkState(host != null, "host==null,have you init it in OkConfig");
         return host;
     }
 
@@ -57,12 +57,12 @@ public class OkConfig {
         }
 
         public Builder host(String host) {
-            this.host = OkHttpPreconditions.checkNotNull(host, "host==null");
+            this.host = EasyPreconditions.checkNotNull(host, "host==null");
             return this;
         }
 
         public Builder okHttpClient(OkHttpClient okHttpClient) {
-            this.okHttpClient = OkHttpPreconditions.checkNotNull(okHttpClient, "okHttpClient==null");
+            this.okHttpClient = EasyPreconditions.checkNotNull(okHttpClient, "okHttpClient==null");
             return this;
         }
 
@@ -72,7 +72,7 @@ public class OkConfig {
         }
 
         public Builder parseClass(Class<? extends ResponseParse> parseClass) {
-            this.parseClass = OkHttpPreconditions.checkNotNull(parseClass, "parseClass==null");
+            this.parseClass = EasyPreconditions.checkNotNull(parseClass, "parseClass==null");
             return this;
         }
 
