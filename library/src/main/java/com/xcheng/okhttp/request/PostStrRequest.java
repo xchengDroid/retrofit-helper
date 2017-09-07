@@ -27,7 +27,6 @@ public class PostStrRequest extends OkRequest {
 
     private PostStrRequest(Builder builder) {
         super(builder);
-        EasyPreconditions.checkState(builder.content != null, "content==null,it must have a request body.");
         content = builder.content;
         mediaType = ParamUtil.defValueIfNull(builder.mediaType, MEDIA_TYPE_PLAIN);
     }
@@ -88,6 +87,7 @@ public class PostStrRequest extends OkRequest {
 
         @Override
         public PostStrRequest build() {
+            EasyPreconditions.checkState(content != null, "content==null,it must have a request body.");
             return new PostStrRequest(this);
         }
     }

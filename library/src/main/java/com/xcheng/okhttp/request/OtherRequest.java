@@ -80,8 +80,7 @@ public class OtherRequest extends OkRequest {
          * @see RequestBody#create(MediaType, String)
          */
         public Builder requestBody(@Nullable MediaType mediaType, String content) {
-            requestBody(RequestBody.create(mediaType, content));
-            return this;
+            return requestBody(RequestBody.create(mediaType, content));
         }
 
         public Builder requestBody(RequestBody requestBody) {
