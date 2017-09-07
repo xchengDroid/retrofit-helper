@@ -60,6 +60,7 @@ public class PostStrRequest extends OkRequest {
         }
 
         public OkRequest json(String json) {
+            //如果mediaType==null 默认设置为MEDIA_TYPE_JSON
             if (mediaType == null) {
                 mediaType(MEDIA_TYPE_JSON);
             }
