@@ -11,13 +11,11 @@ import java.lang.annotation.RetentionPolicy;
 import okhttp3.MediaType;
 import okhttp3.Request;
 import okhttp3.RequestBody;
-import okhttp3.internal.http.HttpMethod;
 
 /**
- * 提交字text,json等
+ * HEAD DELETE PUT PATCH
  * Created by chengxin on 2017/6/22.
  */
-
 public class OtherRequest extends OkRequest {
 
     private RequestBody requestBody;
@@ -39,23 +37,9 @@ public class OtherRequest extends OkRequest {
 
     @Override
     public Request createRequest() {
-        Request.Builder builder = new Request.Builder().url(url()).tag(tag()).headers(headers());
-        switch (method) {
-            case DELETE:
-                if (requestBody == null) {
-                    return builder.delete().build();
-                } else {
-                    return builder.delete(requestBody).build();
-                }
-            case HEAD:
-                return builder.head().build();
-            case PUT:
-            case PATCH:
-                return builder.patch(requestBody).build();
-            default:
-                throw new IllegalStateException("UnSupport method:" + method);
-        }
+        return new Request.Builder().url(url()).tag(tag()).headers(headers()).method(method, requestBody).build();
     }
+
 
     @StringDef({HEAD, DELETE, PUT, PATCH})
     @Retention(RetentionPolicy.SOURCE)
@@ -91,12 +75,6 @@ public class OtherRequest extends OkRequest {
         @Override
         public OtherRequest build() {
             EasyPreconditions.checkState(method != null, "method==null");
-            if (requestBody != null && !HttpMethod.permitsRequestBody(method)) {
-                EasyPreconditions.checkState(false, "method " + method + " must not have a request body.");
-            }
-            if (requestBody == null && HttpMethod.requiresRequestBody(method)) {
-                EasyPreconditions.checkState(false, "method " + method + " must have a request body.");
-            }
             return new OtherRequest(this);
         }
     }
