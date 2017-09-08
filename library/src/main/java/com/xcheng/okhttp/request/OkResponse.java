@@ -15,21 +15,31 @@
  */
 package com.xcheng.okhttp.request;
 
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.xcheng.okhttp.error.EasyError;
+import com.xcheng.okhttp.util.EasyPreconditions;
 
 /**
  * An HTTP response.
  */
 public final class OkResponse<T> {
 
-    public static <T> OkResponse<T> success(@NonNull T body) {
+    /**
+     * @param body 请求成功返回的body
+     * @throws NullPointerException if body==null
+     */
+    public static <T> OkResponse<T> success(T body) {
+        EasyPreconditions.checkNotNull(body != null, "body==null");
         return new OkResponse<>(body, null);
     }
 
-    public static <T> OkResponse<T> error(@NonNull EasyError easyError) {
+    /**
+     * @param easyError 请求失败返回的错误信息
+     * @throws NullPointerException if easyError==null
+     */
+    public static <T> OkResponse<T> error(EasyError easyError) {
+        EasyPreconditions.checkNotNull(easyError != null, "easyError==null");
         return new OkResponse<>(null, easyError);
     }
 
