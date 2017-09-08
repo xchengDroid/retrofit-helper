@@ -106,7 +106,7 @@ public abstract class OkRequest {
         return outProgress;
     }
 
-    protected abstract Request createRequest();
+    public abstract Request createRequest();
 
     /**
      * Created by cx on 17/6/22.

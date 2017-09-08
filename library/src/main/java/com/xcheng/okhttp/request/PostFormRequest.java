@@ -26,19 +26,15 @@ import okhttp3.RequestBody;
 public class PostFormRequest extends OkRequest {
     private static MediaType MEDIA_TYPE_STREAM = MediaType.parse("application/octet-stream");
 
-    private List<FileInput> fileInputs;
+    private final List<FileInput> fileInputs;
 
     private PostFormRequest(Builder builder) {
         super(builder);
-        this.fileInputs = ParamUtil.immutableList(builder.fileInputs);
-    }
-
-    public List<FileInput> getFileInputs() {
-        return fileInputs;
+        this.fileInputs = builder.fileInputs;
     }
 
     @Override
-    protected Request createRequest() {
+    public Request createRequest() {
         RequestBody requestBody;
         if (ParamUtil.isEmpty(fileInputs)) {
             FormBody.Builder builder = new FormBody.Builder();

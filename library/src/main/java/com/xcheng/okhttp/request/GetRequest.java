@@ -15,7 +15,7 @@ public class GetRequest extends OkRequest {
     }
 
     @Override
-    protected Request createRequest() {
+    public Request createRequest() {
         return new Request.Builder().url(url()).headers(headers()).tag(tag()).build();
     }
 

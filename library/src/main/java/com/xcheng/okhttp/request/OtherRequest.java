@@ -27,19 +27,10 @@ public class OtherRequest extends OkRequest {
         this.requestBody = builder.requestBody;
     }
 
-    public String getMethod() {
-        return method;
-    }
-
-    public RequestBody getRequestBody() {
-        return requestBody;
-    }
-
     @Override
     public Request createRequest() {
         return new Request.Builder().url(url()).tag(tag()).headers(headers()).method(method, requestBody).build();
     }
-
 
     @StringDef({HEAD, DELETE, PUT, PATCH})
     @Retention(RetentionPolicy.SOURCE)
