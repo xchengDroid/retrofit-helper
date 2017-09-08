@@ -68,8 +68,8 @@ public class PostFormRequest extends OkRequest {
     private void addParams(MultipartBody.Builder builder) {
         Map<String, String> params = params();
         if (!ParamUtil.isEmpty(params)) {
-            for (String key : params.keySet()) {
-                builder.addFormDataPart(key, params.get(key));
+            for (Map.Entry<String, String> entry : params.entrySet()) {
+                builder.addFormDataPart(entry.getKey(), entry.getValue());
             }
         }
     }
@@ -77,8 +77,8 @@ public class PostFormRequest extends OkRequest {
     private void addParams(FormBody.Builder builder) {
         Map<String, String> params = params();
         if (!ParamUtil.isEmpty(params)) {
-            for (String key : params.keySet()) {
-                builder.add(key, params.get(key));
+            for (Map.Entry<String, String> entry : params.entrySet()) {
+                builder.add(entry.getKey(), entry.getValue());
             }
         }
     }
