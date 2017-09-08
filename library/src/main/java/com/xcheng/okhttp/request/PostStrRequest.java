@@ -31,6 +31,10 @@ public class PostStrRequest extends OkRequest {
         mediaType = ParamUtil.defValueIfNull(builder.mediaType, MEDIA_TYPE_PLAIN);
     }
 
+    public String getContent() {
+        return content;
+    }
+
     @Override
     public Request createRequest() {
         return new Request.Builder().url(url()).tag(tag()).headers(headers()).post(RequestBody.create(mediaType, content)).build();
