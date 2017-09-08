@@ -30,7 +30,7 @@ public final class OkResponse<T> {
      * @throws NullPointerException if body==null
      */
     public static <T> OkResponse<T> success(T body) {
-        EasyPreconditions.checkNotNull(body != null, "body==null");
+        EasyPreconditions.checkNotNull(body, "body==null");
         return new OkResponse<>(body, null);
     }
 
@@ -39,7 +39,7 @@ public final class OkResponse<T> {
      * @throws NullPointerException if easyError==null
      */
     public static <T> OkResponse<T> error(EasyError easyError) {
-        EasyPreconditions.checkNotNull(easyError != null, "easyError==null");
+        EasyPreconditions.checkNotNull(easyError, "easyError==null");
         return new OkResponse<>(null, easyError);
     }
 
