@@ -43,5 +43,10 @@ public interface OkCall<T> extends Cloneable {
 
     TypeToken<T> getTypeToken();
 
+    /**
+     * 是否回调UI
+     *
+     * @return true代表回调，否则false
+     */
     boolean isPostUi();
 }
