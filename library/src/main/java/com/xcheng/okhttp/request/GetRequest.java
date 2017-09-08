@@ -1,6 +1,5 @@
 package com.xcheng.okhttp.request;
 
-import com.xcheng.okhttp.util.EasyPreconditions;
 import com.xcheng.okhttp.util.ParamUtil;
 
 import okhttp3.Request;
@@ -24,7 +23,6 @@ public class GetRequest extends OkRequest {
         @Override
         public GetRequest build() {
             String url = getUrl();
-            EasyPreconditions.checkState(url != null, "url==null");
             url = ParamUtil.appendParams(url, getParams());
             url(url);
             return new GetRequest(this);
