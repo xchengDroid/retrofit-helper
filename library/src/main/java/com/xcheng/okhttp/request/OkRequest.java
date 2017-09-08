@@ -36,6 +36,7 @@ public abstract class OkRequest {
     private final Class<? extends ResponseParse> parseClass;
 
     protected OkRequest(Builder<?> builder) {
+        //build方法是抽象，本来应该在build方法里面做检测，现在放到构造函数里面统一检测
         EasyPreconditions.checkState(builder.url != null, "url==null");
         this.url = builder.url;
         this.tag = ParamUtil.defValueIfNull(builder.tag, this);
