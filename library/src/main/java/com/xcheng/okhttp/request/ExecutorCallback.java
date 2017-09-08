@@ -1,7 +1,5 @@
 package com.xcheng.okhttp.request;
 
-import android.support.annotation.NonNull;
-
 import com.xcheng.okhttp.callback.OkCall;
 import com.xcheng.okhttp.callback.UICallback;
 import com.xcheng.okhttp.error.EasyError;
@@ -91,7 +89,7 @@ final class ExecutorCallback<T> extends UICallback<T> {
                 if (!okCall.isCanceled()) {
                     delegate.onSuccess(okCall, response);
                 } else {
-                    onError(okCall, listener.canceledError());
+                    onError(okCall, EasyError.create("Canceled"));
                 }
             }
         });
@@ -99,13 +97,5 @@ final class ExecutorCallback<T> extends UICallback<T> {
 
     interface OnExecutorListener {
         void onAfter();
-
-        /**
-         * 如果请求被取消，获取所需的Canceled Error
-         *
-         * @return canceledError
-         */
-        @NonNull
-        EasyError canceledError();
     }
 }

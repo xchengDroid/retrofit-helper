@@ -71,9 +71,7 @@ public final class OkHttpCall<T> implements OkCall<T> {
     }
 
     private void callFailure(EasyError error) {
-        if (error == null) {
-            error = EasyError.createDefaultError("do not find defined error in " + okRequest.parseClass() + ".getError(IOException) method");
-        }
+        EasyPreconditions.checkNotNull(error, "error==null");
         executorCallback.onError(this, error);
         executorCallback.onAfter(this);
     }
@@ -103,23 +101,12 @@ public final class OkHttpCall<T> implements OkCall<T> {
 
     @Override
     public void enqueue(UICallback<T> uiCallback) {
-        EasyPreconditions.checkNotNull(uiCallback, "uiCallback can not be null");
+        EasyPreconditions.checkNotNull(uiCallback, "uiCallback==null");
         this.tokenClass = uiCallback.getClass();
         this.executorCallback = new ExecutorCallback<>(uiCallback, new ExecutorCallback.OnExecutorListener() {
             @Override
             public void onAfter() {
                 finished(OkHttpCall.this);
-            }
-
-            @NonNull
-            @Override
-            public EasyError canceledError() {
-                String errorMsg = "Call Canceled, url= " + request().url();
-                EasyError error = responseParse.getError(new IOException(errorMsg));
-                if (error == null) {
-                    error = EasyError.createDefaultError(errorMsg);
-                }
-                return error;
             }
         });
         synchronized (this) {
@@ -143,18 +130,12 @@ public final class OkHttpCall<T> implements OkCall<T> {
                 try {
                     response = wrapResponse(response);
                     OkResponse<T> okResponse = responseParse.parseNetworkResponse(OkHttpCall.this, response);
-                    EasyError responseError = null;
-                    if (okResponse != null) {
-                        if (okResponse.isSuccess()) {
-                            callSuccess(okResponse.getBody());
-                            return;
-                        }
-                        responseError = okResponse.getError();
+                    EasyPreconditions.checkNotNull(okResponse, "okResponse==null");
+                    if (okResponse.isSuccess()) {
+                        callSuccess(okResponse.getBody());
+                        return;
                     }
-                    if (responseError == null) {
-                        responseError = EasyError.createDefaultError("do not find error in " + okRequest.parseClass() + ".parseNetworkResponse(OkCall<T> , Response) , have you return it ?");
-                    }
-                    callFailure(responseError);
+                    callFailure(okResponse.getError());
                 } catch (IOException e) {
                     e.printStackTrace();
                     callFailure(responseParse.getError(e));

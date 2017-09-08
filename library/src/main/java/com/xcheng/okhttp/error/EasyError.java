@@ -16,7 +16,14 @@ public class EasyError {
         this.message = message;
     }
 
-    public static EasyError createDefaultError(String message) {
+    /**
+     * 静态方法创建简单的错误信息,
+     * errorCode为{@link Integer#MIN_VALUE}
+     *
+     * @param message 错误描述
+     * @return EasyError
+     */
+    public static EasyError create(String message) {
         return new EasyError(Integer.MIN_VALUE, message);
     }
 
