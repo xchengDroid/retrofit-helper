@@ -5,9 +5,9 @@ import com.xcheng.okhttp.util.ParamUtil;
 import okhttp3.Request;
 
 /**
+ * 通用的GET请求
  * Created by chengxin on 2017/6/22.
  */
-
 public class GetRequest extends OkRequest {
 
     private GetRequest(Builder builder) {
