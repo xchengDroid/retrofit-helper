@@ -173,6 +173,7 @@ public abstract class OkRequest {
         }
 
         public T headers(Headers headers) {
+            //如果为空 自行奔溃
             this.headers = headers.newBuilder();
             return (T) this;
         }
@@ -232,12 +233,12 @@ public abstract class OkRequest {
             return (T) this;
         }
 
-        public T extra(String key, Object val) {
+        public T extra(String key, Object value) {
             //Lazy Initialization
             if (this.extraMap == null) {
                 this.extraMap = new LinkedHashMap<>();
             }
-            this.extraMap.put(key, val);
+            this.extraMap.put(key, value);
             return (T) this;
         }
 

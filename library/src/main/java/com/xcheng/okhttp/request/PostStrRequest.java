@@ -62,18 +62,14 @@ public class PostStrRequest extends OkRequest {
             return content(json).build();
         }
 
-        public OkRequest jsonObject(JSONObject jsonObject) {
-            EasyPreconditions.checkArgument(jsonObject.length() != 0, "jsonObject.length() == 0");
-            return json(jsonObject.toString());
-        }
-
+        /**
+         * 将params转换成json字符串对象
+         */
         public OkRequest jsonParams() {
-            Map<String, String> params = getParams();
-            EasyPreconditions.checkArgument(!ParamUtil.isEmpty(params), "params can not be null or empty");
             JSONObject jsonObject = new JSONObject();
-            for (String key : params.keySet()) {
+            for (Map.Entry<String, String> entry : getParams().entrySet()) {
                 try {
-                    jsonObject.put(key, params.get(key));
+                    jsonObject.put(entry.getKey(), entry.getValue());
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
