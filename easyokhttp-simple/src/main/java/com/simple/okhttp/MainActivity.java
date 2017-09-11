@@ -26,7 +26,6 @@ import okhttp3.OkHttpClient;
 public class MainActivity extends AppCompatActivity {
     private WebView webView;
     ImageView imageView;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,8 +43,8 @@ public class MainActivity extends AppCompatActivity {
 
     public void json(View view) {
         GetRequest getRequest = new GetRequest.Builder().build();
-//                EasyOkHttp.get("/data/cityinfo/101010100.html")
-//                .parseClass(JsonParse.class).build();
+                EasyOkHttp.get("/data/cityinfo/101010100.html")
+                .parseClass(JsonParse.class).build();
         OkHttpCall<Weather> okCall = new OkHttpCall<>(getRequest);
         okCall.enqueue(new UICallback<Weather>() {
             @Override
@@ -56,7 +55,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onSuccess(OkCall<Weather> okCall, Weather response) {
                 webView.loadData(new Gson().toJson(response), "text/html", "utf-8");
-
             }
         });
     }
