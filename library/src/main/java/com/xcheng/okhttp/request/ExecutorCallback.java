@@ -9,7 +9,7 @@ import com.xcheng.okhttp.util.Platform;
  * UICallBack 处理类
  * Created by chengxin on 2017/6/26.
  */
-
+@Deprecated
 final class ExecutorCallback<T> extends UICallback<T> {
     private static final Platform PLATFORM = Platform.get();
     private final UICallback<T> delegate;

@@ -4,8 +4,8 @@ package com.xcheng.okhttp;
 import android.util.Log;
 
 import com.xcheng.okhttp.callback.OkCall;
+import com.xcheng.okhttp.request.ExecutorCall;
 import com.xcheng.okhttp.request.GetRequest;
-import com.xcheng.okhttp.request.OkHttpCall;
 import com.xcheng.okhttp.request.OkConfig;
 import com.xcheng.okhttp.request.OtherRequest;
 import com.xcheng.okhttp.request.PostFormRequest;
@@ -67,7 +67,7 @@ public class EasyOkHttp {
     }
 
     public static void cancel(Object tag) {
-        for (OkCall<?> okCall : OkHttpCall.getCalls()) {
+        for (OkCall<?> okCall : ExecutorCall.getCalls()) {
             if (okCall.request().tag().equals(tag)) {
                 okCall.cancel();
             }
@@ -75,7 +75,7 @@ public class EasyOkHttp {
     }
 
     public static void cancelAll() {
-        for (OkCall<?> okCall : OkHttpCall.getCalls()) {
+        for (OkCall<?> okCall : ExecutorCall.getCalls()) {
             okCall.cancel();
         }
     }

@@ -23,25 +23,23 @@ import okhttp3.ResponseBody;
 
 /**
  * Created by cx on 17/6/22.
- * 发起http请求的封装类
+ * 发起http请求内部的封装类
  */
-@Deprecated
-public final class OkHttpCall<T> implements OkCall<T> {
-    private static final List<OkHttpCall<?>> ALL_CALLS = new ArrayList<>();
+final class RealCall<T> implements OkCall<T> {
+    private static final List<RealCall<?>> ALL_CALLS = new ArrayList<>();
 
     private final OkRequest okRequest;
     //发起请求 解析相关
     private final ResponseParse<T> responseParse;
     private TypeToken<T> typeToken;
-    private Class<? extends UICallback> tokenClass;
-    private ExecutorCallback<T> executorCallback;
+    private UICallback<T> executorCallback;
 
     private Call rawCall;
     private volatile boolean canceled;
     private boolean executed;
 
     @SuppressWarnings("unchecked")
-    public OkHttpCall(@NonNull OkRequest okRequest) {
+    public RealCall(@NonNull OkRequest okRequest) {
         this.okRequest = okRequest;
         this.typeToken = (TypeToken<T>) okRequest.typeToken();
         this.responseParse = createResponseParse();
@@ -61,7 +59,7 @@ public final class OkHttpCall<T> implements OkCall<T> {
 
                 @Override
                 public void onRequestProgress(long bytesWritten, long contentLength, boolean done) {
-                    executorCallback.inProgress(OkHttpCall.this, bytesWritten * 1.0f / contentLength, contentLength, done);
+                    executorCallback.inProgress(RealCall.this, bytesWritten * 1.0f / contentLength, contentLength, done);
 
                 }
             });
@@ -96,41 +94,34 @@ public final class OkHttpCall<T> implements OkCall<T> {
         try {
             return responseParse.parseNetworkResponse(this, rawCall.execute());
         } finally {
-            finished(OkHttpCall.this);
+            finished(RealCall.this);
         }
     }
 
     @Override
     public void enqueue(UICallback<T> uiCallback) {
-        EasyPreconditions.checkNotNull(uiCallback, "uiCallback==null");
-        this.tokenClass = uiCallback.getClass();
-        this.executorCallback = new ExecutorCallback<>(uiCallback, new ExecutorCallback.OnExecutorListener() {
-            @Override
-            public void onAfter() {
-                finished(OkHttpCall.this);
-            }
-        });
+        this.executorCallback = uiCallback;
         synchronized (this) {
             if (executed) throw new IllegalStateException("Already executed.");
             executed = true;
             rawCall = createRawCall();
         }
         addCall(this);
-        executorCallback.onBefore(this);
+        this.executorCallback.onBefore(this);
         if (canceled) {
             rawCall.cancel();
         }
         rawCall.enqueue(new okhttp3.Callback() {
             @Override
-            public void onFailure(okhttp3.Call call, IOException e) {
+            public void onFailure(Call call, IOException e) {
                 callFailure(responseParse.getError(e));
             }
 
             @Override
-            public void onResponse(okhttp3.Call call, Response response) {
+            public void onResponse(Call call, Response response) {
                 try {
                     response = wrapResponse(response);
-                    OkResponse<T> okResponse = responseParse.parseNetworkResponse(OkHttpCall.this, response);
+                    OkResponse<T> okResponse = responseParse.parseNetworkResponse(RealCall.this, response);
                     EasyPreconditions.checkNotNull(okResponse, "okResponse==null");
                     if (okResponse.isSuccess()) {
                         callSuccess(okResponse.getBody());
@@ -152,7 +143,7 @@ public final class OkHttpCall<T> implements OkCall<T> {
             ResponseBody wrapBody = new ProgressResponseBody(response.body(), new ProgressResponseBody.Listener() {
                 @Override
                 public void onResponseProgress(long bytesRead, long contentLength, boolean done) {
-                    executorCallback.outProgress(OkHttpCall.this, bytesRead * 1.0f / contentLength, contentLength, done);
+                    executorCallback.outProgress(RealCall.this, bytesRead * 1.0f / contentLength, contentLength, done);
                 }
             });
             response = response.newBuilder()
@@ -163,10 +154,13 @@ public final class OkHttpCall<T> implements OkCall<T> {
 
     @Override
     public TypeToken<T> getTypeToken() {
-        if (typeToken == null && tokenClass != null) {
-            typeToken = ParamUtil.createTypeToken(tokenClass);
-        }
         return typeToken;
+    }
+
+    void setTokenIfNull(@NonNull Class<? extends UICallback> tokenClazz) {
+        if (typeToken == null) {
+            typeToken = ParamUtil.createTypeToken(tokenClazz);
+        }
     }
 
     @Override
@@ -202,9 +196,7 @@ public final class OkHttpCall<T> implements OkCall<T> {
     @SuppressWarnings("CloneDoesntCallSuperClone")
     @Override
     public OkCall<T> clone() {
-        OkHttpCall<T> okCall = new OkHttpCall<>(okRequest);
-        okCall.typeToken = getTypeToken();
-        return okCall;
+        return new RealCall<>(okRequest);
     }
 
     static private class InstantiationException extends RuntimeException {
@@ -227,16 +219,18 @@ public final class OkHttpCall<T> implements OkCall<T> {
         }
     }
 
-
-    private static synchronized void addCall(OkHttpCall<?> call) {
+    private static synchronized void addCall(RealCall<?> call) {
         ALL_CALLS.add(call);
     }
 
-    private static synchronized void finished(OkHttpCall<?> call) {
+    static synchronized void finished(RealCall<?> call) {
         ALL_CALLS.remove(call);
     }
 
-    public static synchronized List<OkHttpCall<?>> getCalls() {
+    /**
+     * @return a copy list call
+     */
+    static synchronized List<RealCall<?>> getCalls() {
         return ParamUtil.immutableList(ALL_CALLS);
     }
 }
