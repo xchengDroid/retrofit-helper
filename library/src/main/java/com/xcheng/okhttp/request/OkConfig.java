@@ -36,7 +36,7 @@ public class OkConfig {
         return host;
     }
 
-    public boolean isPostUiIfCanceled() {
+    public boolean postUiIfCanceled() {
         return postUiIfCanceled;
     }
 
