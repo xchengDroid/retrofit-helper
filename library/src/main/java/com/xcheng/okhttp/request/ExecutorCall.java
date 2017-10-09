@@ -1,159 +1,242 @@
 package com.xcheng.okhttp.request;
 
+import android.support.annotation.NonNull;
+
 import com.google.gson.reflect.TypeToken;
+import com.xcheng.okhttp.EasyOkHttp;
 import com.xcheng.okhttp.callback.OkCall;
+import com.xcheng.okhttp.callback.ResponseParse;
 import com.xcheng.okhttp.callback.UICallback;
 import com.xcheng.okhttp.error.EasyError;
 import com.xcheng.okhttp.util.EasyPreconditions;
-import com.xcheng.okhttp.util.Platform;
+import com.xcheng.okhttp.util.ParamUtil;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
-/**
- * UICallBack 回调主线程处理类
- * Created by chengxin on 2017/10/9.
- */
-public class ExecutorCall<T> implements OkCall<T> {
-    private static final Platform PLATFORM = Platform.get();
-    private final RealCall<T> delegate;
+import okhttp3.Call;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
 
-    public ExecutorCall(OkRequest okRequest) {
-        delegate = new RealCall<>(okRequest);
+/**
+ * Created by cx on 17/6/22.
+ * 发起http请求的封装类
+ */
+public final class ExecutorCall<T> implements OkCall<T> {
+    private static final List<OkCall<?>> ALL_CALLS = new ArrayList<>();
+
+    private final OkRequest okRequest;
+    //发起请求 解析相关
+    private final ResponseParse<T> responseParse;
+    private TypeToken<T> typeToken;
+    private Class<? extends UICallback> tokenClass;
+    private ExecutorCallback<T> executorCallback;
+
+    private Call rawCall;
+    private volatile boolean canceled;
+    private boolean executed;
+
+    @SuppressWarnings("unchecked")
+    public ExecutorCall(@NonNull OkRequest okRequest) {
+        this.okRequest = okRequest;
+        this.typeToken = (TypeToken<T>) okRequest.typeToken();
+        this.responseParse = createResponseParse();
     }
 
-    /**
-     * for clone
-     */
-    private ExecutorCall(RealCall<T> delegate) {
-        this.delegate = delegate;
+    @Override
+    public OkRequest request() {
+        return okRequest;
+    }
+
+    private Call createRawCall() {
+        Request request = okRequest.createRequest();
+        RequestBody body = request.body();
+        if (okRequest.inProgress() && body != null && executorCallback != null) {
+            Request.Builder builder = request.newBuilder();
+            RequestBody requestBody = new ProgressRequestBody(body, new ProgressRequestBody.Listener() {
+
+                @Override
+                public void onRequestProgress(long bytesWritten, long contentLength, boolean done) {
+                    executorCallback.inProgress(ExecutorCall.this, bytesWritten * 1.0f / contentLength, contentLength, done);
+
+                }
+            });
+            builder.method(request.method(), requestBody);
+            request = builder.build();
+        }
+        return okRequest.okHttpClient().newCall(request);
+    }
+
+    private void callFailure(EasyError error) {
+        EasyPreconditions.checkNotNull(error, "error==null");
+        executorCallback.onError(this, error);
+        executorCallback.onAfter(this);
+    }
+
+    private void callSuccess(T t) {
+        executorCallback.onSuccess(this, t);
+        executorCallback.onAfter(this);
     }
 
     @Override
     public OkResponse<T> execute() throws IOException {
-        return delegate.execute();
+        synchronized (this) {
+            if (executed) throw new IllegalStateException("Already executed.");
+            executed = true;
+            rawCall = createRawCall();
+        }
+        addCall(this);
+        if (canceled) {
+            rawCall.cancel();
+        }
+        try {
+            return responseParse.parseNetworkResponse(this, rawCall.execute());
+        } finally {
+            finished(ExecutorCall.this);
+        }
     }
 
     @Override
-    public void enqueue(final UICallback<T> uiCallback) {
+    public void enqueue(UICallback<T> uiCallback) {
         EasyPreconditions.checkNotNull(uiCallback, "uiCallback==null");
-        delegate.setTokenClazz(uiCallback.getClass());
-        delegate.enqueue(new UICallback<T>() {
+        this.tokenClass = uiCallback.getClass();
+        this.executorCallback = new ExecutorCallback<>(uiCallback, new ExecutorCallback.OnExecutorListener() {
             @Override
-            public void onBefore(OkCall<T> okCall) {
-                PLATFORM.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (isPostUi()) {
-                            uiCallback.onBefore(ExecutorCall.this);
-                        }
-                    }
-                });
+            public void onAfter() {
+                finished(ExecutorCall.this);
+            }
+        });
+        synchronized (this) {
+            if (executed) throw new IllegalStateException("Already executed.");
+            executed = true;
+            rawCall = createRawCall();
+        }
+        addCall(this);
+        executorCallback.onBefore(this);
+        if (canceled) {
+            rawCall.cancel();
+        }
+        rawCall.enqueue(new okhttp3.Callback() {
+            @Override
+            public void onFailure(okhttp3.Call call, IOException e) {
+                callFailure(responseParse.getError(e));
             }
 
             @Override
-            public void inProgress(OkCall<T> okCall, final float progress, final long total, final boolean done) {
-                PLATFORM.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (isPostUi()) {
-                            uiCallback.inProgress(ExecutorCall.this, progress, total, done);
-                        }
+            public void onResponse(okhttp3.Call call, Response response) {
+                try {
+                    response = wrapResponse(response);
+                    OkResponse<T> okResponse = responseParse.parseNetworkResponse(ExecutorCall.this, response);
+                    EasyPreconditions.checkNotNull(okResponse, "okResponse==null");
+                    if (okResponse.isSuccess()) {
+                        callSuccess(okResponse.getBody());
+                        return;
                     }
-                });
-            }
-
-            @Override
-            public void outProgress(OkCall<T> okCall, final float progress, final long total, final boolean done) {
-                PLATFORM.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (isPostUi()) {
-                            uiCallback.outProgress(ExecutorCall.this, progress, total, done);
-                        }
-                    }
-                });
-            }
-
-            @Override
-            public void onError(OkCall<T> okCall, final EasyError error) {
-                PLATFORM.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (isPostUi()) {
-                            uiCallback.onError(ExecutorCall.this, error);
-                        }
-                    }
-                });
-            }
-
-            @Override
-            public void onSuccess(OkCall<T> okCall, final T response) {
-                PLATFORM.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (!isCanceled()) {
-                            uiCallback.onSuccess(ExecutorCall.this, response);
-                        } else {
-                            onError(ExecutorCall.this, EasyError.create("Canceled"));
-                        }
-                    }
-                });
-            }
-
-            @Override
-            public void onAfter(OkCall<T> okCall) {
-                PLATFORM.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (isPostUi()) {
-                            uiCallback.onAfter(ExecutorCall.this);
-                        }
-                        RealCall.finished(delegate);
-                    }
-                });
+                    callFailure(okResponse.getError());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    callFailure(responseParse.getError(e));
+                } finally {
+                    response.body().close();
+                }
             }
         });
     }
 
+    private Response wrapResponse(Response response) {
+        if (okRequest.outProgress() && executorCallback != null) {
+            ResponseBody wrapBody = new ProgressResponseBody(response.body(), new ProgressResponseBody.Listener() {
+                @Override
+                public void onResponseProgress(long bytesRead, long contentLength, boolean done) {
+                    executorCallback.outProgress(ExecutorCall.this, bytesRead * 1.0f / contentLength, contentLength, done);
+                }
+            });
+            response = response.newBuilder()
+                    .body(wrapBody).build();
+        }
+        return response;
+    }
+
     @Override
-    public boolean isExecuted() {
-        return delegate.isExecuted();
+    public TypeToken<T> getTypeToken() {
+        if (typeToken == null && tokenClass != null) {
+            //延迟加载
+            typeToken = ParamUtil.createTypeToken(tokenClass);
+        }
+        return typeToken;
+    }
+
+    @Override
+    public boolean isPostUi() {
+        return !isCanceled() || EasyOkHttp.getOkConfig().isPostUiIfCanceled();
+    }
+
+    @Override
+    public synchronized boolean isExecuted() {
+        return executed;
     }
 
     @Override
     public void cancel() {
-        delegate.cancel();
+        canceled = true;
+        synchronized (this) {
+            if (rawCall != null) {
+                rawCall.cancel();
+            }
+        }
     }
 
     @Override
     public boolean isCanceled() {
-        return delegate.isCanceled();
+        if (canceled) {
+            return true;
+        }
+        synchronized (this) {
+            return rawCall != null && rawCall.isCanceled();
+        }
     }
 
     @SuppressWarnings("CloneDoesntCallSuperClone")
     @Override
     public OkCall<T> clone() {
-        return new ExecutorCall<>(delegate.clone());
+        ExecutorCall<T> okCall = new ExecutorCall<>(okRequest);
+        okCall.typeToken = getTypeToken();
+        return okCall;
     }
 
-    @Override
-    public OkRequest request() {
-        return delegate.request();
+    static private class InstantiationException extends RuntimeException {
+        private InstantiationException(String msg, Exception cause) {
+            super(msg, cause);
+        }
     }
 
-    @Override
-    public TypeToken<T> getTypeToken() {
-        return delegate.getTypeToken();
+    private ResponseParse<T> createResponseParse() {
+        try {
+            return okRequest.parseClass().newInstance();
+        } catch (java.lang.InstantiationException e) {
+            throw new InstantiationException("Unable to instantiate ResponseParse " + okRequest.parseClass().getName()
+                    + ": make sure class name exists, is public, and has an"
+                    + " empty constructor that is public", e);
+        } catch (IllegalAccessException e) {
+            throw new InstantiationException("Unable to instantiate ResponseParse " + okRequest.parseClass().getName()
+                    + ": make sure class name exists, is public, and has an"
+                    + " empty constructor that is public", e);
+        }
     }
 
 
-    @Override
-    public boolean isPostUi() {
-        return delegate.isPostUi();
+    private static synchronized void addCall(OkCall<?> call) {
+        ALL_CALLS.add(call);
     }
 
-    public static List<RealCall<?>> getCalls() {
-        return RealCall.getCalls();
+    private static synchronized void finished(OkCall<?> call) {
+        ALL_CALLS.remove(call);
+    }
+
+    public static synchronized List<OkCall<?>> getCalls() {
+        return ParamUtil.immutableList(ALL_CALLS);
     }
 }
