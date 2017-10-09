@@ -26,6 +26,7 @@ import okhttp3.ResponseBody;
  * 发起http请求的封装类
  */
 public final class ExecutorCall<T> implements OkCall<T> {
+    //保存所有未结束的OkCall
     private static final List<OkCall<?>> ALL_CALLS = new ArrayList<>();
 
     private final OkRequest okRequest;
@@ -163,7 +164,7 @@ public final class ExecutorCall<T> implements OkCall<T> {
     @Override
     public TypeToken<T> getTypeToken() {
         if (typeToken == null && tokenClass != null) {
-            //延迟加载
+            //延迟初始化
             typeToken = ParamUtil.createTypeToken(tokenClass);
         }
         return typeToken;
