@@ -19,7 +19,14 @@ public class ExecutorCall<T> implements OkCall<T> {
     private final RealCall<T> delegate;
 
     public ExecutorCall(OkRequest okRequest) {
-        this.delegate = new RealCall<>(okRequest);
+        delegate = new RealCall<>(okRequest);
+    }
+
+    /**
+     * for clone
+     */
+    private ExecutorCall(RealCall<T> delegate) {
+        this.delegate = delegate;
     }
 
     @Override
@@ -127,7 +134,7 @@ public class ExecutorCall<T> implements OkCall<T> {
     @SuppressWarnings("CloneDoesntCallSuperClone")
     @Override
     public OkCall<T> clone() {
-        return new ExecutorCall<>(delegate.request());
+        return new ExecutorCall<>(delegate.clone());
     }
 
     @Override
@@ -139,6 +146,7 @@ public class ExecutorCall<T> implements OkCall<T> {
     public TypeToken<T> getTypeToken() {
         return delegate.getTypeToken();
     }
+
 
     @Override
     public boolean isPostUi() {

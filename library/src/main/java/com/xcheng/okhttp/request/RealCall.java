@@ -158,6 +158,11 @@ final class RealCall<T> implements OkCall<T> {
         return typeToken;
     }
 
+    /**
+     * 如果typeToken未空的话重新赋值
+     *
+     * @param tokenClazz 被解析的tokenClazz
+     */
     void setTokenIfNull(@NonNull Class<? extends UICallback> tokenClazz) {
         if (typeToken == null) {
             typeToken = ParamUtil.createTypeToken(tokenClazz);
@@ -196,8 +201,10 @@ final class RealCall<T> implements OkCall<T> {
 
     @SuppressWarnings("CloneDoesntCallSuperClone")
     @Override
-    public OkCall<T> clone() {
-        return new RealCall<>(okRequest);
+    public RealCall<T> clone() {
+        RealCall<T> realCall = new RealCall<>(okRequest);
+        realCall.typeToken = getTypeToken();
+        return realCall;
     }
 
     static private class InstantiationException extends RuntimeException {
