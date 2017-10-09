@@ -32,6 +32,8 @@ final class RealCall<T> implements OkCall<T> {
     private final OkRequest okRequest;
     //发起请求 解析相关
     private final ResponseParse<T> responseParse;
+    //当typeToken为空时，尝试解析tokenClazz获取typeToken
+    private Class<? extends UICallback> tokenClazz;
     private TypeToken<T> typeToken;
     private UICallback<T> executorCallback;
 
@@ -155,18 +157,18 @@ final class RealCall<T> implements OkCall<T> {
 
     @Override
     public TypeToken<T> getTypeToken() {
+        if (typeToken == null && tokenClazz != null) {
+            //延迟加载
+            typeToken = ParamUtil.createTypeToken(tokenClazz);
+        }
         return typeToken;
     }
 
     /**
-     * 如果typeToken未空的话重新赋值
-     *
-     * @param tokenClazz 被解析的tokenClazz
+     * 如果typeToken为空的话尝试解析tokenClazz获取
      */
-    void setTokenIfNull(@NonNull Class<? extends UICallback> tokenClazz) {
-        if (typeToken == null) {
-            typeToken = ParamUtil.createTypeToken(tokenClazz);
-        }
+    void setTokenClazz(@NonNull Class<? extends UICallback> tokenClazz) {
+        this.tokenClazz = tokenClazz;
     }
 
     @Override
@@ -203,7 +205,8 @@ final class RealCall<T> implements OkCall<T> {
     @Override
     public RealCall<T> clone() {
         RealCall<T> realCall = new RealCall<>(okRequest);
-        realCall.typeToken = getTypeToken();
+        realCall.typeToken = typeToken;
+        realCall.tokenClazz = tokenClazz;
         return realCall;
     }
 

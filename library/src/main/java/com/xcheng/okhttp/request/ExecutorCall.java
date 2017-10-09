@@ -37,7 +37,7 @@ public class ExecutorCall<T> implements OkCall<T> {
     @Override
     public void enqueue(final UICallback<T> uiCallback) {
         EasyPreconditions.checkNotNull(uiCallback, "uiCallback==null");
-        delegate.setTokenIfNull(uiCallback.getClass());
+        delegate.setTokenClazz(uiCallback.getClass());
         delegate.enqueue(new UICallback<T>() {
             @Override
             public void onBefore(OkCall<T> okCall) {
