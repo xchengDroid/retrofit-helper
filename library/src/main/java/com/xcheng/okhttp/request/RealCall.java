@@ -26,6 +26,7 @@ import okhttp3.ResponseBody;
  * 发起http请求内部的封装类
  */
 final class RealCall<T> implements OkCall<T> {
+    //保存所有Call,以供异步取消请求的时候使用
     private static final List<RealCall<?>> ALL_CALLS = new ArrayList<>();
 
     private final OkRequest okRequest;
