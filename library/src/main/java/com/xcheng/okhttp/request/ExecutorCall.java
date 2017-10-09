@@ -203,7 +203,8 @@ public final class ExecutorCall<T> implements OkCall<T> {
     @Override
     public OkCall<T> clone() {
         ExecutorCall<T> okCall = new ExecutorCall<>(okRequest);
-        okCall.typeToken = getTypeToken();
+        okCall.typeToken = typeToken;
+        okCall.tokenClass = tokenClass;
         return okCall;
     }
 
