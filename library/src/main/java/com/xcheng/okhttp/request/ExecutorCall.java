@@ -171,7 +171,7 @@ public final class ExecutorCall<T> implements OkCall<T> {
 
     @Override
     public boolean isPostUi() {
-        return !isCanceled() || EasyOkHttp.getOkConfig().isPostUiIfCanceled();
+        return !isCanceled() || EasyOkHttp.getOkConfig().postUiIfCanceled();
     }
 
     @Override
