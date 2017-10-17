@@ -51,6 +51,7 @@ public class OkConfig {
         private Class<? extends ResponseParse> parseClass;
 
         public Builder() {
+            //default
             okHttpClient = new OkHttpClient();
             postUiIfCanceled = false;
             parseClass = JsonParse.class;

@@ -25,7 +25,7 @@ public class EasyOkHttp {
     }
 
     /**
-     * init EasyOkHttp with okConfig
+     * init EasyOkHttp with okConfig ,like ImageLoader.getInstance.init(config)
      */
     public static void init(OkConfig okConfig) {
         synchronized (EasyOkHttp.class) {
@@ -36,7 +36,6 @@ public class EasyOkHttp {
             sOkConfig = EasyPreconditions.checkNotNull(okConfig, "okConfig==null");
         }
     }
-
 
     /**
      * like  JobManager.create(this) JobManager.instance()
