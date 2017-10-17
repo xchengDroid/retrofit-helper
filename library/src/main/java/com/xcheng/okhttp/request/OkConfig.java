@@ -7,9 +7,9 @@ import com.xcheng.okhttp.util.EasyPreconditions;
 import okhttp3.OkHttpClient;
 
 /**
+ * 全局的EasyOkHttp配置类
  * Created by chengxin on 2017/6/27.
  */
-
 public class OkConfig {
     private final OkHttpClient okHttpClient;
     private final String host;
