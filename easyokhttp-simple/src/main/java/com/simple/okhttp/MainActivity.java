@@ -17,15 +17,16 @@ import com.xcheng.okhttp.callback.JsonParse;
 import com.xcheng.okhttp.callback.OkCall;
 import com.xcheng.okhttp.callback.UICallback;
 import com.xcheng.okhttp.error.EasyError;
+import com.xcheng.okhttp.request.ExecutorCall;
 import com.xcheng.okhttp.request.GetRequest;
 import com.xcheng.okhttp.request.OkConfig;
-import com.xcheng.okhttp.request.OkHttpCall;
 
 import okhttp3.OkHttpClient;
 
 public class MainActivity extends AppCompatActivity {
     private WebView webView;
     ImageView imageView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,10 +43,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void json(View view) {
-        GetRequest getRequest = new GetRequest.Builder().build();
-                EasyOkHttp.get("/data/cityinfo/101010100.html")
+        GetRequest getRequest = EasyOkHttp.get("/data/cityinfo/101010100.html")
                 .parseClass(JsonParse.class).build();
-        OkHttpCall<Weather> okCall = new OkHttpCall<>(getRequest);
+        ExecutorCall<Weather> okCall = new ExecutorCall<>(getRequest);
         okCall.enqueue(new UICallback<Weather>() {
             @Override
             public void onError(OkCall<Weather> okCall, EasyError error) {
@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void string(View view) {
         GetRequest getRequest = EasyOkHttp.get("https://github.com/").outProgress().build();
-        OkHttpCall<String> okCall = new OkHttpCall<>(getRequest);
+        ExecutorCall<String> okCall = new ExecutorCall<>(getRequest);
         okCall.enqueue(new UICallback<String>() {
 
             @Override
@@ -84,24 +84,40 @@ public class MainActivity extends AppCompatActivity {
                 .parseClass(BitmapParse.class)
                 .outProgress()
                 .build();
-        OkHttpCall<Bitmap> okCall = new OkHttpCall<>(getRequest);
+        ExecutorCall<Bitmap> okCall = new ExecutorCall<>(getRequest);
         okCall.enqueue(new UICallback<Bitmap>() {
+            @Override
+            public void onBefore(OkCall<Bitmap> okCall) {
+                super.onBefore(okCall);
+                Log.e("print","before");
+            }
+
+            @Override
+            public void onAfter(OkCall<Bitmap> okCall) {
+                super.onAfter(okCall);
+                Log.e("print","onAfter");
+
+            }
 
             @Override
             public void outProgress(OkCall<Bitmap> okCall, float progress, long total, boolean done) {
                 super.outProgress(okCall, progress, total, done);
                 TextView textView = (TextView) view;
                 textView.setText(progress * 100 + "%");
-                Log.e("print", progress + "==" + total + "==" + done);
+                Log.e("print","outProgress");
             }
 
             @Override
             public void onError(OkCall<Bitmap> okCall, EasyError error) {
+                Log.e("print","onError");
+
                 Toast.makeText(MainActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onSuccess(OkCall<Bitmap> okCall, Bitmap response) {
+                Log.e("print","onSuccess");
+
                 webView.setVisibility(View.GONE);
                 imageView.setVisibility(View.VISIBLE);
                 imageView.setImageBitmap(response);
