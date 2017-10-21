@@ -20,7 +20,6 @@
 
    `compile 'com.xcheng:easyokhttp:1.0.7'`
 
-      
 
 ## 配置EasyOkHttp
 
@@ -45,7 +44,7 @@
 
 ```
 GetRequest getRequest = EasyOkHttp.get("https://github.com/").build();
-OKHttpCall<String> okCall = new OKHttpCall<>(getRequest);
+ExecutorCall<String> okCall = new ExecutorCall<>(getRequest);
 okCall.enqueue(new UICallback<String>() {
     @Override
     public void onError(@NonNull BaseError error, int id) {
@@ -66,7 +65,7 @@ okCall.enqueue(new UICallback<String>() {
 
 ```
  GetRequest getRequest = EasyOkHttp.get("data/cityinfo/101010100.html").parseClass(JsonParse.class).build();
-        OKHttpCall<Weather> okCall = new OKHttpCall<>(getRequest);
+        ExecutorCall<Weather> okCall = new ExecutorCall<>(getRequest);
         okCall.enqueue(new UICallback<Weather>() {
             @Override
             public void onError(@NonNull BaseError error, int id) {
@@ -87,7 +86,7 @@ okCall.enqueue(new UICallback<String>() {
 
 ```
 GetRequest getRequest = EasyOkHttp.get("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1499010173&di=9599915fd6f9eb51f527cbbf62a84bd6&imgtype=jpg&er=1&src=http%3A%2F%2F4493bz.1985t.com%2Fuploads%2Fallimg%2F160119%2F5-16011Z92519.jpg").parseClass(BitmapParse.class).build();
-OKHttpCall<Bitmap> okCall = new OKHttpCall<>(getRequest);
+ExecutorCall<Bitmap> okCall = new ExecutorCall<>(getRequest);
 okCall.enqueue(new UICallback<Bitmap>() {
     @Override
     public void onError(@NonNull BaseError error, int id) {
