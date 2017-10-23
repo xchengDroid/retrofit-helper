@@ -26,7 +26,6 @@ public class EasyError {
     public static EasyError create(String message) {
         return new EasyError(Integer.MIN_VALUE, message);
     }
-
     /**
      * 自定义的错误码
      *
@@ -36,10 +35,17 @@ public class EasyError {
         return code;
     }
 
+    public void setCode(int code) {
+        this.code = code;
+    }
+
     public String getMessage() {
         return message;
     }
 
+    public void setMessage(String message) {
+        this.message = message;
+    }
 
     public void log() {
         Log.e(getClass().getSimpleName(), toString());
