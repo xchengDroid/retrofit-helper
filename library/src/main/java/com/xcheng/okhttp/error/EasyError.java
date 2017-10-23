@@ -8,11 +8,11 @@ import android.util.Log;
  * Created by chengxin on 2017/6/22.
  */
 public class EasyError {
-    private int errorCode;
+    private int code;
     private String message;
 
-    public EasyError(int errorCode, @NonNull String message) {
-        this.errorCode = errorCode;
+    public EasyError(int code, @NonNull String message) {
+        this.code = code;
         this.message = message;
     }
 
@@ -30,23 +30,16 @@ public class EasyError {
     /**
      * 自定义的错误码
      *
-     * @return errorCode
+     * @return code
      */
-    public int getErrorCode() {
-        return errorCode;
-    }
-
-    public void setErrorCode(int errorCode) {
-        this.errorCode = errorCode;
+    public int getCode() {
+        return code;
     }
 
     public String getMessage() {
         return message;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
-    }
 
     public void log() {
         Log.e(getClass().getSimpleName(), toString());
@@ -54,6 +47,6 @@ public class EasyError {
 
     @Override
     public String toString() {
-        return "[ errorCode: " + errorCode + ", message: " + message + " ]";
+        return "[ code: " + code + ", message: " + message + " ]";
     }
 }
