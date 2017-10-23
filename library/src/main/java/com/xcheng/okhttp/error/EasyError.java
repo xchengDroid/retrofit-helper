@@ -1,7 +1,6 @@
 package com.xcheng.okhttp.error;
 
 import android.support.annotation.NonNull;
-import android.util.Log;
 
 /**
  * 通用的错误信息，可继承添加一些自定义的error
@@ -45,10 +44,6 @@ public class EasyError {
 
     public void setMessage(String message) {
         this.message = message;
-    }
-
-    public void log() {
-        Log.e(getClass().getSimpleName(), toString());
     }
 
     @Override
