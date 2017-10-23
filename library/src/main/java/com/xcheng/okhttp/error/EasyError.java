@@ -25,6 +25,7 @@ public class EasyError {
     public static EasyError create(String message) {
         return new EasyError(Integer.MIN_VALUE, message);
     }
+
     /**
      * 自定义的错误码
      *
@@ -42,7 +43,7 @@ public class EasyError {
         return message;
     }
 
-    public void setMessage(String message) {
+    public void setMessage(@NonNull String message) {
         this.message = message;
     }
 
