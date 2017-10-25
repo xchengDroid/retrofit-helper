@@ -55,6 +55,9 @@ public class EasyError {
         this.result = result;
     }
 
+    /**
+     * @return true if result!=null
+     */
     public boolean hasResult() {
         return result != null;
     }
