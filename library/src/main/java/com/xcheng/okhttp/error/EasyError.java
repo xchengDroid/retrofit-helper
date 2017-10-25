@@ -64,6 +64,12 @@ public class EasyError {
 
     @Override
     public String toString() {
-        return "[ code: " + code + ", message: " + message + " ]";
+        return getClass().getSimpleName() + "{code="
+                + code
+                + ", message="
+                + message
+                + ", result="
+                + result
+                + '}';
     }
 }
