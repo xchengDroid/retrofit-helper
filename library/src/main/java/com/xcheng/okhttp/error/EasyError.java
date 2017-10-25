@@ -7,6 +7,8 @@ package com.xcheng.okhttp.error;
 public class EasyError {
     private int code;
     private String message;
+    //存放需要保存的对象
+    private Object result;
 
     public EasyError(int code, String message) {
         this.code = code;
@@ -43,6 +45,18 @@ public class EasyError {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public Object getResult() {
+        return result;
+    }
+
+    public void setResult(Object result) {
+        this.result = result;
+    }
+
+    public boolean hasResult() {
+        return result != null;
     }
 
     @Override
