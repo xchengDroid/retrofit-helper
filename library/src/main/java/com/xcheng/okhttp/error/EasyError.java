@@ -7,7 +7,7 @@ package com.xcheng.okhttp.error;
 public class EasyError {
     private int code;
     private String message;
-    //存放需要保存的对象
+    //存放需要保存的对象，如原始的json等
     private Object result;
 
     public EasyError(int code, String message) {
