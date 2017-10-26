@@ -1,14 +1,17 @@
 package com.xcheng.okhttp.error;
 
+import android.support.annotation.NonNull;
+
 /**
  * 通用的错误信息，可继承添加一些自定义的error
  * Created by chengxin on 2017/6/22.
  */
 public class EasyError {
+    private static final String EMPTY_STR = "";
     /**
      * 唯一错误码
      */
-    private int code;
+    private final int code;
     /**
      * 错误信息
      */
@@ -38,13 +41,26 @@ public class EasyError {
     public static EasyError create(String message) {
         return new EasyError(Integer.MIN_VALUE, message);
     }
-    
+
     public int getCode() {
         return code;
     }
 
+    @NonNull
     public String getMessage() {
+        if (message == null) {
+            return EMPTY_STR;
+        }
         return message;
+    }
+
+    /**
+     * 修改message描述
+     *
+     * @param message 错误描述
+     */
+    public void setMessage(String message) {
+        this.message = message;
     }
 
     public Object getResult() {
