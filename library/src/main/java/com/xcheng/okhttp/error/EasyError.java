@@ -5,9 +5,17 @@ package com.xcheng.okhttp.error;
  * Created by chengxin on 2017/6/22.
  */
 public class EasyError {
+    /**
+     * 唯一错误码
+     */
     private int code;
+    /**
+     * 错误信息
+     */
     private String message;
-    //存放需要保存的对象，如原始的json,表单出错后返回错误实体之类
+    /**
+     * 存放需要保存的对象，如原始的json,表单出错后返回错误实体之类
+     */
     private Object result;
 
     public EasyError(int code, String message) {
@@ -30,12 +38,7 @@ public class EasyError {
     public static EasyError create(String message) {
         return new EasyError(Integer.MIN_VALUE, message);
     }
-
-    /**
-     * 返回自定义的错误码
-     *
-     * @return code
-     */
+    
     public int getCode() {
         return code;
     }
