@@ -7,12 +7,17 @@ package com.xcheng.okhttp.error;
 public class EasyError {
     private int code;
     private String message;
-    //存放需要保存的对象，如原始的json等
+    //存放需要保存的对象，如原始的json,表单出错后返回错误实体之类
     private Object result;
 
     public EasyError(int code, String message) {
         this.code = code;
         this.message = message;
+    }
+
+    public EasyError(int code, String message, Object result) {
+        this(code, message);
+        this.result = result;
     }
 
     /**
@@ -35,24 +40,12 @@ public class EasyError {
         return code;
     }
 
-    public void setCode(int code) {
-        this.code = code;
-    }
-
     public String getMessage() {
         return message;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
     public Object getResult() {
         return result;
-    }
-
-    public void setResult(Object result) {
-        this.result = result;
     }
 
     /**
