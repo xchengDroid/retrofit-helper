@@ -201,6 +201,7 @@ public abstract class OkRequest {
         }
 
         public T param(String key, String value) {
+            EasyPreconditions.checkNotNull(key, "key==null");
             params.put(key, value);
             return (T) this;
         }
