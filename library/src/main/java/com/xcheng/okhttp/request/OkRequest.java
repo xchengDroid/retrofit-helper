@@ -1,7 +1,6 @@
 package com.xcheng.okhttp.request;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import com.google.gson.reflect.TypeToken;
 import com.xcheng.okhttp.EasyOkHttp;
@@ -31,7 +30,8 @@ public abstract class OkRequest {
 
     //发起请求 解析相关
     private final OkHttpClient okHttpClient;
-    private final Map<String, Object> extraMap;
+    //额外入参
+    private final Object extra;
     private final TypeToken<?> typeToken;
     private final Class<? extends ResponseParse> parseClass;
 
@@ -46,7 +46,7 @@ public abstract class OkRequest {
         this.inProgress = builder.inProgress;
         this.outProgress = builder.outProgress;
         this.okHttpClient = ParamUtil.defValueIfNull(builder.okHttpClient, EasyOkHttp.getOkConfig().getOkHttpClient());
-        this.extraMap = builder.extraMap;
+        this.extra = builder.extra;
         this.typeToken = builder.typeToken;
         this.parseClass = ParamUtil.defValueIfNull(builder.parseClass, EasyOkHttp.getOkConfig().getParseClass());
     }
@@ -60,16 +60,8 @@ public abstract class OkRequest {
     }
 
     @SuppressWarnings("unchecked")
-    public <V> V extra(String key) {
-        if (extraMap != null) {
-            return (V) extraMap.get(key);
-        }
-        return null;
-    }
-
-    @Nullable
-    public Map<String, Object> extraMap() {
-        return extraMap;
+    public <E> E extra() {
+        return (E) extra;
     }
 
     public TypeToken<?> typeToken() {
@@ -134,7 +126,7 @@ public abstract class OkRequest {
 
         //发起请求 解析相关
         private OkHttpClient okHttpClient;
-        private Map<String, Object> extraMap;
+        private Object extra;
         private TypeToken<?> typeToken;
         private Class<? extends ResponseParse> parseClass;
 
@@ -245,12 +237,8 @@ public abstract class OkRequest {
             return (T) this;
         }
 
-        public T extra(String key, Object value) {
-            //Lazy Initialization
-            if (this.extraMap == null) {
-                this.extraMap = new LinkedHashMap<>();
-            }
-            this.extraMap.put(key, value);
+        public T extra(Object extra) {
+            this.extra = extra;
             return (T) this;
         }
 
