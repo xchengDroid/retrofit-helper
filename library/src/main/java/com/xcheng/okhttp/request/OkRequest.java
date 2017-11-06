@@ -1,6 +1,7 @@
 package com.xcheng.okhttp.request;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.google.gson.reflect.TypeToken;
 import com.xcheng.okhttp.EasyOkHttp;
@@ -8,6 +9,7 @@ import com.xcheng.okhttp.callback.ResponseParse;
 import com.xcheng.okhttp.util.EasyPreconditions;
 import com.xcheng.okhttp.util.ParamUtil;
 
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -31,7 +33,7 @@ public abstract class OkRequest {
     //发起请求 解析相关
     private final OkHttpClient okHttpClient;
     //额外入参
-    private final Object extra;
+    private final Map<String, Object> extraMap;
     private final TypeToken<?> typeToken;
     private final Class<? extends ResponseParse> parseClass;
 
@@ -46,7 +48,7 @@ public abstract class OkRequest {
         this.inProgress = builder.inProgress;
         this.outProgress = builder.outProgress;
         this.okHttpClient = ParamUtil.defValueIfNull(builder.okHttpClient, EasyOkHttp.getOkConfig().getOkHttpClient());
-        this.extra = builder.extra;
+        this.extraMap = builder.extraMap;
         this.typeToken = builder.typeToken;
         this.parseClass = ParamUtil.defValueIfNull(builder.parseClass, EasyOkHttp.getOkConfig().getParseClass());
     }
@@ -60,8 +62,16 @@ public abstract class OkRequest {
     }
 
     @SuppressWarnings("unchecked")
-    public <E> E extra() {
-        return (E) extra;
+    public <E> E extra(String key) {
+        if (extraMap != null) {
+            return (E) extraMap.get(key);
+        }
+        return null;
+    }
+
+    @Nullable
+    public Map<String, Object> extraMap() {
+        return extraMap;
     }
 
     public TypeToken<?> typeToken() {
@@ -126,7 +136,7 @@ public abstract class OkRequest {
 
         //发起请求 解析相关
         private OkHttpClient okHttpClient;
-        private Object extra;
+        private Map<String, Object> extraMap;
         private TypeToken<?> typeToken;
         private Class<? extends ResponseParse> parseClass;
 
@@ -237,8 +247,12 @@ public abstract class OkRequest {
             return (T) this;
         }
 
-        public T extra(Object extra) {
-            this.extra = extra;
+        public T extra(String key, Object value) {
+            //Lazy Initialization
+            if (this.extraMap == null) {
+                this.extraMap = new HashMap<>();
+            }
+            this.extraMap.put(key, value);
             return (T) this;
         }
 
