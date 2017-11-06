@@ -15,6 +15,11 @@ public class GetRequest extends OkRequest {
     }
 
     @Override
+    public String url() {
+        return ParamUtil.appendParams(super.url(), params());
+    }
+
+    @Override
     public Request createRequest() {
         return new Request.Builder().url(url()).headers(headers()).tag(tag()).build();
     }
@@ -22,9 +27,6 @@ public class GetRequest extends OkRequest {
     public static class Builder extends OkRequest.Builder<Builder> {
         @Override
         public GetRequest build() {
-            String url = getUrl();
-            url = ParamUtil.appendParams(url, getParams());
-            url(url);
             return new GetRequest(this);
         }
     }

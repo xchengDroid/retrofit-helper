@@ -106,6 +106,17 @@ public abstract class OkRequest {
         return outProgress;
     }
 
+    @Override
+    public String toString() {
+        return "OkRequest{url="
+                + url
+                + ", tag="
+                + (tag != this ? tag : null)
+                + ", id="
+                + id
+                + '}';
+    }
+
     public abstract Request createRequest();
 
     /**
@@ -208,7 +219,7 @@ public abstract class OkRequest {
 
         /**
          * @param key   param 中的 key
-         * @param value 转换成 String对象
+         * @param value 调用 {@link String#valueOf(Object)}转换成 String对象
          * @return Builder
          */
         public T param(String key, Object value) {
@@ -241,14 +252,6 @@ public abstract class OkRequest {
             }
             this.extraMap.put(key, value);
             return (T) this;
-        }
-
-        protected Map<String, String> getParams() {
-            return params;
-        }
-
-        protected String getUrl() {
-            return url;
         }
 
         public abstract OkRequest build();
