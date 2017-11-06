@@ -1,12 +1,11 @@
 package com.xcheng.okhttp.request;
 
+import android.support.annotation.NonNull;
+
 import com.xcheng.okhttp.util.EasyPreconditions;
 import com.xcheng.okhttp.util.ParamUtil;
 
-import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.Map;
 
 import okhttp3.MediaType;
 import okhttp3.Request;
@@ -63,17 +62,9 @@ public class PostStrRequest extends OkRequest {
         }
 
         /**
-         * 将params转换成json字符串对象
+         * 将jsonObject转换成json字符串对象
          */
-        public OkRequest jsonParams() {
-            JSONObject jsonObject = new JSONObject();
-            for (Map.Entry<String, String> entry : getParams().entrySet()) {
-                try {
-                    jsonObject.put(entry.getKey(), entry.getValue());
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
+        public OkRequest json(@NonNull JSONObject jsonObject) {
             return json(jsonObject.toString());
         }
 
