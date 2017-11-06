@@ -108,7 +108,7 @@ public abstract class OkRequest {
 
     @Override
     public String toString() {
-        return "OkRequest{url="
+        return getClass().getSimpleName() + "{url="
                 + url
                 + ", tag="
                 + (tag != this ? tag : null)
