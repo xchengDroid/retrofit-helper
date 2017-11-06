@@ -30,7 +30,7 @@ public class PostStrRequest extends OkRequest {
         mediaType = ParamUtil.defValueIfNull(builder.mediaType, MEDIA_TYPE_PLAIN);
     }
 
-    public String getContent() {
+    public String content() {
         return content;
     }
 

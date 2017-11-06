@@ -9,19 +9,20 @@ import okhttp3.Request;
  * Created by chengxin on 2017/6/22.
  */
 public class GetRequest extends OkRequest {
+    private final String appendUrl;
 
     private GetRequest(Builder builder) {
         super(builder);
+        appendUrl = ParamUtil.appendParams(url(), params());
     }
 
-    @Override
-    public String url() {
-        return ParamUtil.appendParams(super.url(), params());
+    public String getAppendUrl() {
+        return appendUrl;
     }
 
     @Override
     public Request createRequest() {
-        return new Request.Builder().url(url()).headers(headers()).tag(tag()).build();
+        return new Request.Builder().url(appendUrl).headers(headers()).tag(tag()).build();
     }
 
     public static class Builder extends OkRequest.Builder<Builder> {
