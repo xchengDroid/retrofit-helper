@@ -9,7 +9,6 @@ import com.xcheng.okhttp.callback.ResponseParse;
 import com.xcheng.okhttp.util.EasyPreconditions;
 import com.xcheng.okhttp.util.ParamUtil;
 
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -250,7 +249,7 @@ public abstract class OkRequest {
         public T extra(String key, Object value) {
             //Lazy Initialization
             if (this.extraMap == null) {
-                this.extraMap = new HashMap<>();
+                this.extraMap = new LinkedHashMap<>();
             }
             this.extraMap.put(key, value);
             return (T) this;
