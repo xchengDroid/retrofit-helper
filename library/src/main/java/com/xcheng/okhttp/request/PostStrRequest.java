@@ -21,8 +21,8 @@ public class PostStrRequest extends OkRequest {
 
     private static final MediaType MEDIA_TYPE_JSON = MediaType.parse("application/json; charset=utf-8");
 
-    private String content;
-    private MediaType mediaType;
+    private final String content;
+    private final MediaType mediaType;
 
     private PostStrRequest(Builder builder) {
         super(builder);
