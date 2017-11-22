@@ -33,7 +33,7 @@ public class EasyError {
 
     /**
      * 静态方法创建简单的错误信息,
-     * errorCode为{@link Integer#MIN_VALUE}
+     * code为{@link Integer#MIN_VALUE}
      *
      * @param message 错误描述
      * @return EasyError
@@ -66,14 +66,7 @@ public class EasyError {
     public Object getResult() {
         return result;
     }
-
-    /**
-     * @return true if result!=null
-     */
-    public boolean hasResult() {
-        return result != null;
-    }
-
+    
     @Override
     public String toString() {
         return getClass().getSimpleName() + "{code="
