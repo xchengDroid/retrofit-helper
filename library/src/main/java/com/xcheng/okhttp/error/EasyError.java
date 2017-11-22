@@ -7,7 +7,6 @@ import android.support.annotation.NonNull;
  * Created by chengxin on 2017/6/22.
  */
 public class EasyError {
-    private static final String EMPTY_STR = "";
     /**
      * 唯一错误码
      */
@@ -49,7 +48,7 @@ public class EasyError {
     @NonNull
     public String getMessage() {
         if (message == null) {
-            return EMPTY_STR;
+            return "";
         }
         return message;
     }
@@ -66,7 +65,7 @@ public class EasyError {
     public Object getResult() {
         return result;
     }
-    
+
     @Override
     public String toString() {
         return getClass().getSimpleName() + "{code="
