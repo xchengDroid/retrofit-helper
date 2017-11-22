@@ -18,16 +18,16 @@ public class EasyError {
     /**
      * 存放需要保存的对象，如原始的json,表单出错后返回错误实体之类
      */
-    private Object result;
+    private Object extra;
 
     public EasyError(int code, String message) {
         this.code = code;
         this.message = message;
     }
 
-    public EasyError(int code, String message, Object result) {
+    public EasyError(int code, String message, Object extra) {
         this(code, message);
-        this.result = result;
+        this.extra = extra;
     }
 
     /**
@@ -62,8 +62,8 @@ public class EasyError {
         this.message = message;
     }
 
-    public Object getResult() {
-        return result;
+    public Object getExtra() {
+        return extra;
     }
 
     @Override
@@ -72,8 +72,8 @@ public class EasyError {
                 + code
                 + ", message="
                 + message
-                + ", result="
-                + result
+                + ", extra="
+                + extra
                 + '}';
     }
 }
