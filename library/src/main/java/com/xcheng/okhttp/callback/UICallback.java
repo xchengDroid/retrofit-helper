@@ -12,8 +12,6 @@ public abstract class UICallback<T> {
     }
 
     /**
-     * UI Thread
-     *
      * @param progress 上传进度(0~1]
      */
     public void inProgress(OkCall<T> okCall, float progress, long total, boolean done) {
@@ -21,8 +19,6 @@ public abstract class UICallback<T> {
     }
 
     /**
-     * UI Thread
-     *
      * @param progress 下载进度(0~1]
      */
     public void outProgress(OkCall<T> okCall, float progress, long total, boolean done) {
