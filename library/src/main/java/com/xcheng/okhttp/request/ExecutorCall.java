@@ -123,7 +123,7 @@ public final class ExecutorCall<T> implements OkCall<T> {
         rawCall.enqueue(new okhttp3.Callback() {
             @Override
             public void onFailure(okhttp3.Call call, IOException e) {
-                callFailure(responseParse.getError(e));
+                callFailure(responseParse.parseException(ExecutorCall.this, e));
             }
 
             @Override
@@ -139,7 +139,7 @@ public final class ExecutorCall<T> implements OkCall<T> {
                     callFailure(okResponse.getError());
                 } catch (IOException e) {
                     e.printStackTrace();
-                    callFailure(responseParse.getError(e));
+                    onFailure(call, e);
                 } finally {
                     response.body().close();
                 }

@@ -28,5 +28,5 @@ public interface ResponseParse<T> {
      * @throws NullPointerException 如果返回值为空
      */
     @NonNull
-    EasyError getError(IOException e);
+    EasyError parseException(OkCall<T> okCall, IOException e);
 }
