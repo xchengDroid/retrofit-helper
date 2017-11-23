@@ -11,14 +11,14 @@ import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 
 /**
- * 实现 {@link #parseException(IOException)}方法
+ * 实现 {@link #parseException(OkCall, IOException)}方法
  *
  * @param <T>
  */
-public abstract class SimpleParse<T> implements HttpParse<T> {
-
+public abstract class ErrorParse<T> implements HttpParse<T> {
+    @Override
     @NonNull
-    public EasyError parseException(IOException e) {
+    public EasyError parseException(OkCall<T> okCall, IOException e) {
         if (e instanceof UnknownHostException) {
             return new EasyError(-101, e.getMessage());
         } else if (e instanceof ConnectException) {

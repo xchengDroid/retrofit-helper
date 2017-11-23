@@ -12,7 +12,7 @@ import okhttp3.Response;
 /**
  * Created by chengxin on 2017/6/22.
  */
-public class StringParse extends SimpleParse<String> {
+public class StringParse extends ErrorParse<String> {
     @NonNull
     @Override
     public OkResponse<String> parseNetworkResponse(OkCall<String> okCall, Response response) throws IOException {

@@ -15,7 +15,7 @@ import okhttp3.Response;
  * JSON解析类
  * Created by chengxin on 2017/6/22.
  */
-public class JsonParse<T> extends SimpleParse<T> {
+public class JsonParse<T> extends ErrorParse<T> {
     @SuppressWarnings("unchecked")
     @NonNull
     @Override

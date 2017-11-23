@@ -11,7 +11,7 @@ import java.io.IOException;
 
 import okhttp3.Response;
 
-public class BitmapParse extends SimpleParse<Bitmap> {
+public class BitmapParse extends ErrorParse<Bitmap> {
 
     @NonNull
     @Override
