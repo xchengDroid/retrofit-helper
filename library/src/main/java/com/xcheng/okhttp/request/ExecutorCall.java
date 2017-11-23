@@ -138,7 +138,6 @@ public final class ExecutorCall<T> implements OkCall<T> {
                     }
                     callFailure(okResponse.getError());
                 } catch (IOException e) {
-                    e.printStackTrace();
                     onFailure(call, e);
                 } finally {
                     response.body().close();

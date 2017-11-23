@@ -15,6 +15,8 @@ import okhttp3.Response;
  */
 public interface HttpParse<T> {
     /**
+     * called by {@link okhttp3.Callback#onResponse(Call, Response)}}
+     *
      * @throws NullPointerException 如果返回值为空
      */
     @NonNull
