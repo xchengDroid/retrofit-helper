@@ -1,7 +1,7 @@
 package com.xcheng.okhttp.request;
 
 import com.xcheng.okhttp.callback.JsonParse;
-import com.xcheng.okhttp.callback.ResponseParse;
+import com.xcheng.okhttp.callback.HttpParse;
 import com.xcheng.okhttp.util.EasyPreconditions;
 
 import okhttp3.OkHttpClient;
@@ -13,7 +13,7 @@ import okhttp3.OkHttpClient;
 public class OkConfig {
     private final OkHttpClient okHttpClient;
     private final String host;
-    private final Class<? extends ResponseParse> parseClass;
+    private final Class<? extends HttpParse> parseClass;
     private final boolean postUiIfCanceled;
 
     public static Builder newBuilder() {
@@ -40,7 +40,7 @@ public class OkConfig {
         return postUiIfCanceled;
     }
 
-    public Class<? extends ResponseParse> getParseClass() {
+    public Class<? extends HttpParse> getParseClass() {
         return parseClass;
     }
 
@@ -48,7 +48,7 @@ public class OkConfig {
         private OkHttpClient okHttpClient;
         private String host;
         private boolean postUiIfCanceled;
-        private Class<? extends ResponseParse> parseClass;
+        private Class<? extends HttpParse> parseClass;
 
         public Builder() {
             //default
@@ -72,7 +72,7 @@ public class OkConfig {
             return this;
         }
 
-        public Builder parseClass(Class<? extends ResponseParse> parseClass) {
+        public Builder parseClass(Class<? extends HttpParse> parseClass) {
             this.parseClass = EasyPreconditions.checkNotNull(parseClass, "parseClass==null");
             return this;
         }

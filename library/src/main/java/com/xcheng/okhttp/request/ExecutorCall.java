@@ -5,7 +5,7 @@ import android.support.annotation.NonNull;
 import com.google.gson.reflect.TypeToken;
 import com.xcheng.okhttp.EasyOkHttp;
 import com.xcheng.okhttp.callback.OkCall;
-import com.xcheng.okhttp.callback.ResponseParse;
+import com.xcheng.okhttp.callback.HttpParse;
 import com.xcheng.okhttp.callback.UICallback;
 import com.xcheng.okhttp.error.EasyError;
 import com.xcheng.okhttp.util.EasyPreconditions;
@@ -31,7 +31,7 @@ public final class ExecutorCall<T> implements OkCall<T> {
 
     private final OkRequest okRequest;
     //发起请求 解析相关
-    private final ResponseParse<T> responseParse;
+    private final HttpParse<T> httpParse;
     private TypeToken<T> typeToken;
     private Class<? extends UICallback> tokenClass;
     private ExecutorCallback<T> executorCallback;
@@ -44,7 +44,7 @@ public final class ExecutorCall<T> implements OkCall<T> {
     public ExecutorCall(@NonNull OkRequest okRequest) {
         this.okRequest = okRequest;
         this.typeToken = (TypeToken<T>) okRequest.typeToken();
-        this.responseParse = createResponseParse();
+        this.httpParse = createHttpParse();
     }
 
     @Override
@@ -94,7 +94,7 @@ public final class ExecutorCall<T> implements OkCall<T> {
             rawCall.cancel();
         }
         try {
-            return responseParse.parseNetworkResponse(this, rawCall.execute());
+            return httpParse.parseNetworkResponse(this, rawCall.execute());
         } finally {
             finished(ExecutorCall.this);
         }
@@ -123,14 +123,14 @@ public final class ExecutorCall<T> implements OkCall<T> {
         rawCall.enqueue(new okhttp3.Callback() {
             @Override
             public void onFailure(okhttp3.Call call, IOException e) {
-                callFailure(responseParse.parseException(ExecutorCall.this, e));
+                callFailure(httpParse.parseException(ExecutorCall.this, e));
             }
 
             @Override
             public void onResponse(okhttp3.Call call, Response response) {
                 try {
                     response = wrapResponse(response);
-                    OkResponse<T> okResponse = responseParse.parseNetworkResponse(ExecutorCall.this, response);
+                    OkResponse<T> okResponse = httpParse.parseNetworkResponse(ExecutorCall.this, response);
                     EasyPreconditions.checkNotNull(okResponse, "okResponse==null");
                     if (okResponse.isSuccess()) {
                         callSuccess(okResponse.getBody());
@@ -215,15 +215,15 @@ public final class ExecutorCall<T> implements OkCall<T> {
         }
     }
 
-    private ResponseParse<T> createResponseParse() {
+    private HttpParse<T> createHttpParse() {
         try {
             return okRequest.parseClass().newInstance();
         } catch (java.lang.InstantiationException e) {
-            throw new InstantiationException("Unable to instantiate ResponseParse " + okRequest.parseClass().getName()
+            throw new InstantiationException("Unable to instantiate HttpParse " + okRequest.parseClass().getName()
                     + ": make sure class name exists, is public, and has an"
                     + " empty constructor that is public", e);
         } catch (IllegalAccessException e) {
-            throw new InstantiationException("Unable to instantiate ResponseParse " + okRequest.parseClass().getName()
+            throw new InstantiationException("Unable to instantiate HttpParse " + okRequest.parseClass().getName()
                     + ": make sure class name exists, is public, and has an"
                     + " empty constructor that is public", e);
         }

@@ -13,7 +13,7 @@ import okhttp3.Response;
 /**
  * http 请求返回解析接口类
  */
-public interface ResponseParse<T> {
+public interface HttpParse<T> {
     /**
      * @throws NullPointerException 如果返回值为空
      */

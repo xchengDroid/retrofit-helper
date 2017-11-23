@@ -5,7 +5,7 @@ import android.support.annotation.Nullable;
 
 import com.google.gson.reflect.TypeToken;
 import com.xcheng.okhttp.EasyOkHttp;
-import com.xcheng.okhttp.callback.ResponseParse;
+import com.xcheng.okhttp.callback.HttpParse;
 import com.xcheng.okhttp.util.EasyPreconditions;
 import com.xcheng.okhttp.util.ParamUtil;
 
@@ -34,7 +34,7 @@ public abstract class OkRequest {
     //额外入参
     private final Map<String, Object> extraMap;
     private final TypeToken<?> typeToken;
-    private final Class<? extends ResponseParse> parseClass;
+    private final Class<? extends HttpParse> parseClass;
 
     protected OkRequest(Builder<?> builder) {
         //build方法是抽象，本来应该在build方法里面做检测，现在放到构造函数里面统一检测
@@ -77,7 +77,7 @@ public abstract class OkRequest {
         return typeToken;
     }
 
-    public Class<? extends ResponseParse> parseClass() {
+    public Class<? extends HttpParse> parseClass() {
         return parseClass;
     }
 
@@ -137,7 +137,7 @@ public abstract class OkRequest {
         private OkHttpClient okHttpClient;
         private Map<String, Object> extraMap;
         private TypeToken<?> typeToken;
-        private Class<? extends ResponseParse> parseClass;
+        private Class<? extends HttpParse> parseClass;
 
         public Builder() {
             this.headers = new Headers.Builder();
@@ -236,7 +236,7 @@ public abstract class OkRequest {
             return (T) this;
         }
 
-        public T parseClass(Class<? extends ResponseParse> parseClass) {
+        public T parseClass(Class<? extends HttpParse> parseClass) {
             this.parseClass = parseClass;
             return (T) this;
         }

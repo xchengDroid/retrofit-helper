@@ -15,7 +15,7 @@ import java.net.UnknownHostException;
  *
  * @param <T>
  */
-public abstract class SimpleParse<T> implements ResponseParse<T> {
+public abstract class SimpleParse<T> implements HttpParse<T> {
 
     @NonNull
     public EasyError parseException(IOException e) {
