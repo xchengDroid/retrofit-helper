@@ -11,7 +11,7 @@ import okhttp3.Call;
 import okhttp3.Response;
 
 /**
- * http 请求返回解析接口类
+ * http 请求返回解析接口类，解析{@link Response}和{@link IOException}
  */
 public interface HttpParse<T> {
     /**
