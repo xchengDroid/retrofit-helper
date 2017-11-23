@@ -27,11 +27,11 @@ public class OkConfig {
         parseClass = builder.parseClass;
     }
 
-    public OkHttpClient getOkHttpClient() {
+    public OkHttpClient okHttpClient() {
         return okHttpClient;
     }
 
-    public String getHost() {
+    public String host() {
         EasyPreconditions.checkState(host != null, "host==null,have you init it in OkConfig");
         return host;
     }
@@ -40,7 +40,7 @@ public class OkConfig {
         return postUiIfCanceled;
     }
 
-    public Class<? extends HttpParse> getParseClass() {
+    public Class<? extends HttpParse> parseClass() {
         return parseClass;
     }
 

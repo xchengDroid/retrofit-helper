@@ -46,10 +46,10 @@ public abstract class OkRequest {
         this.id = builder.id;
         this.inProgress = builder.inProgress;
         this.outProgress = builder.outProgress;
-        this.okHttpClient = ParamUtil.defValueIfNull(builder.okHttpClient, EasyOkHttp.getOkConfig().getOkHttpClient());
+        this.okHttpClient = ParamUtil.defValueIfNull(builder.okHttpClient, EasyOkHttp.getOkConfig().okHttpClient());
         this.extraMap = builder.extraMap;
         this.typeToken = builder.typeToken;
-        this.parseClass = ParamUtil.defValueIfNull(builder.parseClass, EasyOkHttp.getOkConfig().getParseClass());
+        this.parseClass = ParamUtil.defValueIfNull(builder.parseClass, EasyOkHttp.getOkConfig().parseClass());
     }
 
     public String url() {
@@ -163,7 +163,7 @@ public abstract class OkRequest {
         public T url(String url) {
             EasyPreconditions.checkNotNull(url, "url==null");
             if (!url.startsWith("http")) {
-                String host = EasyOkHttp.getOkConfig().getHost();
+                String host = EasyOkHttp.getOkConfig().host();
                 boolean hostStart = host.endsWith("/");
                 boolean urlStart = url.startsWith("/");
                 if (hostStart && urlStart) {
