@@ -10,9 +10,8 @@ import java.io.IOException;
 import okhttp3.Call;
 import okhttp3.Response;
 
-
 /**
- * http解析的工具 成功返回所需的对象
+ * http 请求返回解析接口类
  */
 public interface ResponseParse<T> {
     /**
