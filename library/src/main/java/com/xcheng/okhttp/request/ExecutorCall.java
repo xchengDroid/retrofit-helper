@@ -216,13 +216,13 @@ public final class ExecutorCall<T> implements OkCall<T> {
 
     private HttpParser<T> createHttpParser() {
         try {
-            return okRequest.parseClass().newInstance();
+            return okRequest.parserClass().newInstance();
         } catch (java.lang.InstantiationException e) {
-            throw new InstantiationException("Unable to instantiate HttpParser " + okRequest.parseClass().getName()
+            throw new InstantiationException("Unable to instantiate HttpParser " + okRequest.parserClass().getName()
                     + ": make sure class name exists, is public, and has an"
                     + " empty constructor that is public", e);
         } catch (IllegalAccessException e) {
-            throw new InstantiationException("Unable to instantiate HttpParser " + okRequest.parseClass().getName()
+            throw new InstantiationException("Unable to instantiate HttpParser " + okRequest.parserClass().getName()
                     + ": make sure class name exists, is public, and has an"
                     + " empty constructor that is public", e);
         }

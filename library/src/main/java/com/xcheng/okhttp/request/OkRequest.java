@@ -34,7 +34,7 @@ public abstract class OkRequest {
     //额外入参
     private final Map<String, Object> extraMap;
     private final TypeToken<?> typeToken;
-    private final Class<? extends HttpParser> parseClass;
+    private final Class<? extends HttpParser> parserClass;
 
     protected OkRequest(Builder<?> builder) {
         //build方法是抽象，本来应该在build方法里面做检测，现在放到构造函数里面统一检测
@@ -49,7 +49,7 @@ public abstract class OkRequest {
         this.okHttpClient = ParamUtil.defValueIfNull(builder.okHttpClient, EasyOkHttp.getOkConfig().okHttpClient());
         this.extraMap = builder.extraMap;
         this.typeToken = builder.typeToken;
-        this.parseClass = ParamUtil.defValueIfNull(builder.parseClass, EasyOkHttp.getOkConfig().parseClass());
+        this.parserClass = ParamUtil.defValueIfNull(builder.parserClass, EasyOkHttp.getOkConfig().parserClass());
     }
 
     public String url() {
@@ -77,8 +77,8 @@ public abstract class OkRequest {
         return typeToken;
     }
 
-    public Class<? extends HttpParser> parseClass() {
-        return parseClass;
+    public Class<? extends HttpParser> parserClass() {
+        return parserClass;
     }
 
     public Object tag() {
@@ -137,7 +137,7 @@ public abstract class OkRequest {
         private OkHttpClient okHttpClient;
         private Map<String, Object> extraMap;
         private TypeToken<?> typeToken;
-        private Class<? extends HttpParser> parseClass;
+        private Class<? extends HttpParser> parserClass;
 
         public Builder() {
             this.headers = new Headers.Builder();
@@ -236,8 +236,8 @@ public abstract class OkRequest {
             return (T) this;
         }
 
-        public T parseClass(Class<? extends HttpParser> parseClass) {
-            this.parseClass = parseClass;
+        public T parserClass(Class<? extends HttpParser> parserClass) {
+            this.parserClass = parserClass;
             return (T) this;
         }
 

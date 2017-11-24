@@ -13,7 +13,7 @@ import okhttp3.OkHttpClient;
 public class OkConfig {
     private final OkHttpClient okHttpClient;
     private final String host;
-    private final Class<? extends HttpParser> parseClass;
+    private final Class<? extends HttpParser> parserClass;
     private final boolean postUiIfCanceled;
 
     public static Builder newBuilder() {
@@ -24,7 +24,7 @@ public class OkConfig {
         okHttpClient = builder.okHttpClient;
         host = builder.host;
         postUiIfCanceled = builder.postUiIfCanceled;
-        parseClass = builder.parseClass;
+        parserClass = builder.parserClass;
     }
 
     public OkHttpClient okHttpClient() {
@@ -40,21 +40,21 @@ public class OkConfig {
         return postUiIfCanceled;
     }
 
-    public Class<? extends HttpParser> parseClass() {
-        return parseClass;
+    public Class<? extends HttpParser> parserClass() {
+        return parserClass;
     }
 
     public static class Builder {
         private OkHttpClient okHttpClient;
         private String host;
         private boolean postUiIfCanceled;
-        private Class<? extends HttpParser> parseClass;
+        private Class<? extends HttpParser> parserClass;
 
         public Builder() {
             //default
             okHttpClient = new OkHttpClient();
             postUiIfCanceled = false;
-            parseClass = JsonParser.class;
+            parserClass = JsonParser.class;
         }
 
         public Builder host(String host) {
@@ -72,8 +72,8 @@ public class OkConfig {
             return this;
         }
 
-        public Builder parseClass(Class<? extends HttpParser> parseClass) {
-            this.parseClass = EasyPreconditions.checkNotNull(parseClass, "parseClass==null");
+        public Builder parserClass(Class<? extends HttpParser> parserClass) {
+            this.parserClass = EasyPreconditions.checkNotNull(parserClass, "parserClass==null");
             return this;
         }
 
