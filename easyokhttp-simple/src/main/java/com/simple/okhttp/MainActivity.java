@@ -12,8 +12,8 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.xcheng.okhttp.EasyOkHttp;
-import com.xcheng.okhttp.callback.BitmapParse;
-import com.xcheng.okhttp.callback.JsonParse;
+import com.xcheng.okhttp.callback.BitmapParser;
+import com.xcheng.okhttp.callback.JsonParser;
 import com.xcheng.okhttp.callback.OkCall;
 import com.xcheng.okhttp.callback.UICallback;
 import com.xcheng.okhttp.error.EasyError;
@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
         OkConfig config = OkConfig.newBuilder()
                 .okHttpClient(new OkHttpClient())
                 .host("http://www.weather.com.cn/")
-                .parseClass(JsonParse.class)
+                .parseClass(JsonParser.class)
                 .postUiIfCanceled(true)
                 .build();
         EasyOkHttp.init(config);
@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void json(View view) {
         GetRequest getRequest = EasyOkHttp.get("/data/cityinfo/101010100.html")
-                .parseClass(JsonParse.class).build();
+                .parseClass(JsonParser.class).build();
         ExecutorCall<Weather> okCall = new ExecutorCall<>(getRequest);
         okCall.enqueue(new UICallback<Weather>() {
             @Override
@@ -81,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void bitmap(final View view) {
         GetRequest getRequest = EasyOkHttp.get("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1499010173&di=9599915fd6f9eb51f527cbbf62a84bd6&imgtype=jpg&er=1&src=http%3A%2F%2F4493bz.1985t.com%2Fuploads%2Fallimg%2F160119%2F5-16011Z92519.jpg")
-                .parseClass(BitmapParse.class)
+                .parseClass(BitmapParser.class)
                 .outProgress()
                 .build();
         ExecutorCall<Bitmap> okCall = new ExecutorCall<>(getRequest);

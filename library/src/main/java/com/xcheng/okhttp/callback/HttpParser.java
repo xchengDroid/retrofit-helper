@@ -13,7 +13,7 @@ import okhttp3.Response;
 /**
  * http 请求返回解析接口类，解析{@link Response}和{@link IOException}
  */
-public interface HttpParse<T> {
+public interface HttpParser<T> {
     /**
      * called by {@link okhttp3.Callback#onResponse(Call, Response)}}
      *

@@ -1,5 +1,7 @@
 package com.xcheng.okhttp.callback;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.annotation.NonNull;
 
 import com.xcheng.okhttp.error.EasyError;
@@ -9,15 +11,13 @@ import java.io.IOException;
 
 import okhttp3.Response;
 
-/**
- * Created by chengxin on 2017/6/22.
- */
-public class StringParse extends ErrorParse<String> {
+public class BitmapParser extends ErrorParser<Bitmap> {
+
     @NonNull
     @Override
-    public OkResponse<String> parseNetworkResponse(OkCall<String> okCall, Response response) throws IOException {
+    public OkResponse<Bitmap> parseNetworkResponse(OkCall<Bitmap> okCall, Response response) throws IOException {
         if (response.isSuccessful()) {
-            return OkResponse.success(response.body().string());
+            return OkResponse.success(BitmapFactory.decodeStream(response.body().byteStream()));
         }
         return OkResponse.error(EasyError.create("response error"));
     }
