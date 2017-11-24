@@ -30,7 +30,7 @@ public abstract class OkRequest {
     private final boolean outProgress;
 
     //发起请求 解析相关
-    private final OkHttpClient okHttpClient;
+    private final OkHttpClient client;
     //额外入参
     private final Map<String, Object> extraMap;
     private final TypeToken<?> typeToken;
@@ -46,7 +46,7 @@ public abstract class OkRequest {
         this.id = builder.id;
         this.inProgress = builder.inProgress;
         this.outProgress = builder.outProgress;
-        this.okHttpClient = ParamUtil.defValueIfNull(builder.okHttpClient, EasyOkHttp.getOkConfig().okHttpClient());
+        this.client = ParamUtil.defValueIfNull(builder.client, EasyOkHttp.getOkConfig().client());
         this.extraMap = builder.extraMap;
         this.typeToken = builder.typeToken;
         this.parserClass = ParamUtil.defValueIfNull(builder.parserClass, EasyOkHttp.getOkConfig().parserClass());
@@ -56,8 +56,8 @@ public abstract class OkRequest {
         return url;
     }
 
-    public OkHttpClient okHttpClient() {
-        return okHttpClient;
+    public OkHttpClient client() {
+        return client;
     }
 
     @SuppressWarnings("unchecked")
@@ -134,7 +134,7 @@ public abstract class OkRequest {
         private boolean outProgress;
 
         //发起请求 解析相关
-        private OkHttpClient okHttpClient;
+        private OkHttpClient client;
         private Map<String, Object> extraMap;
         private TypeToken<?> typeToken;
         private Class<? extends HttpParser> parserClass;
@@ -231,8 +231,8 @@ public abstract class OkRequest {
             return param(key, result);
         }
 
-        public T okHttpClient(OkHttpClient okHttpClient) {
-            this.okHttpClient = okHttpClient;
+        public T client(OkHttpClient client) {
+            this.client = client;
             return (T) this;
         }
 

@@ -1,7 +1,7 @@
 package com.xcheng.okhttp.request;
 
-import com.xcheng.okhttp.callback.JsonParser;
 import com.xcheng.okhttp.callback.HttpParser;
+import com.xcheng.okhttp.callback.JsonParser;
 import com.xcheng.okhttp.util.EasyPreconditions;
 
 import okhttp3.OkHttpClient;
@@ -11,7 +11,7 @@ import okhttp3.OkHttpClient;
  * Created by chengxin on 2017/6/27.
  */
 public class OkConfig {
-    private final OkHttpClient okHttpClient;
+    private final OkHttpClient client;
     private final String host;
     private final Class<? extends HttpParser> parserClass;
     private final boolean postUiIfCanceled;
@@ -21,14 +21,14 @@ public class OkConfig {
     }
 
     private OkConfig(Builder builder) {
-        okHttpClient = builder.okHttpClient;
+        client = builder.client;
         host = builder.host;
         postUiIfCanceled = builder.postUiIfCanceled;
         parserClass = builder.parserClass;
     }
 
-    public OkHttpClient okHttpClient() {
-        return okHttpClient;
+    public OkHttpClient client() {
+        return client;
     }
 
     public String host() {
@@ -45,16 +45,13 @@ public class OkConfig {
     }
 
     public static class Builder {
-        private OkHttpClient okHttpClient;
+        private OkHttpClient client;
         private String host;
         private boolean postUiIfCanceled;
         private Class<? extends HttpParser> parserClass;
 
         public Builder() {
-            //default
-            okHttpClient = new OkHttpClient();
             postUiIfCanceled = false;
-            parserClass = JsonParser.class;
         }
 
         public Builder host(String host) {
@@ -62,8 +59,8 @@ public class OkConfig {
             return this;
         }
 
-        public Builder okHttpClient(OkHttpClient okHttpClient) {
-            this.okHttpClient = EasyPreconditions.checkNotNull(okHttpClient, "okHttpClient==null");
+        public Builder client(OkHttpClient client) {
+            this.client = EasyPreconditions.checkNotNull(client, "client==null");
             return this;
         }
 
@@ -77,7 +74,19 @@ public class OkConfig {
             return this;
         }
 
+        /**
+         * Note: If  {@link #client(OkHttpClient)}  is not called a default {@link
+         * OkHttpClient} will be created and used.
+         * If  {@link #parserClass(Class)}  is not called a default {@link JsonParser} will be used.
+         */
         public OkConfig build() {
+            if (client == null) {
+                //Lazy Initialization,because it is weight
+                client = new OkHttpClient();
+            }
+            if (parserClass == null) {
+                parserClass = JsonParser.class;
+            }
             return new OkConfig(this);
         }
     }

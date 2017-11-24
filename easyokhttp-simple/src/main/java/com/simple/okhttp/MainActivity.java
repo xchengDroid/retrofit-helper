@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
         webView = (WebView) findViewById(R.id.web_easyokhttp);
         imageView = (ImageView) findViewById(R.id.iv_easyokhttp);
         OkConfig config = OkConfig.newBuilder()
-                .okHttpClient(new OkHttpClient())
+                .client(new OkHttpClient())
                 .host("http://www.weather.com.cn/")
                 .parserClass(JsonParser.class)
                 .postUiIfCanceled(true)

@@ -68,7 +68,7 @@ public final class ExecutorCall<T> implements OkCall<T> {
             builder.method(request.method(), requestBody);
             request = builder.build();
         }
-        return okRequest.okHttpClient().newCall(request);
+        return okRequest.client().newCall(request);
     }
 
     private void callFailure(EasyError error) {
