@@ -1,5 +1,6 @@
 package com.xcheng.okhttp.request;
 
+import android.support.annotation.CheckResult;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -60,6 +61,8 @@ public abstract class OkRequest {
         return client;
     }
 
+    @Nullable
+    @CheckResult
     @SuppressWarnings("unchecked")
     public <E> E extra(String key) {
         if (extraMap != null) {
@@ -246,6 +249,12 @@ public abstract class OkRequest {
             return (T) this;
         }
 
+        /**
+         * Http 响应解析所需要的额外数据 eg：下载文件保存的路径，某些返回需要检测Header信息session权限等
+         *
+         * @param key   Map key
+         * @param value Map value
+         */
         public T extra(String key, Object value) {
             //Lazy Initialization
             if (this.extraMap == null) {
