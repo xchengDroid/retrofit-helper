@@ -34,8 +34,7 @@ public abstract class OkRequest {
     private final OkHttpClient client;
     //额外入参
     private final Map<String, Object> extraMap;
-    private TypeToken<?> typeToken;
-    private Class<?> tokenClazz;
+    private final TypeToken<?> typeToken;
     private final Class<? extends HttpParser> parserClass;
 
     protected OkRequest(Builder<?> builder) {
@@ -78,20 +77,7 @@ public abstract class OkRequest {
     }
 
     public TypeToken<?> typeToken() {
-        if (typeToken == null && tokenClazz != null) {
-            //延迟初始化
-            typeToken = ParamUtil.createTypeToken(tokenClazz);
-        }
         return typeToken;
-    }
-
-    /**
-     * 设置动态生成TypeToken对象所需的Clazz
-     *
-     * @param tokenClazz
-     */
-    void setTokenClazz(Class<?> tokenClazz) {
-        this.tokenClazz = tokenClazz;
     }
 
     public Class<? extends HttpParser> parserClass() {

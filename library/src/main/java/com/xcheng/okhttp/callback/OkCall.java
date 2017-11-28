@@ -1,5 +1,6 @@
 package com.xcheng.okhttp.callback;
 
+import com.google.gson.reflect.TypeToken;
 import com.xcheng.okhttp.request.OkRequest;
 import com.xcheng.okhttp.request.OkResponse;
 
@@ -38,6 +39,9 @@ public interface OkCall<T> extends Cloneable {
      * The original HTTP request.
      */
     OkRequest request();
+
+
+    TypeToken<T> getTypeToken();
 
     /**
      * 是否回调UI

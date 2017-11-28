@@ -2,9 +2,10 @@ package com.xcheng.okhttp.request;
 
 import android.support.annotation.NonNull;
 
+import com.google.gson.reflect.TypeToken;
 import com.xcheng.okhttp.EasyOkHttp;
-import com.xcheng.okhttp.callback.HttpParser;
 import com.xcheng.okhttp.callback.OkCall;
+import com.xcheng.okhttp.callback.HttpParser;
 import com.xcheng.okhttp.callback.UICallback;
 import com.xcheng.okhttp.error.EasyError;
 import com.xcheng.okhttp.util.EasyPreconditions;
@@ -31,7 +32,10 @@ public final class ExecutorCall<T> implements OkCall<T> {
     private final OkRequest okRequest;
     //发起请求 解析相关
     private final HttpParser<T> httpParser;
+    private TypeToken<T> typeToken;
+    private Class<? extends UICallback> tokenClass;
     private ExecutorCallback<T> executorCallback;
+
     private Call rawCall;
     private volatile boolean canceled;
     private boolean executed;
@@ -39,6 +43,7 @@ public final class ExecutorCall<T> implements OkCall<T> {
     @SuppressWarnings("unchecked")
     public ExecutorCall(@NonNull OkRequest okRequest) {
         this.okRequest = okRequest;
+        this.typeToken = (TypeToken<T>) okRequest.typeToken();
         this.httpParser = createHttpParser();
     }
 
@@ -98,7 +103,7 @@ public final class ExecutorCall<T> implements OkCall<T> {
     @Override
     public void enqueue(UICallback<T> uiCallback) {
         EasyPreconditions.checkNotNull(uiCallback, "uiCallback==null");
-        okRequest.setTokenClazz(uiCallback.getClass());
+        this.tokenClass = uiCallback.getClass();
         this.executorCallback = new ExecutorCallback<>(uiCallback, new ExecutorCallback.OnExecutorListener() {
             @Override
             public void onAfter() {
@@ -156,6 +161,15 @@ public final class ExecutorCall<T> implements OkCall<T> {
     }
 
     @Override
+    public TypeToken<T> getTypeToken() {
+        if (typeToken == null && tokenClass != null) {
+            //延迟初始化
+            typeToken = ParamUtil.createTypeToken(tokenClass);
+        }
+        return typeToken;
+    }
+
+    @Override
     public boolean isPostUi() {
         return !isCanceled() || EasyOkHttp.getOkConfig().postUiIfCanceled();
     }
@@ -188,7 +202,10 @@ public final class ExecutorCall<T> implements OkCall<T> {
     @SuppressWarnings("CloneDoesntCallSuperClone")
     @Override
     public OkCall<T> clone() {
-        return new ExecutorCall<>(okRequest);
+        ExecutorCall<T> okCall = new ExecutorCall<>(okRequest);
+        okCall.typeToken = typeToken;
+        okCall.tokenClass = tokenClass;
+        return okCall;
     }
 
     static private class InstantiationException extends RuntimeException {
