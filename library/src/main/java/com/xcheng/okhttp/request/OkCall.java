@@ -1,9 +1,9 @@
 package com.xcheng.okhttp.request;
 
-import com.google.gson.reflect.TypeToken;
 import com.xcheng.okhttp.callback.UICallback;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 
 public interface OkCall<T> extends Cloneable {
 
@@ -39,8 +39,10 @@ public interface OkCall<T> extends Cloneable {
      */
     OkRequest request();
 
-
-    TypeToken<T> getTypeToken();
+    /**
+     * if called {@link #enqueue(UICallback)},it will return result Type;
+     */
+    Type getType();
 
     /**
      * 是否回调UI

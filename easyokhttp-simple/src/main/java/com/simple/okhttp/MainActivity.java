@@ -2,6 +2,7 @@ package com.simple.okhttp;
 
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -13,6 +14,7 @@ import android.widget.Toast;
 import com.google.gson.Gson;
 import com.xcheng.okhttp.EasyOkHttp;
 import com.xcheng.okhttp.callback.BitmapParser;
+import com.xcheng.okhttp.callback.HttpParser;
 import com.xcheng.okhttp.callback.JsonParser;
 import com.xcheng.okhttp.request.OkCall;
 import com.xcheng.okhttp.callback.UICallback;
@@ -36,15 +38,20 @@ public class MainActivity extends AppCompatActivity {
         OkConfig config = OkConfig.newBuilder()
                 .client(new OkHttpClient())
                 .host("http://www.weather.com.cn/")
-                .parserClass(JsonParser.class)
+                .parserFactory(new OkConfig.ParserFactory() {
+                    @NonNull
+                    @Override
+                    public HttpParser<?> create() {
+                        return new JsonParser<>();
+                    }
+                })
                 .postUiIfCanceled(true)
                 .build();
         EasyOkHttp.init(config);
     }
 
     public void json(View view) {
-        GetRequest getRequest = EasyOkHttp.get("/data/cityinfo/101010100.html")
-                .parserClass(JsonParser.class).build();
+        GetRequest getRequest = EasyOkHttp.get("/data/cityinfo/101010100.html").build();
         ExecutorCall<Weather> okCall = new ExecutorCall<>(getRequest);
         okCall.enqueue(new UICallback<Weather>() {
             @Override
@@ -67,7 +74,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onError(OkCall<String> okCall, EasyError error) {
                 Toast.makeText(MainActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
-
             }
 
             @Override
@@ -81,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void bitmap(final View view) {
         GetRequest getRequest = EasyOkHttp.get("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1499010173&di=9599915fd6f9eb51f527cbbf62a84bd6&imgtype=jpg&er=1&src=http%3A%2F%2F4493bz.1985t.com%2Fuploads%2Fallimg%2F160119%2F5-16011Z92519.jpg")
-                .parserClass(BitmapParser.class)
+                .parser(new BitmapParser())
                 .outProgress()
                 .build();
         ExecutorCall<Bitmap> okCall = new ExecutorCall<>(getRequest);
@@ -89,13 +95,13 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onBefore(OkCall<Bitmap> okCall) {
                 super.onBefore(okCall);
-                Log.e("print","before");
+                Log.e("print", "before");
             }
 
             @Override
             public void onAfter(OkCall<Bitmap> okCall) {
                 super.onAfter(okCall);
-                Log.e("print","onAfter");
+                Log.e("print", "onAfter");
 
             }
 
@@ -104,19 +110,19 @@ public class MainActivity extends AppCompatActivity {
                 super.outProgress(okCall, progress, total, done);
                 TextView textView = (TextView) view;
                 textView.setText(progress * 100 + "%");
-                Log.e("print","outProgress");
+                Log.e("print", "outProgress");
             }
 
             @Override
             public void onError(OkCall<Bitmap> okCall, EasyError error) {
-                Log.e("print","onError");
+                Log.e("print", "onError");
 
                 Toast.makeText(MainActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onSuccess(OkCall<Bitmap> okCall, Bitmap response) {
-                Log.e("print","onSuccess");
+                Log.e("print", "onSuccess");
 
                 webView.setVisibility(View.GONE);
                 imageView.setVisibility(View.VISIBLE);

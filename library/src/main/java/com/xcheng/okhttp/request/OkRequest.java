@@ -1,10 +1,7 @@
 package com.xcheng.okhttp.request;
 
-import android.support.annotation.CheckResult;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
-import com.google.gson.reflect.TypeToken;
 import com.xcheng.okhttp.EasyOkHttp;
 import com.xcheng.okhttp.callback.HttpParser;
 import com.xcheng.okhttp.util.EasyPreconditions;
@@ -32,10 +29,9 @@ public abstract class OkRequest {
 
     //发起请求 解析相关
     private final OkHttpClient client;
-    //额外入参
-    private final Map<String, Object> extraMap;
-    private final TypeToken<?> typeToken;
-    private final Class<? extends HttpParser> parserClass;
+
+    // http解析类
+    private final HttpParser<?> parser;
 
     protected OkRequest(Builder<?> builder) {
         //build方法是抽象，本来应该在build方法里面做检测，现在放到构造函数里面统一检测
@@ -48,9 +44,7 @@ public abstract class OkRequest {
         this.inProgress = builder.inProgress;
         this.outProgress = builder.outProgress;
         this.client = ParamUtil.defValueIfNull(builder.client, EasyOkHttp.getOkConfig().client());
-        this.extraMap = builder.extraMap;
-        this.typeToken = builder.typeToken;
-        this.parserClass = ParamUtil.defValueIfNull(builder.parserClass, EasyOkHttp.getOkConfig().parserClass());
+        this.parser = ParamUtil.defValueIfNull(builder.parser, EasyOkHttp.getOkConfig().parser());
     }
 
     public String url() {
@@ -61,27 +55,9 @@ public abstract class OkRequest {
         return client;
     }
 
-    @Nullable
-    @CheckResult
-    @SuppressWarnings("unchecked")
-    public <E> E extra(String key) {
-        if (extraMap != null) {
-            return (E) extraMap.get(key);
-        }
-        return null;
-    }
 
-    @Nullable
-    public Map<String, Object> extraMap() {
-        return extraMap;
-    }
-
-    public TypeToken<?> typeToken() {
-        return typeToken;
-    }
-
-    public Class<? extends HttpParser> parserClass() {
-        return parserClass;
+    public HttpParser<?> parser() {
+        return parser;
     }
 
     public Object tag() {
@@ -138,9 +114,7 @@ public abstract class OkRequest {
 
         //发起请求 解析相关
         private OkHttpClient client;
-        private Map<String, Object> extraMap;
-        private TypeToken<?> typeToken;
-        private Class<? extends HttpParser> parserClass;
+        private HttpParser<?> parser;
 
         public Builder() {
             this.headers = new Headers.Builder();
@@ -239,28 +213,8 @@ public abstract class OkRequest {
             return (T) this;
         }
 
-        public T parserClass(Class<? extends HttpParser> parserClass) {
-            this.parserClass = parserClass;
-            return (T) this;
-        }
-
-        public T typeToken(TypeToken<?> typeToken) {
-            this.typeToken = typeToken;
-            return (T) this;
-        }
-
-        /**
-         * Http 响应解析所需要的额外数据 eg：下载文件保存的路径，某些返回需要检测Header信息session权限等
-         *
-         * @param key   Map key
-         * @param value Map value
-         */
-        public T extra(String key, Object value) {
-            //Lazy Initialization
-            if (this.extraMap == null) {
-                this.extraMap = new LinkedHashMap<>();
-            }
-            this.extraMap.put(key, value);
+        public T parser(HttpParser<?> parser) {
+            this.parser = parser;
             return (T) this;
         }
 

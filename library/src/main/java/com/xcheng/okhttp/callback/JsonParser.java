@@ -22,7 +22,7 @@ public class JsonParser<T> extends ErrorParser<T> {
     @Override
     public OkResponse<T> parseNetworkResponse(OkCall<T> call, Response response) throws IOException {
         if (response.isSuccessful()) {
-            TypeToken<T> token = call.getTypeToken();
+            TypeToken<T> token = (TypeToken<T>) TypeToken.get(call.getType());
             String str = response.body().string();
             if (String.class.isAssignableFrom(token.getRawType())) {
                 return OkResponse.success((T) str);

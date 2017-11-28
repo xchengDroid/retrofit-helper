@@ -2,7 +2,6 @@ package com.xcheng.okhttp.request;
 
 import android.support.annotation.NonNull;
 
-import com.google.gson.reflect.TypeToken;
 import com.xcheng.okhttp.EasyOkHttp;
 import com.xcheng.okhttp.callback.HttpParser;
 import com.xcheng.okhttp.callback.UICallback;
@@ -11,6 +10,7 @@ import com.xcheng.okhttp.util.EasyPreconditions;
 import com.xcheng.okhttp.util.ParamUtil;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,17 +31,18 @@ public final class ExecutorCall<T> implements OkCall<T> {
     private final OkRequest okRequest;
     //发起请求 解析相关
     private final HttpParser<T> httpParser;
-    //用户当json解析的TypeToken未设置的情况下，利用class动态生成typeToken
-    private Class<? extends UICallback> tokenClass;
+    //用户当json解析的TypeToken未设置的情况下，利用class动态生成Type
+    private Type type;
     private ExecutorCallback<T> executorCallback;
 
     private Call rawCall;
     private volatile boolean canceled;
     private boolean executed;
 
+    @SuppressWarnings("unchecked")
     public ExecutorCall(@NonNull OkRequest okRequest) {
         this.okRequest = okRequest;
-        this.httpParser = createHttpParser();
+        this.httpParser = (HttpParser<T>) okRequest.parser();
     }
 
     @Override
@@ -100,7 +101,7 @@ public final class ExecutorCall<T> implements OkCall<T> {
     @Override
     public void enqueue(UICallback<T> uiCallback) {
         EasyPreconditions.checkNotNull(uiCallback, "uiCallback==null");
-        this.tokenClass = uiCallback.getClass();
+        this.type = ParamUtil.getType(uiCallback.getClass());
         this.executorCallback = new ExecutorCallback<>(uiCallback, new ExecutorCallback.OnExecutorListener() {
             @Override
             public void onAfter() {
@@ -157,14 +158,10 @@ public final class ExecutorCall<T> implements OkCall<T> {
         return response;
     }
 
-    @SuppressWarnings("unchecked")
+
     @Override
-    public TypeToken<T> getTypeToken() {
-        TypeToken<?> typeToken = okRequest.typeToken();
-        if (typeToken == null && tokenClass != null) {
-            typeToken = ParamUtil.createTypeToken(tokenClass);
-        }
-        return (TypeToken<T>) typeToken;
+    public Type getType() {
+        return type;
     }
 
     @Override
@@ -201,28 +198,8 @@ public final class ExecutorCall<T> implements OkCall<T> {
     @Override
     public OkCall<T> clone() {
         ExecutorCall<T> okCall = new ExecutorCall<>(okRequest);
-        okCall.tokenClass = tokenClass;
+        okCall.type = type;
         return okCall;
-    }
-
-    static private class InstantiationException extends RuntimeException {
-        private InstantiationException(String msg, Exception cause) {
-            super(msg, cause);
-        }
-    }
-
-    private HttpParser<T> createHttpParser() {
-        try {
-            return okRequest.parserClass().newInstance();
-        } catch (java.lang.InstantiationException e) {
-            throw new InstantiationException("Unable to instantiate HttpParser " + okRequest.parserClass().getName()
-                    + ": make sure class name exists, is public, and has an"
-                    + " empty constructor that is public", e);
-        } catch (IllegalAccessException e) {
-            throw new InstantiationException("Unable to instantiate HttpParser " + okRequest.parserClass().getName()
-                    + ": make sure class name exists, is public, and has an"
-                    + " empty constructor that is public", e);
-        }
     }
 
     private static synchronized void addCall(OkCall<?> call) {

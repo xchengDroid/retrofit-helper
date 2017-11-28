@@ -1,5 +1,7 @@
 package com.xcheng.okhttp.request;
 
+import android.support.annotation.NonNull;
+
 import com.xcheng.okhttp.callback.HttpParser;
 import com.xcheng.okhttp.callback.JsonParser;
 import com.xcheng.okhttp.util.EasyPreconditions;
@@ -13,7 +15,7 @@ import okhttp3.OkHttpClient;
 public class OkConfig {
     private final OkHttpClient client;
     private final String host;
-    private final Class<? extends HttpParser> parserClass;
+    private final ParserFactory parserFactory;
     private final boolean postUiIfCanceled;
 
     public static Builder newBuilder() {
@@ -24,7 +26,7 @@ public class OkConfig {
         client = builder.client;
         host = builder.host;
         postUiIfCanceled = builder.postUiIfCanceled;
-        parserClass = builder.parserClass;
+        parserFactory = builder.parserFactory;
     }
 
     public OkHttpClient client() {
@@ -40,15 +42,18 @@ public class OkConfig {
         return postUiIfCanceled;
     }
 
-    public Class<? extends HttpParser> parserClass() {
-        return parserClass;
+    /**
+     * create a new {@link HttpParser} instance
+     */
+    public HttpParser<?> parser() {
+        return parserFactory.create();
     }
 
     public static class Builder {
         private OkHttpClient client;
         private String host;
         private boolean postUiIfCanceled;
-        private Class<? extends HttpParser> parserClass;
+        private ParserFactory parserFactory;
 
         public Builder() {
             postUiIfCanceled = false;
@@ -69,25 +74,36 @@ public class OkConfig {
             return this;
         }
 
-        public Builder parserClass(Class<? extends HttpParser> parserClass) {
-            this.parserClass = EasyPreconditions.checkNotNull(parserClass, "parserClass==null");
+        public Builder parserFactory(ParserFactory parserFactory) {
+            this.parserFactory = EasyPreconditions.checkNotNull(parserFactory, "parserClass==null");
             return this;
         }
 
         /**
          * Note: If  {@link #client(OkHttpClient)}  is not called a default {@link
          * OkHttpClient} will be created and used.
-         * If  {@link #parserClass(Class)}  is not called a default {@link JsonParser} will be used.
+         * If  {@link #parserFactory(ParserFactory)}  is not called a default {@link JsonParser} will be used.
          */
         public OkConfig build() {
             if (client == null) {
                 //Lazy Initialization,because it is weight
                 client = new OkHttpClient();
             }
-            if (parserClass == null) {
-                parserClass = JsonParser.class;
+            if (parserFactory == null) {
+                parserFactory = new ParserFactory() {
+                    @NonNull
+                    @Override
+                    public HttpParser<?> create() {
+                        return new JsonParser<>();
+                    }
+                };
             }
             return new OkConfig(this);
         }
+    }
+
+    public interface ParserFactory {
+        @NonNull
+        HttpParser<?> create();
     }
 }
