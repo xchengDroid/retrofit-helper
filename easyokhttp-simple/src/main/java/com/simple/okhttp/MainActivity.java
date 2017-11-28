@@ -14,7 +14,7 @@ import com.google.gson.Gson;
 import com.xcheng.okhttp.EasyOkHttp;
 import com.xcheng.okhttp.callback.BitmapParser;
 import com.xcheng.okhttp.callback.JsonParser;
-import com.xcheng.okhttp.callback.OkCall;
+import com.xcheng.okhttp.request.OkCall;
 import com.xcheng.okhttp.callback.UICallback;
 import com.xcheng.okhttp.error.EasyError;
 import com.xcheng.okhttp.request.ExecutorCall;

@@ -3,7 +3,7 @@ package com.xcheng.okhttp;
 
 import android.util.Log;
 
-import com.xcheng.okhttp.callback.OkCall;
+import com.xcheng.okhttp.request.OkCall;
 import com.xcheng.okhttp.request.ExecutorCall;
 import com.xcheng.okhttp.request.GetRequest;
 import com.xcheng.okhttp.request.OkConfig;

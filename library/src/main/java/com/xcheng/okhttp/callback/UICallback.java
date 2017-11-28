@@ -1,6 +1,7 @@
 package com.xcheng.okhttp.callback;
 
 import com.xcheng.okhttp.error.EasyError;
+import com.xcheng.okhttp.request.OkCall;
 
 public abstract class UICallback<T> {
     public void onBefore(OkCall<T> okCall) {

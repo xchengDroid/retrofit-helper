@@ -1,6 +1,5 @@
 package com.xcheng.okhttp.request;
 
-import com.xcheng.okhttp.callback.OkCall;
 import com.xcheng.okhttp.callback.UICallback;
 import com.xcheng.okhttp.error.EasyError;
 import com.xcheng.okhttp.util.Platform;

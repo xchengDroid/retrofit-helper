@@ -3,6 +3,7 @@ package com.xcheng.okhttp.callback;
 import android.support.annotation.NonNull;
 
 import com.xcheng.okhttp.error.EasyError;
+import com.xcheng.okhttp.request.OkCall;
 
 import java.io.IOException;
 import java.net.ConnectException;

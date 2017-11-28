@@ -4,7 +4,6 @@ import android.support.annotation.NonNull;
 
 import com.google.gson.reflect.TypeToken;
 import com.xcheng.okhttp.EasyOkHttp;
-import com.xcheng.okhttp.callback.OkCall;
 import com.xcheng.okhttp.callback.HttpParser;
 import com.xcheng.okhttp.callback.UICallback;
 import com.xcheng.okhttp.error.EasyError;

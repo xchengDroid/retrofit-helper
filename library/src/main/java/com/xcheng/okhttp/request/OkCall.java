@@ -1,8 +1,7 @@
-package com.xcheng.okhttp.callback;
+package com.xcheng.okhttp.request;
 
 import com.google.gson.reflect.TypeToken;
-import com.xcheng.okhttp.request.OkRequest;
-import com.xcheng.okhttp.request.OkResponse;
+import com.xcheng.okhttp.callback.UICallback;
 
 import java.io.IOException;
 
