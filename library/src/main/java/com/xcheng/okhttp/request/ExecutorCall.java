@@ -42,7 +42,7 @@ public final class ExecutorCall<T> implements OkCall<T> {
     @SuppressWarnings("unchecked")
     public ExecutorCall(@NonNull OkRequest okRequest) {
         this.okRequest = okRequest;
-        this.httpParser = (HttpParser<T>) okRequest.parser();
+        this.httpParser = createHttpParser();
     }
 
     @Override
@@ -200,6 +200,25 @@ public final class ExecutorCall<T> implements OkCall<T> {
         ExecutorCall<T> okCall = new ExecutorCall<>(okRequest);
         okCall.type = type;
         return okCall;
+    }
+    static private class InstantiationException extends RuntimeException {
+        private InstantiationException(String msg, Exception cause) {
+            super(msg, cause);
+        }
+    }
+
+    private HttpParser<T> createHttpParser() {
+        try {
+            return okRequest.parserClass().newInstance();
+        } catch (java.lang.InstantiationException e) {
+            throw new InstantiationException("Unable to instantiate HttpParser " + okRequest.parserClass().getName()
+                    + ": make sure class name exists, is public, and has an"
+                    + " empty constructor that is public", e);
+        } catch (IllegalAccessException e) {
+            throw new InstantiationException("Unable to instantiate HttpParser " + okRequest.parserClass().getName()
+                    + ": make sure class name exists, is public, and has an"
+                    + " empty constructor that is public", e);
+        }
     }
 
     private static synchronized void addCall(OkCall<?> call) {

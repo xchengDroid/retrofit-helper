@@ -2,7 +2,6 @@ package com.simple.okhttp;
 
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -14,13 +13,12 @@ import android.widget.Toast;
 import com.google.gson.Gson;
 import com.xcheng.okhttp.EasyOkHttp;
 import com.xcheng.okhttp.callback.BitmapParser;
-import com.xcheng.okhttp.callback.HttpParser;
 import com.xcheng.okhttp.callback.JsonParser;
-import com.xcheng.okhttp.request.OkCall;
 import com.xcheng.okhttp.callback.UICallback;
 import com.xcheng.okhttp.error.EasyError;
 import com.xcheng.okhttp.request.ExecutorCall;
 import com.xcheng.okhttp.request.GetRequest;
+import com.xcheng.okhttp.request.OkCall;
 import com.xcheng.okhttp.request.OkConfig;
 
 import okhttp3.OkHttpClient;
@@ -37,14 +35,8 @@ public class MainActivity extends AppCompatActivity {
         imageView = (ImageView) findViewById(R.id.iv_easyokhttp);
         OkConfig config = OkConfig.newBuilder()
                 .client(new OkHttpClient())
+                .parserClass(JsonParser.class)
                 .host("http://www.weather.com.cn/")
-                .parserFactory(new OkConfig.ParserFactory() {
-                    @NonNull
-                    @Override
-                    public HttpParser<?> create() {
-                        return new JsonParser<>();
-                    }
-                })
                 .postUiIfCanceled(true)
                 .build();
         EasyOkHttp.init(config);
@@ -87,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void bitmap(final View view) {
         GetRequest getRequest = EasyOkHttp.get("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1499010173&di=9599915fd6f9eb51f527cbbf62a84bd6&imgtype=jpg&er=1&src=http%3A%2F%2F4493bz.1985t.com%2Fuploads%2Fallimg%2F160119%2F5-16011Z92519.jpg")
-                .parser(new BitmapParser())
+                .parserClass(BitmapParser.class)
                 .outProgress()
                 .build();
         ExecutorCall<Bitmap> okCall = new ExecutorCall<>(getRequest);
@@ -102,7 +94,6 @@ public class MainActivity extends AppCompatActivity {
             public void onAfter(OkCall<Bitmap> okCall) {
                 super.onAfter(okCall);
                 Log.e("print", "onAfter");
-
             }
 
             @Override

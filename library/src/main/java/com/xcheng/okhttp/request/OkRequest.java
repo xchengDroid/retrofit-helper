@@ -1,6 +1,8 @@
 package com.xcheng.okhttp.request;
 
+import android.support.annotation.CheckResult;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.xcheng.okhttp.EasyOkHttp;
 import com.xcheng.okhttp.callback.HttpParser;
@@ -29,9 +31,9 @@ public abstract class OkRequest {
 
     //发起请求 解析相关
     private final OkHttpClient client;
-
-    // http解析类
-    private final HttpParser<?> parser;
+    //额外入参
+    private final Map<String, Object> extraMap;
+    private final Class<? extends HttpParser> parserClass;
 
     protected OkRequest(Builder<?> builder) {
         //build方法是抽象，本来应该在build方法里面做检测，现在放到构造函数里面统一检测
@@ -44,7 +46,8 @@ public abstract class OkRequest {
         this.inProgress = builder.inProgress;
         this.outProgress = builder.outProgress;
         this.client = ParamUtil.defValueIfNull(builder.client, EasyOkHttp.getOkConfig().client());
-        this.parser = ParamUtil.defValueIfNull(builder.parser, EasyOkHttp.getOkConfig().parser());
+        this.extraMap = builder.extraMap;
+        this.parserClass = ParamUtil.defValueIfNull(builder.parserClass, EasyOkHttp.getOkConfig().parserClass());
     }
 
     public String url() {
@@ -55,9 +58,23 @@ public abstract class OkRequest {
         return client;
     }
 
+    @Nullable
+    @CheckResult
+    @SuppressWarnings("unchecked")
+    public <E> E extra(String key) {
+        if (extraMap != null) {
+            return (E) extraMap.get(key);
+        }
+        return null;
+    }
 
-    public HttpParser<?> parser() {
-        return parser;
+    @Nullable
+    public Map<String, Object> extraMap() {
+        return extraMap;
+    }
+
+    public Class<? extends HttpParser> parserClass() {
+        return parserClass;
     }
 
     public Object tag() {
@@ -114,7 +131,8 @@ public abstract class OkRequest {
 
         //发起请求 解析相关
         private OkHttpClient client;
-        private HttpParser<?> parser;
+        private Map<String, Object> extraMap;
+        private Class<? extends HttpParser> parserClass;
 
         public Builder() {
             this.headers = new Headers.Builder();
@@ -213,8 +231,23 @@ public abstract class OkRequest {
             return (T) this;
         }
 
-        public T parser(HttpParser<?> parser) {
-            this.parser = parser;
+        public T parserClass(Class<? extends HttpParser> parserClass) {
+            this.parserClass = parserClass;
+            return (T) this;
+        }
+
+        /**
+         * Http 响应解析所需要的额外数据 eg：下载文件保存的路径，某些返回需要检测Header信息session权限等
+         *
+         * @param key   Map key
+         * @param value Map value
+         */
+        public T extra(String key, Object value) {
+            //Lazy Initialization
+            if (this.extraMap == null) {
+                this.extraMap = new LinkedHashMap<>();
+            }
+            this.extraMap.put(key, value);
             return (T) this;
         }
 
