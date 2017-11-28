@@ -53,7 +53,6 @@ public class ParamUtil {
         return Collections.unmodifiableList(new ArrayList<>(list));
     }
 
-    @SuppressWarnings("unchecked")
     public static Type getType(Class<?> clazz) {
         String clsName = clazz.getName();
         if (clsName.startsWith("android.") || clsName.startsWith("java."))
@@ -66,7 +65,7 @@ public class ParamUtil {
         }
     }
 
-    public static Type getSuperclassTypeParameter(Class<?> subclass) {
+    private static Type getSuperclassTypeParameter(Class<?> subclass) {
         Type superclass = subclass.getGenericSuperclass();
         if (superclass instanceof Class) {
             throw new RuntimeException("Missing type parameter.");
