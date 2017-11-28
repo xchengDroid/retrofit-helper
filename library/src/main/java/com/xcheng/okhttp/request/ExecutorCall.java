@@ -225,7 +225,6 @@ public final class ExecutorCall<T> implements OkCall<T> {
         }
     }
 
-
     private static synchronized void addCall(OkCall<?> call) {
         ALL_CALLS.add(call);
     }
