@@ -39,7 +39,6 @@ public final class ExecutorCall<T> implements OkCall<T> {
     private volatile boolean canceled;
     private boolean executed;
 
-    @SuppressWarnings("unchecked")
     public ExecutorCall(@NonNull OkRequest okRequest) {
         this.okRequest = okRequest;
         this.httpParser = createHttpParser();
@@ -201,6 +200,7 @@ public final class ExecutorCall<T> implements OkCall<T> {
         okCall.type = type;
         return okCall;
     }
+
     static private class InstantiationException extends RuntimeException {
         private InstantiationException(String msg, Exception cause) {
             super(msg, cause);
