@@ -32,7 +32,7 @@ public final class ExecutorCall<T> implements OkCall<T> {
     private final OkRequest okRequest;
     //发起请求 解析相关
     private final HttpParser<T> httpParser;
-    private TypeToken<T> typeToken;
+    //用户当json解析的TypeToken未设置的情况下，利用class动态生成typeToken
     private Class<? extends UICallback> tokenClass;
     private ExecutorCallback<T> executorCallback;
 
@@ -40,10 +40,8 @@ public final class ExecutorCall<T> implements OkCall<T> {
     private volatile boolean canceled;
     private boolean executed;
 
-    @SuppressWarnings("unchecked")
     public ExecutorCall(@NonNull OkRequest okRequest) {
         this.okRequest = okRequest;
-        this.typeToken = (TypeToken<T>) okRequest.typeToken();
         this.httpParser = createHttpParser();
     }
 
@@ -160,13 +158,14 @@ public final class ExecutorCall<T> implements OkCall<T> {
         return response;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public TypeToken<T> getTypeToken() {
+        TypeToken<?> typeToken = okRequest.typeToken();
         if (typeToken == null && tokenClass != null) {
-            //延迟初始化
             typeToken = ParamUtil.createTypeToken(tokenClass);
         }
-        return typeToken;
+        return (TypeToken<T>) typeToken;
     }
 
     @Override
@@ -203,7 +202,6 @@ public final class ExecutorCall<T> implements OkCall<T> {
     @Override
     public OkCall<T> clone() {
         ExecutorCall<T> okCall = new ExecutorCall<>(okRequest);
-        okCall.typeToken = typeToken;
         okCall.tokenClass = tokenClass;
         return okCall;
     }
