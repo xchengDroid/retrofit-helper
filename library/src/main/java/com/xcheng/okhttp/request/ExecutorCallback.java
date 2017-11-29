@@ -11,9 +11,9 @@ import com.xcheng.okhttp.util.Platform;
 final class ExecutorCallback<T> extends UICallback<T> {
     private static final Platform PLATFORM = Platform.get();
     private final UICallback<T> delegate;
-    private OnExecutorListener listener;
+    private OnAfterListener listener;
 
-    ExecutorCallback(UICallback<T> delegate, OnExecutorListener listener) {
+    ExecutorCallback(UICallback<T> delegate, OnAfterListener listener) {
         this.delegate = delegate;
         this.listener = listener;
     }
@@ -93,7 +93,7 @@ final class ExecutorCallback<T> extends UICallback<T> {
         });
     }
 
-    interface OnExecutorListener {
+    interface OnAfterListener {
         void onAfter();
     }
 }

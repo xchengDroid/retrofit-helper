@@ -101,7 +101,7 @@ public final class ExecutorCall<T> implements OkCall<T> {
     public void enqueue(UICallback<T> uiCallback) {
         EasyPreconditions.checkNotNull(uiCallback, "uiCallback==null");
         this.type = ParamUtil.getType(uiCallback.getClass());
-        this.executorCallback = new ExecutorCallback<>(uiCallback, new ExecutorCallback.OnExecutorListener() {
+        this.executorCallback = new ExecutorCallback<>(uiCallback, new ExecutorCallback.OnAfterListener() {
             @Override
             public void onAfter() {
                 finished(ExecutorCall.this);
