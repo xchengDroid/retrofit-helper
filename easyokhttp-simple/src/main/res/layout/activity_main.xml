@@ -8,42 +8,41 @@
     tools:context="com.simple.okhttp.MainActivity">
 
     <Button
-        android:textAllCaps="false"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:onClick="json"
         android:text="easyOKHttp获取json!"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:textAllCaps="false" />
 
 
     <Button
-        android:textAllCaps="false"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:onClick="string"
-        android:text="easyOKHttp获取string!"/>
+        android:text="easyOKHttp获取string!"
+        android:textAllCaps="false" />
 
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:onClick="bitmap"
-        android:textAllCaps="false"
-        android:text="easyOKHttp获取Bitmap!" />
+        android:text="easyOKHttp获取Bitmap!"
+        android:textAllCaps="false" />
+
     <TextView
-        android:textAllCaps="false"
         android:id="@+id/tv_easyokhttp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:textAllCaps="false" />
+
     <WebView
         android:id="@+id/web_easyokhttp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
+
     <ImageView
-        android:textAllCaps="false"
         android:id="@+id/iv_easyokhttp"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:textAllCaps="false" />
 </LinearLayout>
