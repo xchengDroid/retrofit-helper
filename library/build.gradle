@@ -25,6 +25,7 @@ android {
 
 dependencies {
     api fileTree(dir: 'libs', include: ['*.jar'])
+    //noinspection GradleDependency
     compileOnly 'com.android.support:support-annotations:26.1.0'
     api 'com.squareup.okhttp3:okhttp:3.9.0'
     api 'com.google.code.gson:gson:2.8.2'
