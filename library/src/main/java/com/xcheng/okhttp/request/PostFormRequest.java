@@ -1,6 +1,6 @@
 package com.xcheng.okhttp.request;
 
-import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.xcheng.okhttp.util.ParamUtil;
 
@@ -30,7 +30,7 @@ public class PostFormRequest extends OkRequest {
 
     private PostFormRequest(Builder builder) {
         super(builder);
-        this.fileInputs = builder.fileInputs;
+        this.fileInputs = ParamUtil.immutableList(builder.fileInputs);
     }
 
     @Override
@@ -84,7 +84,6 @@ public class PostFormRequest extends OkRequest {
     }
 
     public static class Builder extends OkRequest.Builder<Builder> {
-        @NonNull
         private final List<FileInput> fileInputs = new ArrayList<>();
 
         public Builder addFileInput(FileInput fileInput) {
@@ -92,7 +91,7 @@ public class PostFormRequest extends OkRequest {
             return this;
         }
 
-        public Builder addFileInput(String name, MediaType mediaType, File file) {
+        public Builder addFileInput(String name, @Nullable MediaType mediaType, File file) {
             fileInputs.add(new FileInput(name, mediaType, file));
             return this;
         }
@@ -117,12 +116,10 @@ public class PostFormRequest extends OkRequest {
         private File file;
 
         public FileInput(String name, File file) {
-            this.name = name;
-            this.mediaType = MediaType.parse(guessMimeType(file.getName()));
-            this.file = file;
+            this(name, MediaType.parse(guessMimeType(file.getName())), file);
         }
 
-        public FileInput(String name, MediaType mediaType, File file) {
+        public FileInput(String name, @Nullable MediaType mediaType, File file) {
             this.name = name;
             this.mediaType = mediaType;
             this.file = file;
