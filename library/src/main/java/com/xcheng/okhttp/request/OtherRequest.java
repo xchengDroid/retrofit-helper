@@ -66,6 +66,11 @@ public class OtherRequest extends OkRequest {
         }
 
         @Override
+        public Builder param(String key, String value) {
+            throw new UnsupportedOperationException("Unsupported for OtherRequest");
+        }
+
+        @Override
         public OtherRequest build() {
             EasyPreconditions.checkState(method != null, "method==null");
             return new OtherRequest(this);

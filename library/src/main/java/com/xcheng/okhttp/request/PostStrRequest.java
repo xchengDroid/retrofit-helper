@@ -69,6 +69,11 @@ public class PostStrRequest extends OkRequest {
         }
 
         @Override
+        public Builder param(String key, String value) {
+            throw new UnsupportedOperationException("Unsupported for PostStrRequest");
+        }
+
+        @Override
         public PostStrRequest build() {
             EasyPreconditions.checkState(content != null, "content==null,it must have a request body.");
             return new PostStrRequest(this);
