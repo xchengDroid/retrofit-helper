@@ -13,7 +13,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 
 /**
- * HEAD DELETE PUT PATCH
+ * 通用请求 GET POST HEAD DELETE PUT PATCH
  * Created by chengxin on 2017/6/22.
  */
 public class OtherRequest extends OkRequest {
@@ -32,11 +32,13 @@ public class OtherRequest extends OkRequest {
         return new Request.Builder().url(url()).tag(tag()).headers(headers()).method(method, requestBody).build();
     }
 
-    @StringDef({HEAD, DELETE, PUT, PATCH})
+    @StringDef({GET, POST, HEAD, DELETE, PUT, PATCH})
     @Retention(RetentionPolicy.SOURCE)
     public @interface Method {
     }
 
+    public static final String GET = "GET";
+    public static final String POST = "POST";
     public static final String HEAD = "HEAD";
     public static final String DELETE = "DELETE";
     public static final String PUT = "PUT";
