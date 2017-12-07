@@ -5,10 +5,8 @@ import android.support.annotation.Nullable;
 import com.xcheng.okhttp.util.ParamUtil;
 
 import java.io.File;
-import java.io.UnsupportedEncodingException;
 import java.net.FileNameMap;
 import java.net.URLConnection;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -56,12 +54,7 @@ public class PostFormRequest extends OkRequest {
 
     private static String guessMimeType(String fileName) {
         FileNameMap fileNameMap = URLConnection.getFileNameMap();
-        String contentTypeFor = null;
-        try {
-            contentTypeFor = fileNameMap.getContentTypeFor(URLEncoder.encode(fileName, "UTF-8"));
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
+        String contentTypeFor = fileNameMap.getContentTypeFor(fileName);
         return ParamUtil.defValueIfNull(contentTypeFor, MEDIA_TYPE_STREAM.toString());
     }
 
