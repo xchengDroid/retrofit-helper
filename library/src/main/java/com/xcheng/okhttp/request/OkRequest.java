@@ -155,6 +155,11 @@ public abstract class OkRequest {
             return (T) this;
         }
 
+        /**
+         * 设置Http请求的判断url地址，如果url不是以https或者http开头则追加host地址
+         *
+         * @param url http请求的url
+         */
         public T url(String url) {
             EasyPreconditions.checkNotNull(url, "url==null");
             if (!url.regionMatches(true, 0, "https:", 0, 6)
