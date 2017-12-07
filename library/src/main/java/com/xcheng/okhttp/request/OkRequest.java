@@ -159,11 +159,11 @@ public abstract class OkRequest {
             EasyPreconditions.checkNotNull(url, "url==null");
             if (!url.startsWith("http")) {
                 String host = EasyOkHttp.getOkConfig().host();
-                boolean hostStart = host.endsWith("/");
+                boolean hostEnd = host.endsWith("/");
                 boolean urlStart = url.startsWith("/");
-                if (hostStart && urlStart) {
+                if (hostEnd && urlStart) {
                     url = host + url.substring(1);
-                } else if (!hostStart && !urlStart) {
+                } else if (!hostEnd && !urlStart) {
                     url = host + "/" + url;
                 } else {
                     url = host + url;
