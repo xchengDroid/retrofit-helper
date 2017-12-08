@@ -36,13 +36,13 @@ public class PostStrRequest extends OkRequest {
 
     @Override
     public Request createRequest() {
-        return new Request.Builder().url(url()).tag(tag()).headers(headers()).post(RequestBody.create(mediaType, content)).build();
+        return new Request.Builder().url(url()).tag(tag()).headers(headers()).method(method(), RequestBody.create(mediaType, content)).build();
     }
 
     public static class Builder extends OkRequest.Builder<Builder> {
         private MediaType mediaType;
         private String content;
-        
+
         public Builder() {
             //默认为post
             method(OkRequest.POST);

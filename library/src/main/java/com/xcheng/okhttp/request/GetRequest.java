@@ -28,6 +28,7 @@ public class GetRequest extends OkRequest {
     public static class Builder extends OkRequest.Builder<Builder> {
         @Override
         public GetRequest build() {
+            //忽略method设置
             method(OkRequest.GET);
             return new GetRequest(this);
         }

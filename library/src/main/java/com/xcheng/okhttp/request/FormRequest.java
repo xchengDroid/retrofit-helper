@@ -18,15 +18,15 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 
 /**
- * 提交Form表单
+ * 提交Form表单，如果有文件则MediaType 为 multipart/form-data,否则为application/x-www-form-urlencoded
  * Created by cx on 17/6/22.
  */
-public class PostFormRequest extends OkRequest {
+public class FormRequest extends OkRequest {
     private static MediaType MEDIA_TYPE_STREAM = MediaType.parse("application/octet-stream");
 
     private final List<FileInput> fileInputs;
 
-    private PostFormRequest(Builder builder) {
+    private FormRequest(Builder builder) {
         super(builder);
         this.fileInputs = ParamUtil.immutableList(builder.fileInputs);
     }
@@ -49,7 +49,7 @@ public class PostFormRequest extends OkRequest {
             }
             requestBody = builder.build();
         }
-        return new Request.Builder().url(url()).tag(tag()).headers(headers()).post(requestBody).build();
+        return new Request.Builder().url(url()).tag(tag()).headers(headers()).method(method(), requestBody).build();
     }
 
     private static String guessMimeType(String fileName) {
@@ -103,8 +103,8 @@ public class PostFormRequest extends OkRequest {
         }
 
         @Override
-        public PostFormRequest build() {
-            return new PostFormRequest(this);
+        public FormRequest build() {
+            return new FormRequest(this);
         }
     }
 

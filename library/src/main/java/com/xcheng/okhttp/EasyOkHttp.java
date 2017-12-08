@@ -8,7 +8,7 @@ import com.xcheng.okhttp.request.ExecutorCall;
 import com.xcheng.okhttp.request.GetRequest;
 import com.xcheng.okhttp.request.OkConfig;
 import com.xcheng.okhttp.request.OtherRequest;
-import com.xcheng.okhttp.request.PostFormRequest;
+import com.xcheng.okhttp.request.FormRequest;
 import com.xcheng.okhttp.request.PostStrRequest;
 import com.xcheng.okhttp.util.EasyPreconditions;
 
@@ -57,8 +57,8 @@ public class EasyOkHttp {
         return new PostStrRequest.Builder().url(url);
     }
 
-    public static PostFormRequest.Builder postForm(String url) {
-        return new PostFormRequest.Builder().url(url);
+    public static FormRequest.Builder postForm(String url) {
+        return new FormRequest.Builder().url(url);
     }
 
     public static OtherRequest.Builder other(String url) {
