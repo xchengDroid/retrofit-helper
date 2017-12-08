@@ -42,6 +42,11 @@ public class PostStrRequest extends OkRequest {
     public static class Builder extends OkRequest.Builder<Builder> {
         private MediaType mediaType;
         private String content;
+        
+        public Builder() {
+            //默认为post
+            method(OkRequest.POST);
+        }
 
         public Builder content(String content) {
             this.content = content;

@@ -3,12 +3,15 @@ package com.xcheng.okhttp.request;
 import android.support.annotation.CheckResult;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringDef;
 
 import com.xcheng.okhttp.EasyOkHttp;
 import com.xcheng.okhttp.callback.HttpParser;
 import com.xcheng.okhttp.util.EasyPreconditions;
 import com.xcheng.okhttp.util.ParamUtil;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -21,6 +24,19 @@ import okhttp3.Request;
  * Created by cx on 17/6/22.
  */
 public abstract class OkRequest {
+    @StringDef({GET, POST, HEAD, DELETE, PUT, PATCH})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface Method {
+    }
+
+    public static final String GET = "GET";
+    public static final String POST = "POST";
+    public static final String HEAD = "HEAD";
+    public static final String DELETE = "DELETE";
+    public static final String PUT = "PUT";
+    public static final String PATCH = "PATCH";
+
+    private final String method;
     private final String url;
     private final Object tag;
     private final int id;
@@ -37,7 +53,10 @@ public abstract class OkRequest {
 
     protected OkRequest(Builder<?> builder) {
         //build方法是抽象，本来应该在build方法里面做检测，现在放到构造函数里面统一检测
+        EasyPreconditions.checkState(builder.method != null, "method==null");
         EasyPreconditions.checkState(builder.url != null, "url==null");
+
+        this.method = builder.method;
         this.url = builder.url;
         this.tag = ParamUtil.defValueIfNull(builder.tag, this);
         this.params = builder.params;
@@ -48,6 +67,10 @@ public abstract class OkRequest {
         this.client = ParamUtil.defValueIfNull(builder.client, EasyOkHttp.getOkConfig().client());
         this.extraMap = builder.extraMap;
         this.parserClass = ParamUtil.defValueIfNull(builder.parserClass, EasyOkHttp.getOkConfig().parserClass());
+    }
+
+    public String method() {
+        return method;
     }
 
     public String url() {
@@ -121,6 +144,7 @@ public abstract class OkRequest {
      */
     @SuppressWarnings("unchecked")
     public static abstract class Builder<T extends Builder> {
+        private String method;
         private String url;
         private Object tag;
         private Headers.Builder headers;
@@ -138,6 +162,12 @@ public abstract class OkRequest {
             this.headers = new Headers.Builder();
             this.inProgress = false;
             this.outProgress = false;
+        }
+
+        public T method(@Method String method) {
+            EasyPreconditions.checkNotNull(method, "method==null");
+            this.method = method;
+            return (T) this;
         }
 
         public T id(int id) {
