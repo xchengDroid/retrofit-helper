@@ -12,11 +12,10 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 
 /**
- * 提交字text,json等
+ * 提交text,json等
  * Created by chengxin on 2017/6/22.
  */
-
-public class PostStrRequest extends OkRequest {
+public class StringRequest extends OkRequest {
     private static final MediaType MEDIA_TYPE_PLAIN = MediaType.parse("text/plain;charset=utf-8");
 
     private static final MediaType MEDIA_TYPE_JSON = MediaType.parse("application/json; charset=utf-8");
@@ -24,7 +23,7 @@ public class PostStrRequest extends OkRequest {
     private final String content;
     private final MediaType mediaType;
 
-    private PostStrRequest(Builder builder) {
+    private StringRequest(Builder builder) {
         super(builder);
         content = builder.content;
         mediaType = ParamUtil.defValueIfNull(builder.mediaType, MEDIA_TYPE_PLAIN);
@@ -75,13 +74,13 @@ public class PostStrRequest extends OkRequest {
 
         @Override
         public Builder param(String key, String value) {
-            throw new UnsupportedOperationException("Unsupported for PostStrRequest");
+            throw new UnsupportedOperationException("Unsupported for StringRequest");
         }
 
         @Override
-        public PostStrRequest build() {
+        public StringRequest build() {
             EasyPreconditions.checkState(content != null, "content==null,it must have a request body.");
-            return new PostStrRequest(this);
+            return new StringRequest(this);
         }
     }
 }
