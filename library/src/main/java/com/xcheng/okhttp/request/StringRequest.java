@@ -1,6 +1,7 @@
 package com.xcheng.okhttp.request;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.xcheng.okhttp.util.EasyPreconditions;
 import com.xcheng.okhttp.util.ParamUtil;
@@ -52,7 +53,7 @@ public class StringRequest extends OkRequest {
             return this;
         }
 
-        public Builder mediaType(MediaType mediaType) {
+        public Builder mediaType(@Nullable MediaType mediaType) {
             this.mediaType = mediaType;
             return this;
         }
@@ -79,6 +80,7 @@ public class StringRequest extends OkRequest {
 
         @Override
         public StringRequest build() {
+            //统一检测了
             EasyPreconditions.checkState(content != null, "content==null,it must have a request body.");
             return new StringRequest(this);
         }
