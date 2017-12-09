@@ -11,6 +11,7 @@ import java.io.IOException;
 import okhttp3.Response;
 
 /**
+ * 获取返回的string
  * Created by chengxin on 2017/6/22.
  */
 public class StringParser extends ErrorParser<String> {
