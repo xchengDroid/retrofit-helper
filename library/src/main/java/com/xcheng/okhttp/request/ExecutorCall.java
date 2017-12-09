@@ -207,6 +207,7 @@ public final class ExecutorCall<T> implements OkCall<T> {
         }
     }
 
+    @SuppressWarnings("unchecked")
     private HttpParser<T> createHttpParser() {
         try {
             return okRequest.parserClass().newInstance();
