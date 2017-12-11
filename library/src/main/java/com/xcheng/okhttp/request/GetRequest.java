@@ -1,7 +1,10 @@
 package com.xcheng.okhttp.request;
 
-import com.xcheng.okhttp.util.ParamUtil;
+import android.net.Uri;
 
+import java.util.Map;
+
+import okhttp3.HttpUrl;
 import okhttp3.Request;
 
 /**
@@ -9,23 +12,40 @@ import okhttp3.Request;
  * Created by chengxin on 2017/6/22.
  */
 public class GetRequest extends OkRequest {
-    private final String appendUrl;
+    private final HttpUrl httpUrl;
 
     private GetRequest(Builder builder) {
         super(builder);
-        appendUrl = ParamUtil.appendParams(url(), params());
+        @SuppressWarnings("ConstantConditions")
+        HttpUrl.Builder urlBuilder = HttpUrl.parse(url()).newBuilder();
+        for (Map.Entry<String, String> entry : params().entrySet()) {
+            if (!builder.encoded) {
+                urlBuilder.addEncodedQueryParameter(Uri.encode(entry.getKey()), Uri.encode(entry.getValue()));
+            } else {
+                urlBuilder.addEncodedQueryParameter(entry.getKey(), entry.getValue());
+            }
+        }
+        httpUrl = urlBuilder.build();
     }
 
-    public String getAppendUrl() {
-        return appendUrl;
+    public HttpUrl httpUrl() {
+        return httpUrl;
     }
 
     @Override
     public Request createRequest() {
-        return new Request.Builder().url(appendUrl).headers(headers()).tag(tag()).build();
+        return new Request.Builder().url(httpUrl).headers(headers()).tag(tag()).build();
     }
 
     public static class Builder extends OkRequest.Builder<Builder> {
+        //是否已经编码过了
+        private boolean encoded = false;
+
+        public Builder encoded(boolean encoded) {
+            this.encoded = encoded;
+            return this;
+        }
+
         @Override
         public GetRequest build() {
             //忽略method设置

@@ -1,6 +1,5 @@
 package com.xcheng.okhttp.util;
 
-import android.net.Uri;
 import android.support.annotation.NonNull;
 
 import com.google.gson.reflect.TypeToken;
@@ -18,17 +17,6 @@ import java.util.Map;
  */
 
 public class ParamUtil {
-    public static String appendParams(String url, Map<String, String> params) {
-        if (url == null || isEmpty(params)) {
-            return url;
-        }
-        Uri.Builder builder = Uri.parse(url).buildUpon();
-        for (Map.Entry<String, String> entry : params.entrySet()) {
-            builder.appendQueryParameter(entry.getKey(), entry.getValue());
-        }
-        return builder.build().toString();
-    }
-
     public static boolean isEmpty(Map<?, ?> map) {
         return map == null || map.isEmpty();
     }
