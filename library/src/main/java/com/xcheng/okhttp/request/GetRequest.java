@@ -18,8 +18,9 @@ public class GetRequest extends OkRequest {
         super(builder);
         @SuppressWarnings("ConstantConditions")
         HttpUrl.Builder urlBuilder = HttpUrl.parse(url()).newBuilder();
+        final boolean encoded = builder.encoded;
         for (Map.Entry<String, String> entry : params().entrySet()) {
-            if (!builder.encoded) {
+            if (!encoded) {
                 urlBuilder.addEncodedQueryParameter(Uri.encode(entry.getKey()), Uri.encode(entry.getValue()));
             } else {
                 urlBuilder.addEncodedQueryParameter(entry.getKey(), entry.getValue());
