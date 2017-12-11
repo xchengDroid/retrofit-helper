@@ -1,6 +1,6 @@
 package com.xcheng.okhttp.request;
 
-import android.net.Uri;
+import com.xcheng.okhttp.util.ParamUtil;
 
 import java.util.Map;
 
@@ -21,7 +21,7 @@ public class GetRequest extends OkRequest {
         final boolean encoded = builder.encoded;
         for (Map.Entry<String, String> entry : params().entrySet()) {
             if (!encoded) {
-                urlBuilder.addEncodedQueryParameter(Uri.encode(entry.getKey()), Uri.encode(entry.getValue()));
+                urlBuilder.addEncodedQueryParameter(ParamUtil.encode(entry.getKey()), ParamUtil.encode(entry.getValue()));
             } else {
                 urlBuilder.addEncodedQueryParameter(entry.getKey(), entry.getValue());
             }
