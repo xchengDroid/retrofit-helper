@@ -22,7 +22,6 @@ import okhttp3.RequestBody;
  * Created by cx on 17/6/22.
  */
 public class FormRequest extends OkRequest {
-    private static MediaType MEDIA_TYPE_STREAM = MediaType.parse("application/octet-stream");
 
     private final List<FileInput> fileInputs;
 

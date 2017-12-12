@@ -9,7 +9,7 @@ import com.xcheng.okhttp.request.GetRequest;
 import com.xcheng.okhttp.request.OkConfig;
 import com.xcheng.okhttp.request.OtherRequest;
 import com.xcheng.okhttp.request.FormRequest;
-import com.xcheng.okhttp.request.StringRequest;
+import com.xcheng.okhttp.request.JsonRequest;
 import com.xcheng.okhttp.util.EasyPreconditions;
 
 /**
@@ -53,8 +53,8 @@ public class EasyOkHttp {
         return new GetRequest.Builder().url(url);
     }
 
-    public static StringRequest.Builder string(String url) {
-        return new StringRequest.Builder().url(url);
+    public static JsonRequest.Builder json(String url) {
+        return new JsonRequest.Builder().url(url);
     }
 
     public static FormRequest.Builder form(String url) {
