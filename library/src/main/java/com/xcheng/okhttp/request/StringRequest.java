@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import com.xcheng.okhttp.util.EasyPreconditions;
 import com.xcheng.okhttp.util.ParamUtil;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import okhttp3.MediaType;
@@ -58,19 +59,24 @@ public class StringRequest extends OkRequest {
             return this;
         }
 
-        public OkRequest json(String json) {
-            //如果mediaType==null 默认设置为MEDIA_TYPE_JSON
-            if (mediaType == null) {
-                mediaType(MEDIA_TYPE_JSON);
-            }
-            return content(json).build();
-        }
-
         /**
          * 将jsonObject转换成json字符串对象
          */
-        public OkRequest json(@NonNull JSONObject jsonObject) {
-            return json(jsonObject.toString());
+        public Builder json(@NonNull JSONObject jsonObject) {
+            if (mediaType == null) {
+                mediaType(MEDIA_TYPE_JSON);
+            }
+            return content(jsonObject.toString());
+        }
+
+        /**
+         * 将JSONArray转换成json字符串对象
+         */
+        public Builder json(@NonNull JSONArray jsonArray) {
+            if (mediaType == null) {
+                mediaType(MEDIA_TYPE_JSON);
+            }
+            return content(jsonArray.toString());
         }
 
         @Override
