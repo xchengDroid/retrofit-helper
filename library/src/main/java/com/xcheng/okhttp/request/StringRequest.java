@@ -63,9 +63,8 @@ public class StringRequest extends OkRequest {
          * 将jsonObject转换成json字符串对象
          */
         public Builder json(@NonNull JSONObject jsonObject) {
-            if (mediaType == null) {
-                mediaType(MEDIA_TYPE_JSON);
-            }
+            if (mediaType == null)
+                mediaType = MEDIA_TYPE_JSON;
             return content(jsonObject.toString());
         }
 
@@ -73,9 +72,8 @@ public class StringRequest extends OkRequest {
          * 将JSONArray转换成json字符串对象
          */
         public Builder json(@NonNull JSONArray jsonArray) {
-            if (mediaType == null) {
-                mediaType(MEDIA_TYPE_JSON);
-            }
+            if (mediaType == null)
+                mediaType = MEDIA_TYPE_JSON;
             return content(jsonArray.toString());
         }
 
