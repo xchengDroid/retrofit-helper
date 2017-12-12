@@ -38,7 +38,7 @@ public class JsonRequest extends OkRequest {
 
     public static class Builder extends OkRequest.Builder<Builder> {
         private String json;
-        private final Map<String, Object> nameValuePairs = new LinkedHashMap<>();
+        private Map<String, Object> nameValuePairs;
 
         public Builder() {
             //默认为post
@@ -75,6 +75,9 @@ public class JsonRequest extends OkRequest {
          */
         public Builder put(String name, Object value) {
             EasyPreconditions.checkNotNull(name, "name==null");
+            if (nameValuePairs == null) {
+                nameValuePairs = new LinkedHashMap<>();
+            }
             nameValuePairs.put(name, value);
             return this;
         }
@@ -87,7 +90,7 @@ public class JsonRequest extends OkRequest {
         @Override
         public JsonRequest build() {
             if (json == null) {
-                if (nameValuePairs.isEmpty()) {
+                if (nameValuePairs == null || nameValuePairs.isEmpty()) {
                     throw new IllegalStateException("json==null,it must have a request body.");
                 }
                 json = new JSONObject(nameValuePairs).toString();
