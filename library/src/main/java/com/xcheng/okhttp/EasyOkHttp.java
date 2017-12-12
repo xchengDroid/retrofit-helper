@@ -53,14 +53,23 @@ public class EasyOkHttp {
         return new GetRequest.Builder().url(url);
     }
 
+    /**
+     * 提交json，默认为POST请求
+     */
     public static JsonRequest.Builder json(String url) {
         return new JsonRequest.Builder().url(url);
     }
 
+    /**
+     * 提交Form，默认为POST请求
+     */
     public static FormRequest.Builder form(String url) {
         return new FormRequest.Builder().url(url);
     }
 
+    /**
+     * 自定义构造任何请求，注意：一定要设置method，默认没有设置
+     */
     public static OtherRequest.Builder other(String url) {
         return new OtherRequest.Builder().url(url);
     }
