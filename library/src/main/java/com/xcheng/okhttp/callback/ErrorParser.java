@@ -20,15 +20,16 @@ public abstract class ErrorParser<T> implements HttpParser<T> {
     @Override
     @NonNull
     public EasyError parseException(OkCall<T> okCall, IOException e) {
+        String message = null;
         if (e instanceof UnknownHostException) {
-            return new EasyError(-101, e.getMessage());
+            message = "网络异常";
         } else if (e instanceof ConnectException) {
-            return new EasyError(-102, e.getMessage());
+            message = "网络异常";
         } else if (e instanceof SocketException) {
-            return new EasyError(-103, e.getMessage());
+            message = "服务异常";
         } else if (e instanceof SocketTimeoutException) {
-            return new EasyError(-104, e.getMessage());
+            message = "请求超时";
         }
-        return new EasyError(-105, e.getMessage());
+        return new EasyError(message == null ? "请求失败" : message, e);
     }
 }
