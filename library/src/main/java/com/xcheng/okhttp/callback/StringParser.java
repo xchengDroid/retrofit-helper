@@ -21,6 +21,6 @@ public class StringParser extends ErrorParser<String> {
         if (response.isSuccessful()) {
             return OkResponse.success(response.body().string());
         }
-        return OkResponse.error(EasyError.create("response error"));
+        return OkResponse.error(new EasyError("response error"));
     }
 }

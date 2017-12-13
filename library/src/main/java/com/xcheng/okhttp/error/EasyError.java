@@ -3,46 +3,26 @@ package com.xcheng.okhttp.error;
 import android.support.annotation.NonNull;
 
 /**
- * 通用的错误信息，可继承添加一些自定义的error
+ * 通用的错误信息，一般请求是失败只需要弹出一些错误信息即可
  * Created by chengxin on 2017/6/22.
  */
 public class EasyError {
     /**
-     * 唯一错误码
-     */
-    private final int code;
-    /**
-     * 错误信息
+     * 展示在前段的错误描述信息
      */
     private String message;
     /**
-     * 存放需要保存的对象，如原始的json,表单出错后返回错误实体之类
+     * 请求失败保存失败信息,如原始Exception、json,解析的错误实体
      */
-    private final Object extra;
+    private final Object body;
 
-    public EasyError(int code, String message) {
-        this(code, message, null);
+    public EasyError(String message) {
+        this(message, null);
     }
 
-    public EasyError(int code, String message, Object extra) {
-        this.code = code;
+    public EasyError(String message, Object body) {
         this.message = message;
-        this.extra = extra;
-    }
-
-    /**
-     * 静态方法创建简单的错误信息,
-     * code为{@link Integer#MIN_VALUE}
-     *
-     * @param message 错误描述
-     * @return EasyError
-     */
-    public static EasyError create(String message) {
-        return new EasyError(Integer.MIN_VALUE, message);
-    }
-
-    public int getCode() {
-        return code;
+        this.body = body;
     }
 
     @NonNull
@@ -62,18 +42,19 @@ public class EasyError {
         this.message = message;
     }
 
-    public Object getExtra() {
-        return extra;
+    /**
+     * 强制装换之前注意确保对象类型正确
+     */
+    public Object getBody() {
+        return body;
     }
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "{code="
-                + code
-                + ", message="
+        return getClass().getSimpleName() + "{message="
                 + message
-                + ", extra="
-                + extra
-                + '}';
+                + ", body="
+                + body
+                + "}";
     }
 }

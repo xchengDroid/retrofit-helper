@@ -20,6 +20,6 @@ public class BitmapParser extends ErrorParser<Bitmap> {
         if (response.isSuccessful()) {
             return OkResponse.success(BitmapFactory.decodeStream(response.body().byteStream()));
         }
-        return OkResponse.error(EasyError.create("response error"));
+        return OkResponse.error(new EasyError("response error"));
     }
 }

@@ -30,6 +30,6 @@ public class JsonParser<T> extends ErrorParser<T> {
             T body = new Gson().fromJson(str, token.getType());
             return OkResponse.success(body);
         }
-        return OkResponse.error(EasyError.create("response error"));
+        return OkResponse.error(new EasyError("response error"));
     }
 }
