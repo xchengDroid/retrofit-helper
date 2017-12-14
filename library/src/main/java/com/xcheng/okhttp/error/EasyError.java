@@ -8,11 +8,11 @@ import android.support.annotation.NonNull;
  */
 public class EasyError {
     /**
-     * 展示在前段的错误描述信息
+     * 展示在前端的错误描述信息
      */
     private String message;
     /**
-     * 请求失败保存失败信息,如原始Exception、json,解析的错误实体
+     * 请求失败保存失败信息,如原始Exception、json、解析的错误实体
      */
     private final Object body;
 
