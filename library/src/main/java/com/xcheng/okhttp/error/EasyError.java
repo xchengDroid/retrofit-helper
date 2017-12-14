@@ -28,7 +28,7 @@ public class EasyError {
     @NonNull
     public String getMessage() {
         if (message == null) {
-            return "";
+            return "null message";
         }
         return message;
     }
