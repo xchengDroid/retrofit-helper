@@ -24,8 +24,7 @@ public class AnyRequest extends OkRequest {
     public Request createRequest() {
         return new Request.Builder().url(url()).tag(tag()).headers(headers()).method(method(), requestBody).build();
     }
-
-
+    
     public static class Builder extends OkRequest.Builder<Builder> {
         private RequestBody requestBody;
 
