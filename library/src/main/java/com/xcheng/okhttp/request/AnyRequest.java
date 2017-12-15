@@ -7,14 +7,15 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 
 /**
- * 通用请求 GET POST HEAD DELETE PUT PATCH
+ * 通用请求 支持 GET POST HEAD DELETE PUT PATCH 中的任意类型,
+ * 自由构造RequestBody
  * Created by chengxin on 2017/6/22.
  */
-public class OtherRequest extends OkRequest {
+public class AnyRequest extends OkRequest {
 
-    private RequestBody requestBody;
+    private final RequestBody requestBody;
 
-    private OtherRequest(Builder builder) {
+    private AnyRequest(Builder builder) {
         super(builder);
         this.requestBody = builder.requestBody;
     }
@@ -42,12 +43,12 @@ public class OtherRequest extends OkRequest {
 
         @Override
         public Builder param(String key, String value) {
-            throw new UnsupportedOperationException("Unsupported for OtherRequest");
+            throw new UnsupportedOperationException("Unsupported for AnyRequest");
         }
 
         @Override
-        public OtherRequest build() {
-            return new OtherRequest(this);
+        public AnyRequest build() {
+            return new AnyRequest(this);
         }
     }
 }

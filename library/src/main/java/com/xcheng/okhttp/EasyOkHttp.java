@@ -7,7 +7,7 @@ import com.xcheng.okhttp.request.OkCall;
 import com.xcheng.okhttp.request.ExecutorCall;
 import com.xcheng.okhttp.request.GetRequest;
 import com.xcheng.okhttp.request.OkConfig;
-import com.xcheng.okhttp.request.OtherRequest;
+import com.xcheng.okhttp.request.AnyRequest;
 import com.xcheng.okhttp.request.FormRequest;
 import com.xcheng.okhttp.request.JsonRequest;
 import com.xcheng.okhttp.util.EasyPreconditions;
@@ -70,8 +70,8 @@ public class EasyOkHttp {
     /**
      * 自定义构造任何请求，注意：一定要设置method，默认没有设置
      */
-    public static OtherRequest.Builder other(String url) {
-        return new OtherRequest.Builder().url(url);
+    public static AnyRequest.Builder any(String url) {
+        return new AnyRequest.Builder().url(url);
     }
 
     public static void cancel(Object tag) {
