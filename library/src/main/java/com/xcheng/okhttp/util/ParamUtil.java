@@ -4,10 +4,8 @@ import android.support.annotation.NonNull;
 
 import com.google.gson.reflect.TypeToken;
 
-import java.io.UnsupportedEncodingException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -19,16 +17,6 @@ import java.util.Map;
  */
 
 public class ParamUtil {
-
-    public static String encode(String s) {
-        if (s == null) return null;
-        try {
-            return URLEncoder.encode(s, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-            return s;
-        }
-    }
 
     public static boolean isEmpty(Map<?, ?> map) {
         return map == null || map.isEmpty();

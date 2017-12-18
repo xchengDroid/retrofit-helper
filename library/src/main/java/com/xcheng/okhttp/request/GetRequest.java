@@ -1,6 +1,6 @@
 package com.xcheng.okhttp.request;
 
-import com.xcheng.okhttp.util.ParamUtil;
+import android.net.Uri;
 
 import java.util.Map;
 
@@ -20,7 +20,7 @@ public class GetRequest extends OkRequest {
         HttpUrl.Builder urlBuilder = HttpUrl.parse(url()).newBuilder();
         final boolean encoded = builder.encoded;
         for (Map.Entry<String, String> entry : params().entrySet()) {
-            String value = encoded ? entry.getValue() : ParamUtil.encode(entry.getValue());
+            String value = encoded ? entry.getValue() : Uri.encode(entry.getValue()/* ' ' space encoded %20 */);
             urlBuilder.addEncodedQueryParameter(entry.getKey(), value);
         }
         httpUrl = urlBuilder.build();
