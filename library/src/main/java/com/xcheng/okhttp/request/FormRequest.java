@@ -78,11 +78,6 @@ public class FormRequest extends OkRequest {
     public static class Builder extends OkRequest.Builder<Builder> {
         private final List<FileInput> fileInputs = new ArrayList<>();
 
-        public Builder() {
-            //默认为post
-            method(OkRequest.POST);
-        }
-
         public Builder addFileInput(FileInput fileInput) {
             fileInputs.add(fileInput);
             return this;

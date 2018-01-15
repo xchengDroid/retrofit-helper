@@ -39,12 +39,7 @@ public class JsonRequest extends OkRequest {
     public static class Builder extends OkRequest.Builder<Builder> {
         private String json;
         private Map<String, Object> nameValuePairs;
-
-        public Builder() {
-            //默认为post
-            method(OkRequest.POST);
-        }
-
+        
         public Builder json(String json) {
             this.json = json;
             return this;

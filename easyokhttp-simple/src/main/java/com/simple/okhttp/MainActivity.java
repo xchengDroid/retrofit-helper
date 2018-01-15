@@ -31,8 +31,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        webView = (WebView) findViewById(R.id.web_easyokhttp);
-        imageView = (ImageView) findViewById(R.id.iv_easyokhttp);
+        webView = findViewById(R.id.web_easyokhttp);
+        imageView = findViewById(R.id.iv_easyokhttp);
         OkConfig config = OkConfig.newBuilder()
                 .client(new OkHttpClient())
                 .parserClass(JsonParser.class)
