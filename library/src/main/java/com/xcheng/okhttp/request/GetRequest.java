@@ -2,6 +2,8 @@ package com.xcheng.okhttp.request;
 
 import android.net.Uri;
 
+import com.xcheng.okhttp.util.EasyPreconditions;
+
 import java.util.Map;
 
 import okhttp3.HttpUrl;
@@ -16,14 +18,15 @@ public class GetRequest extends OkRequest {
 
     private GetRequest(Builder builder) {
         super(builder);
-        @SuppressWarnings("ConstantConditions")
-        HttpUrl.Builder urlBuilder = HttpUrl.parse(url()).newBuilder();
+        HttpUrl parsedUrl = HttpUrl.parse(url());
+        EasyPreconditions.checkNotNull(parsedUrl, "unexpected url: " + url());
+        HttpUrl.Builder urlBuilder = parsedUrl.newBuilder();
         final boolean encoded = builder.encoded;
         for (Map.Entry<String, String> entry : params().entrySet()) {
             String value = encoded ? entry.getValue() : Uri.encode(entry.getValue()/* ' ' space encoded %20 */);
             urlBuilder.addEncodedQueryParameter(entry.getKey(), value);
         }
-        httpUrl = urlBuilder.build();
+        this.httpUrl = urlBuilder.build();
     }
 
     public HttpUrl httpUrl() {
