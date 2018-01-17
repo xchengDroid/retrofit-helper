@@ -18,7 +18,7 @@ import com.xcheng.okhttp.util.EasyPreconditions;
 public class EasyOkHttp {
     public static final long DEFAULT_MILLISECONDS = 10_000L;
     private static OkConfig sOkConfig;
-    public static final String TAG = EasyOkHttp.class.getSimpleName();
+    static final String TAG = EasyOkHttp.class.getSimpleName();
 
     //be private
     private EasyOkHttp() {
