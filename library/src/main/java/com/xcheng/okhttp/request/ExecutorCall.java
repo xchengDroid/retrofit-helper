@@ -176,10 +176,13 @@ public final class ExecutorCall<T> implements OkCall<T> {
     @Override
     public void cancel() {
         canceled = true;
+
+        okhttp3.Call call;
         synchronized (this) {
-            if (rawCall != null) {
-                rawCall.cancel();
-            }
+            call = rawCall;
+        }
+        if (call != null) {
+            call.cancel();
         }
     }
 
