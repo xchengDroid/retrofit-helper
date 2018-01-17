@@ -72,7 +72,7 @@ public class EasyOkHttp {
     }
 
     /**
-     * 自定义构造任何请求，注意：一定要设置method，默认没有设置
+     * 自定义构造任何请求，注意：method默认值为POST，默认没有设置
      */
     public static AnyRequest.Builder any(String url) {
         return new AnyRequest.Builder().url(url);
