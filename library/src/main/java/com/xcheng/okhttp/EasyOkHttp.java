@@ -38,9 +38,13 @@ public class EasyOkHttp {
     }
 
     /**
+     * Ensure that you've called {@link #init(OkConfig)} first. Otherwise this method
+     * throws an exception.
      * like  JobManager.create(this) JobManager.instance()
+     *
+     * @return The {@code OkConfig} object.
      */
-    public static OkConfig getOkConfig() {
+    public static OkConfig okConfig() {
         if (sOkConfig == null) {
             synchronized (EasyOkHttp.class) {
                 EasyPreconditions.checkState(sOkConfig != null, "EasyOkHttp must be init with OkConfig before using");
