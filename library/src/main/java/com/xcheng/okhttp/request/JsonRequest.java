@@ -14,7 +14,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 
 /**
- * 提交JSON
+ * 提交JSON，默认为POST请求
  * Created by chengxin on 2017/6/22.
  */
 public class JsonRequest extends OkRequest {
@@ -39,7 +39,7 @@ public class JsonRequest extends OkRequest {
     public static class Builder extends OkRequest.Builder<Builder> {
         private String json;
         private Map<String, Object> nameValuePairs;
-        
+
         public Builder json(String json) {
             this.json = json;
             return this;

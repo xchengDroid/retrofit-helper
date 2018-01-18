@@ -18,7 +18,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 
 /**
- * 提交Form表单，如果有文件则MediaType 为 multipart/form-data,否则为application/x-www-form-urlencoded
+ * 提交Form表单，默认为POST请求。如果有文件则MediaType 为 multipart/form-data,否则为application/x-www-form-urlencoded
  * Created by cx on 17/6/22.
  */
 public class FormRequest extends OkRequest {
