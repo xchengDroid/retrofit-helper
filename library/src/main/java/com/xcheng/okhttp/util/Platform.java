@@ -33,11 +33,4 @@ public class Platform implements Executor {
     public static boolean isOnMainThread() {
         return Looper.myLooper() == Looper.getMainLooper();
     }
-
-    /**
-     * Returns {@code true} if called on the main thread, {@code false} otherwise.
-     */
-    public static boolean isOnBackgroundThread() {
-        return !isOnMainThread();
-    }
 }
