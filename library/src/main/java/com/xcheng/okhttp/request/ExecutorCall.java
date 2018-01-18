@@ -55,11 +55,9 @@ public final class ExecutorCall<T> implements OkCall<T> {
         if (okRequest.inProgress() && body != null && executorCallback != null) {
             Request.Builder builder = request.newBuilder();
             RequestBody requestBody = new ProgressRequestBody(body, new ProgressRequestBody.Listener() {
-
                 @Override
                 public void onRequestProgress(long bytesWritten, long contentLength, boolean done) {
                     executorCallback.inProgress(ExecutorCall.this, bytesWritten * 1.0f / contentLength, contentLength, done);
-
                 }
             });
             builder.method(request.method(), requestBody);
