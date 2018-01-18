@@ -177,6 +177,7 @@ public final class ExecutorCall<T> implements OkCall<T> {
 
         okhttp3.Call call;
         synchronized (this) {
+            //防止访问的时候rawCall正在多线程赋值，保证一致性，类似单利模式
             call = rawCall;
         }
         if (call != null) {
