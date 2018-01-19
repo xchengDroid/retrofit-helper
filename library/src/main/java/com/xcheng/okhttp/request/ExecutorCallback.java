@@ -11,9 +11,9 @@ import com.xcheng.okhttp.util.Platform;
 final class ExecutorCallback<T> extends UICallback<T> {
     private static final Platform PLATFORM = Platform.get();
     private final UICallback<T> delegate;
-    private final OnFinishListener listener;
+    private final OnFinishedListener listener;
 
-    ExecutorCallback(UICallback<T> delegate, OnFinishListener listener) {
+    ExecutorCallback(UICallback<T> delegate, OnFinishedListener listener) {
         this.delegate = delegate;
         this.listener = listener;
     }
@@ -38,7 +38,7 @@ final class ExecutorCallback<T> extends UICallback<T> {
                 if (okCall.isPostUi()) {
                     delegate.onFinish(okCall);
                 }
-                listener.onFinish();
+                listener.onFinished();
             }
         });
     }
@@ -93,7 +93,10 @@ final class ExecutorCallback<T> extends UICallback<T> {
         });
     }
 
-    interface OnFinishListener {
-        void onFinish();
+    /**
+     * 请求已经结束回调
+     */
+    interface OnFinishedListener {
+        void onFinished();
     }
 }

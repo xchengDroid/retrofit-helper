@@ -9,6 +9,7 @@ import com.xcheng.okhttp.request.OkCall;
  * @param <T>
  */
 public abstract class UICallback<T> {
+
     public void onStart(OkCall<T> okCall) {
 
     }
