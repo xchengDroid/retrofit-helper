@@ -85,14 +85,14 @@ public class MainActivity extends AppCompatActivity {
         ExecutorCall<Bitmap> okCall = new ExecutorCall<>(getRequest);
         okCall.enqueue(new UICallback<Bitmap>() {
             @Override
-            public void onBefore(OkCall<Bitmap> okCall) {
-                super.onBefore(okCall);
+            public void onStart(OkCall<Bitmap> okCall) {
+                super.onStart(okCall);
                 Log.e("print", "before");
             }
 
             @Override
-            public void onAfter(OkCall<Bitmap> okCall) {
-                super.onAfter(okCall);
+            public void onFinish(OkCall<Bitmap> okCall) {
+                super.onFinish(okCall);
                 Log.e("print", "onAfter");
             }
 

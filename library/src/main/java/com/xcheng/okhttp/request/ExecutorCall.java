@@ -69,12 +69,12 @@ public final class ExecutorCall<T> implements OkCall<T> {
     private void callFailure(EasyError error) {
         EasyPreconditions.checkNotNull(error, "error==null");
         executorCallback.onError(this, error);
-        executorCallback.onAfter(this);
+        executorCallback.onFinish(this);
     }
 
     private void callSuccess(T t) {
         executorCallback.onSuccess(this, t);
-        executorCallback.onAfter(this);
+        executorCallback.onFinish(this);
     }
 
     @Override
@@ -99,9 +99,9 @@ public final class ExecutorCall<T> implements OkCall<T> {
     public void enqueue(UICallback<T> uiCallback) {
         EasyPreconditions.checkNotNull(uiCallback, "uiCallback==null");
         this.type = ParamUtil.getType(uiCallback.getClass());
-        this.executorCallback = new ExecutorCallback<>(uiCallback, new ExecutorCallback.OnAfterListener() {
+        this.executorCallback = new ExecutorCallback<>(uiCallback, new ExecutorCallback.OnFinishListener() {
             @Override
-            public void onAfter() {
+            public void onFinish() {
                 finished(ExecutorCall.this);
             }
         });
@@ -111,7 +111,7 @@ public final class ExecutorCall<T> implements OkCall<T> {
             rawCall = createRawCall();
         }
         addCall(this);
-        executorCallback.onBefore(this);
+        executorCallback.onStart(this);
         if (canceled) {
             rawCall.cancel();
         }

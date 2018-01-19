@@ -11,34 +11,34 @@ import com.xcheng.okhttp.util.Platform;
 final class ExecutorCallback<T> extends UICallback<T> {
     private static final Platform PLATFORM = Platform.get();
     private final UICallback<T> delegate;
-    private final OnAfterListener listener;
+    private final OnFinishListener listener;
 
-    ExecutorCallback(UICallback<T> delegate, OnAfterListener listener) {
+    ExecutorCallback(UICallback<T> delegate, OnFinishListener listener) {
         this.delegate = delegate;
         this.listener = listener;
     }
 
     @Override
-    public void onBefore(final OkCall<T> okCall) {
+    public void onStart(final OkCall<T> okCall) {
         PLATFORM.execute(new Runnable() {
             @Override
             public void run() {
                 if (okCall.isPostUi()) {
-                    delegate.onBefore(okCall);
+                    delegate.onStart(okCall);
                 }
             }
         });
     }
 
     @Override
-    public void onAfter(final OkCall<T> okCall) {
+    public void onFinish(final OkCall<T> okCall) {
         PLATFORM.execute(new Runnable() {
             @Override
             public void run() {
                 if (okCall.isPostUi()) {
-                    delegate.onAfter(okCall);
+                    delegate.onFinish(okCall);
                 }
-                listener.onAfter();
+                listener.onFinish();
             }
         });
     }
@@ -93,7 +93,7 @@ final class ExecutorCallback<T> extends UICallback<T> {
         });
     }
 
-    interface OnAfterListener {
-        void onAfter();
+    interface OnFinishListener {
+        void onFinish();
     }
 }

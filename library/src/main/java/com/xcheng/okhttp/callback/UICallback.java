@@ -3,12 +3,17 @@ package com.xcheng.okhttp.callback;
 import com.xcheng.okhttp.error.EasyError;
 import com.xcheng.okhttp.request.OkCall;
 
+/**
+ * {@link com.xcheng.okhttp.request.ExecutorCall} http请求回调函数
+ *
+ * @param <T>
+ */
 public abstract class UICallback<T> {
-    public void onBefore(OkCall<T> okCall) {
+    public void onStart(OkCall<T> okCall) {
 
     }
 
-    public void onAfter(OkCall<T> okCall) {
+    public void onFinish(OkCall<T> okCall) {
 
     }
 
