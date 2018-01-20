@@ -64,6 +64,9 @@ public class OkConfig {
             return this;
         }
 
+        /**
+         * @param postUiIfCanceled true 当请求被取消的时候仍然回调UI,false 不回调
+         */
         public Builder postUiIfCanceled(boolean postUiIfCanceled) {
             this.postUiIfCanceled = postUiIfCanceled;
             return this;
