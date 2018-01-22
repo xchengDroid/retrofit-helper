@@ -1,6 +1,7 @@
 package com.xcheng.okhttp.callback;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.xcheng.okhttp.error.EasyError;
 import com.xcheng.okhttp.request.OkCall;
@@ -32,4 +33,17 @@ public interface HttpParser<T> {
      */
     @NonNull
     EasyError parseException(OkCall<T> okCall, IOException e);
+
+    /**
+     * 根据类型获取解析的HttpParser
+     * Created by chengxin on 2018/1/22.
+     */
+    interface Factory {
+        /**
+         * @param type 需要被解析的类型,用于标识不通的返回的类型
+         * @return 创建对应的 HttpParser
+         */
+        @NonNull
+        HttpParser<?> parser(@Nullable String type);
+    }
 }
