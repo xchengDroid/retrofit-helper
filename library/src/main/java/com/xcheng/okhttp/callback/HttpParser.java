@@ -39,7 +39,9 @@ public interface HttpParser<T> {
      * Created by chengxin on 2018/1/22.
      */
     interface Factory {
+
         /**
+         * @param request request请求
          * @return 创建对应的 HttpParser
          */
         @NonNull
