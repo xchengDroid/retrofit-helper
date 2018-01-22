@@ -13,6 +13,7 @@ import java.io.IOException;
 import okhttp3.Response;
 
 public class BitmapParser extends ErrorParser<Bitmap> {
+    public static final BitmapParser INSTANCE = new BitmapParser();
 
     @NonNull
     @Override

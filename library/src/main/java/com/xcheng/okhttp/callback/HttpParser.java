@@ -1,10 +1,10 @@
 package com.xcheng.okhttp.callback;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import com.xcheng.okhttp.error.EasyError;
 import com.xcheng.okhttp.request.OkCall;
+import com.xcheng.okhttp.request.OkRequest;
 import com.xcheng.okhttp.request.OkResponse;
 
 import java.io.IOException;
@@ -40,10 +40,9 @@ public interface HttpParser<T> {
      */
     interface Factory {
         /**
-         * @param type 需要被解析的类型,用于标识不通的返回的类型
          * @return 创建对应的 HttpParser
          */
         @NonNull
-        HttpParser<?> parser(@Nullable String type);
+        HttpParser<?> parser(OkRequest request);
     }
 }

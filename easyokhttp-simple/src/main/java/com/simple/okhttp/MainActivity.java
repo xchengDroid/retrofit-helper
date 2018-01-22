@@ -2,6 +2,7 @@ package com.simple.okhttp;
 
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -13,6 +14,7 @@ import android.widget.Toast;
 import com.google.gson.Gson;
 import com.xcheng.okhttp.EasyOkHttp;
 import com.xcheng.okhttp.callback.BitmapParser;
+import com.xcheng.okhttp.callback.HttpParser;
 import com.xcheng.okhttp.callback.JsonParser;
 import com.xcheng.okhttp.callback.UICallback;
 import com.xcheng.okhttp.error.EasyError;
@@ -20,12 +22,14 @@ import com.xcheng.okhttp.request.ExecutorCall;
 import com.xcheng.okhttp.request.GetRequest;
 import com.xcheng.okhttp.request.OkCall;
 import com.xcheng.okhttp.request.OkConfig;
+import com.xcheng.okhttp.request.OkRequest;
 
 import okhttp3.OkHttpClient;
 
 public class MainActivity extends AppCompatActivity {
     private WebView webView;
     ImageView imageView;
+    public static final int BITMAP_ID = 12;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,8 +39,17 @@ public class MainActivity extends AppCompatActivity {
         imageView = findViewById(R.id.iv_easyokhttp);
         OkConfig config = OkConfig.newBuilder()
                 .client(new OkHttpClient())
-                .parserClass(JsonParser.class)
                 .host("http://www.weather.com.cn/")
+                .parserFactory(new HttpParser.Factory() {
+                    @NonNull
+                    @Override
+                    public HttpParser<?> parser(OkRequest request) {
+                        if (request.id() == BITMAP_ID) {
+                            return BitmapParser.INSTANCE;
+                        }
+                        return JsonParser.INSTANCE;
+                    }
+                })
                 .postUiIfCanceled(true)
                 .build();
         EasyOkHttp.init(config);
@@ -79,8 +92,8 @@ public class MainActivity extends AppCompatActivity {
 
     public void bitmap(final View view) {
         GetRequest getRequest = EasyOkHttp.get("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1499010173&di=9599915fd6f9eb51f527cbbf62a84bd6&imgtype=jpg&er=1&src=http%3A%2F%2F4493bz.1985t.com%2Fuploads%2Fallimg%2F160119%2F5-16011Z92519.jpg")
-                .parserClass(BitmapParser.class)
                 .outProgress()
+                .id(BITMAP_ID)
                 .build();
         ExecutorCall<Bitmap> okCall = new ExecutorCall<>(getRequest);
         okCall.enqueue(new UICallback<Bitmap>() {

@@ -17,6 +17,8 @@ import okhttp3.Response;
  * Created by chengxin on 2017/6/22.
  */
 public class JsonParser<T> extends ErrorParser<T> {
+    public static final JsonParser<?> INSTANCE = new JsonParser<>();
+    
     @SuppressWarnings("unchecked")
     @NonNull
     @Override

@@ -54,7 +54,7 @@ public abstract class OkRequest {
     private final OkHttpClient client;
     //额外入参
     private final Map<String, Object> extraMap;
-    private final Class<? extends HttpParser> parserClass;
+    private HttpParser.Factory factory;
 
     protected OkRequest(Builder<?> builder) {
         //build方法是抽象，本来应该在build方法里面做检测，现在放到构造函数里面统一检测
@@ -70,7 +70,7 @@ public abstract class OkRequest {
         this.outProgress = builder.outProgress;
         this.client = ParamUtil.defValueIfNull(builder.client, EasyOkHttp.okConfig().client());
         this.extraMap = builder.extraMap;
-        this.parserClass = ParamUtil.defValueIfNull(builder.parserClass, EasyOkHttp.okConfig().parserClass());
+        this.factory = ParamUtil.defValueIfNull(builder.factory, EasyOkHttp.okConfig().factory());
     }
 
     public String method() {
@@ -100,8 +100,8 @@ public abstract class OkRequest {
         return extraMap;
     }
 
-    public Class<? extends HttpParser> parserClass() {
-        return parserClass;
+    public HttpParser.Factory parserFactory() {
+        return factory;
     }
 
     public Object tag() {
@@ -160,7 +160,7 @@ public abstract class OkRequest {
         //发起请求 解析相关
         private OkHttpClient client;
         private Map<String, Object> extraMap;
-        private Class<? extends HttpParser> parserClass;
+        private HttpParser.Factory factory;
 
         public Builder() {
             this.headers = new Headers.Builder();
@@ -214,6 +214,10 @@ public abstract class OkRequest {
         }
 
 
+        /**
+         * @param tag 标记该Http请求，调用cancel时传入的参数
+         * @return
+         */
         public T tag(Object tag) {
             this.tag = tag;
             return (T) this;
@@ -271,8 +275,8 @@ public abstract class OkRequest {
             return (T) this;
         }
 
-        public T parserClass(Class<? extends HttpParser> parserClass) {
-            this.parserClass = parserClass;
+        public T parserFactory(HttpParser.Factory factory) {
+            this.factory = factory;
             return (T) this;
         }
 
