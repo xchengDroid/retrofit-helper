@@ -19,6 +19,8 @@ import java.util.Map;
 public class ParamUtil {
 
     public static boolean isEmpty(Map<?, ?> map) {
+        //因为它不能够确信加入到list中的值具有正确的类型。
+        //意思是使用了一个未经处理的类型，它不能验证代码是类型安全的。
         return map == null || map.isEmpty();
     }
 
