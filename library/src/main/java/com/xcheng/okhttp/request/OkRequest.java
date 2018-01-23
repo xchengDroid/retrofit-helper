@@ -132,7 +132,9 @@ public abstract class OkRequest {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "{url="
+        return getClass().getSimpleName() + "{method="
+                + method
+                + ",url="
                 + url
                 + ", tag="
                 + (tag != this ? tag : null)
