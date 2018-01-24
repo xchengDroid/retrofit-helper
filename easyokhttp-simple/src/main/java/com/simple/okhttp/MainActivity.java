@@ -2,6 +2,7 @@ package com.simple.okhttp;
 
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -12,12 +13,16 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.xcheng.okhttp.EasyOkHttp;
+import com.xcheng.okhttp.callback.BitmapParser;
+import com.xcheng.okhttp.callback.HttpParser;
+import com.xcheng.okhttp.callback.JsonParser;
 import com.xcheng.okhttp.callback.UICallback;
 import com.xcheng.okhttp.error.EasyError;
 import com.xcheng.okhttp.request.ExecutorCall;
 import com.xcheng.okhttp.request.GetRequest;
 import com.xcheng.okhttp.request.OkCall;
 import com.xcheng.okhttp.request.OkConfig;
+import com.xcheng.okhttp.request.OkRequest;
 
 import okhttp3.OkHttpClient;
 
@@ -35,6 +40,16 @@ public class MainActivity extends AppCompatActivity {
         OkConfig config = OkConfig.newBuilder()
                 .client(new OkHttpClient())
                 .host("http://www.weather.com.cn/")
+                .parserFactory(new HttpParser.Factory() {
+                    @NonNull
+                    @Override
+                    public HttpParser<?> parser(OkRequest request) {
+                        if (request.id() == BITMAP_ID) {
+                            return BitmapParser.INSTANCE;
+                        }
+                        return JsonParser.INSTANCE;
+                    }
+                })
                 .postUiIfCanceled(true)
                 .build();
         EasyOkHttp.init(config);
