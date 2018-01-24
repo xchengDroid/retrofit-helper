@@ -103,6 +103,8 @@ public final class ExecutorCall<T> implements OkCall<T> {
         this.executorCallback = new ExecutorCallback<>(uiCallback, new ExecutorCallback.OnFinishedListener() {
             @Override
             public void onFinished() {
+                //等uiCallback所有主线程回调函数执行完才将call从列表移除，
+                //这样的目的是为了在回调函数执行完之前的任意时刻都能在主线程取消当前的请求
                 finished(ExecutorCall.this);
             }
         });
