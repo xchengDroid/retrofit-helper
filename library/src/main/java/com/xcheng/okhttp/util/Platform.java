@@ -9,7 +9,7 @@ import java.util.concurrent.Executor;
 
 public class Platform implements Executor {
     private static final Platform PLATFORM = new Platform();
-    private final Handler mainHandler = new Handler(Looper.getMainLooper());
+    private final Handler handler = new Handler(Looper.getMainLooper());
 
     private Platform() {
         Log.e(Platform.class.getSimpleName(), "create Platform");
@@ -20,7 +20,7 @@ public class Platform implements Executor {
      */
     @Override
     public void execute(@NonNull Runnable command) {
-        mainHandler.post(command);
+        handler.post(command);
     }
 
     public static Platform get() {
