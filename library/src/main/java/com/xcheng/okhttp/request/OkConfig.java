@@ -90,15 +90,17 @@ public class OkConfig {
                 client = new OkHttpClient();
             }
             if (factory == null) {
-                factory = new HttpParser.Factory() {
-                    @NonNull
-                    @Override
-                    public HttpParser<?> parser(OkRequest request) {
-                        return JsonParser.INSTANCE;
-                    }
-                };
+                factory = DEFAULT_FACTORY;
             }
             return new OkConfig(this);
         }
     }
+
+    static final HttpParser.Factory DEFAULT_FACTORY = new HttpParser.Factory() {
+        @NonNull
+        @Override
+        public HttpParser<?> parser(OkRequest request) {
+            return JsonParser.INSTANCE;
+        }
+    };
 }
