@@ -14,7 +14,7 @@ import okhttp3.OkHttpClient;
  */
 public class OkConfig {
     private final OkHttpClient client;
-    private final String host;
+    private final String baseUrl;
     private final HttpParser.Factory factory;
     private final boolean postUiIfCanceled;
 
@@ -24,7 +24,7 @@ public class OkConfig {
 
     private OkConfig(Builder builder) {
         client = builder.client;
-        host = builder.host;
+        baseUrl = builder.baseUrl;
         postUiIfCanceled = builder.postUiIfCanceled;
         factory = builder.factory;
     }
@@ -33,9 +33,9 @@ public class OkConfig {
         return client;
     }
 
-    public String host() {
-        EasyPreconditions.checkState(host != null, "host==null,have you init it in OkConfig");
-        return host;
+    public String baseUrl() {
+        EasyPreconditions.checkState(baseUrl != null, "baseUrl==null,have you init it in OkConfig");
+        return baseUrl;
     }
 
     public boolean postUiIfCanceled() {
@@ -48,7 +48,7 @@ public class OkConfig {
 
     public static class Builder {
         private OkHttpClient client;
-        private String host;
+        private String baseUrl;
         private boolean postUiIfCanceled;
         private HttpParser.Factory factory;
 
@@ -56,8 +56,8 @@ public class OkConfig {
             postUiIfCanceled = false;
         }
 
-        public Builder host(String host) {
-            this.host = EasyPreconditions.checkNotNull(host, "host==null");
+        public Builder baseUrl(String baseUrl) {
+            this.baseUrl = EasyPreconditions.checkNotNull(baseUrl, "baseUrl==null");
             return this;
         }
 

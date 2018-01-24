@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
         imageView = findViewById(R.id.iv_easyokhttp);
         OkConfig config = OkConfig.newBuilder()
                 .client(new OkHttpClient())
-                .host("http://www.weather.com.cn/")
+                .baseUrl("http://www.weather.com.cn/")
                 .parserFactory(new HttpParser.Factory() {
                     @NonNull
                     @Override

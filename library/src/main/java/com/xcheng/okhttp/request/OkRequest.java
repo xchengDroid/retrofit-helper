@@ -204,7 +204,7 @@ public abstract class OkRequest {
             EasyPreconditions.checkNotNull(url, "url==null");
             if (!url.regionMatches(true, 0, "https:", 0, 6)
                     && !url.regionMatches(true, 0, "http:", 0, 5)) {
-                String host = EasyOkHttp.okConfig().host();
+                String host = EasyOkHttp.okConfig().baseUrl();
                 boolean hostEnd = host.endsWith("/");
                 boolean urlStart = url.startsWith("/");
                 if (hostEnd && urlStart) {
