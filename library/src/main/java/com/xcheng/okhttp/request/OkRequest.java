@@ -154,6 +154,10 @@ public abstract class OkRequest {
         private String url;
         private Object tag;
         private Headers.Builder headers;
+
+        /**
+         * 保存http请求String类型参数，如Get请求查询参数，form表单等，根据需要子类自己实现
+         */
         private final Map<String, String> params = new LinkedHashMap<>();
         private int id;
         private boolean inProgress;
