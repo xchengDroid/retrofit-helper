@@ -12,6 +12,7 @@ public class Platform implements Executor {
     private final Handler mainHandler = new Handler(Looper.getMainLooper());
 
     private Platform() {
+        Log.e(Platform.class.getSimpleName(), "create Platform");
     }
 
     /**
@@ -23,7 +24,6 @@ public class Platform implements Executor {
     }
 
     public static Platform get() {
-        Log.e(Platform.class.getSimpleName(), PLATFORM.getClass().toString());
         return PLATFORM;
     }
 
