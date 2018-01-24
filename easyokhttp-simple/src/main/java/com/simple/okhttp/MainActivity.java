@@ -66,6 +66,8 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onSuccess(OkCall<Weather> okCall, Weather response) {
+                imageView.setVisibility(View.GONE);
+                webView.setVisibility(View.VISIBLE);
                 webView.loadData(new Gson().toJson(response), "text/html", "utf-8");
             }
         });
