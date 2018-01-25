@@ -24,16 +24,18 @@ import okhttp3.RequestBody;
 public class FormRequest extends OkRequest {
 
     private final List<FileInput> fileInputs;
+    private final boolean multipart;
 
     private FormRequest(Builder builder) {
         super(builder);
         this.fileInputs = ParamUtil.immutableList(builder.fileInputs);
+        this.multipart = builder.multipart;
     }
 
     @Override
     public Request createRequest() {
         RequestBody requestBody;
-        if (ParamUtil.isEmpty(fileInputs)) {
+        if (ParamUtil.isEmpty(fileInputs) && !multipart) {
             FormBody.Builder builder = new FormBody.Builder();
             addParams(builder);
             requestBody = builder.build();
@@ -77,9 +79,18 @@ public class FormRequest extends OkRequest {
 
     public static class Builder extends OkRequest.Builder<Builder> {
         private final List<FileInput> fileInputs = new ArrayList<>();
+        private boolean multipart = false;
 
         public Builder addFileInput(FileInput fileInput) {
             fileInputs.add(fileInput);
+            return this;
+        }
+
+        /**
+         * @param multipart true 代表没有文件的时候依然使用multipart/form-data
+         */
+        public Builder multipart(boolean multipart) {
+            this.multipart = multipart;
             return this;
         }
 
