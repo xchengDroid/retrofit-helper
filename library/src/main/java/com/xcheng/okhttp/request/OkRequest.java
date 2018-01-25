@@ -70,7 +70,7 @@ public abstract class OkRequest {
         this.outProgress = builder.outProgress;
         this.client = ParamUtil.defValueIfNull(builder.client, EasyOkHttp.okConfig().client());
         this.extraMap = builder.extraMap;
-        this.factory = ParamUtil.defValueIfNull(builder.factory, EasyOkHttp.okConfig().factory());
+        this.factory = ParamUtil.defValueIfNull(builder.factory, EasyOkHttp.okConfig().parserFactory());
     }
 
     public String method() {

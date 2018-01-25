@@ -42,7 +42,7 @@ public class OkConfig {
         return postUiIfCanceled;
     }
 
-    public HttpParser.Factory factory() {
+    public HttpParser.Factory parserFactory() {
         return factory;
     }
 
