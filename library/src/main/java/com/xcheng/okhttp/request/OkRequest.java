@@ -19,6 +19,7 @@ import okhttp3.Headers;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.Response;
 
 /**
  * 构造OkHttp请求相关参数
@@ -286,7 +287,9 @@ public abstract class OkRequest {
         }
 
         /**
-         * Http 响应解析所需要的额外数据 eg：下载文件保存的路径，某些返回需要检测Header信息session权限等
+         * 约定大于配置，在{@link HttpParser#parseNetworkResponse(OkCall, Response)}方法中获取需要的的参数解析即可。
+         * Http 响应解析所需要的额外数据 eg：gson解析需要的{@link java.lang.reflect.Type},
+         * 下载文件保存的地址path，某些返回需要检测Header信息session权限等
          *
          * @param key   Map key
          * @param value Map value
