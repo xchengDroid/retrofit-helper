@@ -66,7 +66,7 @@ public class OkConfig {
             mustTag = false;
         }
 
-        public Builder(OkConfig okConfig) {
+        Builder(OkConfig okConfig) {
             baseUrl = okConfig.baseUrl;
             postUiIfCanceled = okConfig.postUiIfCanceled;
             mustTag = okConfig.mustTag;

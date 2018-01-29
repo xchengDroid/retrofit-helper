@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         webView = findViewById(R.id.web_easyokhttp);
         imageView = findViewById(R.id.iv_easyokhttp);
-        OkConfig config = OkConfig.newBuilder()
+        OkConfig config = new OkConfig.Builder()
                 .client(new OkHttpClient())
                 .baseUrl("http://www.weather.com.cn/")
                 .parserFactory(new HttpParser.Factory() {
