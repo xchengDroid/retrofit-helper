@@ -20,8 +20,8 @@ public class OkConfig {
     private final OkHttpClient client;
     private final HttpParser.Factory factory;
 
-    public static Builder newBuilder() {
-        return new Builder();
+    public Builder newBuilder() {
+        return new Builder(this);
     }
 
     private OkConfig(Builder builder) {
@@ -65,6 +65,15 @@ public class OkConfig {
         public Builder() {
             postUiIfCanceled = false;
             mustTag = false;
+        }
+
+        public Builder(OkConfig okConfig) {
+            baseUrl = okConfig.baseUrl;
+            postUiIfCanceled = okConfig.postUiIfCanceled;
+            mustTag = okConfig.mustTag;
+
+            client = okConfig.client;
+            factory = okConfig.factory;
         }
 
         public Builder baseUrl(String baseUrl) {
