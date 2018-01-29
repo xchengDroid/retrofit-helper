@@ -34,7 +34,6 @@ public class OkConfig {
     }
 
     public String baseUrl() {
-        EasyPreconditions.checkState(baseUrl != null, "baseUrl==null,have you init it in OkConfig");
         return baseUrl;
     }
 
@@ -113,6 +112,7 @@ public class OkConfig {
          * If  {@link #parserFactory(HttpParser.Factory)}}  is not called a default {@link JsonParser} will be used.
          */
         public OkConfig build() {
+            EasyPreconditions.checkState(baseUrl != null, "baseUrl==null");
             if (client == null) {
                 //Lazy Initialization,because it is weight
                 client = new OkHttpClient();
