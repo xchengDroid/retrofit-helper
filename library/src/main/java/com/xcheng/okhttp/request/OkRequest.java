@@ -60,6 +60,9 @@ public abstract class OkRequest {
     protected OkRequest(Builder<?> builder) {
         //build方法是抽象，本来应该在build方法里面做检测，现在放到构造函数里面统一检测
         EasyPreconditions.checkState(builder.url != null, "url==null");
+        if (EasyOkHttp.okConfig().mustTag()) {
+            EasyPreconditions.checkState(builder.tag != null, "tag==null");
+        }
         //如果没有设置 默认为POST
         this.method = ParamUtil.defValueIfNull(builder.method, POST);
         this.url = builder.url;
