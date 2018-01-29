@@ -13,24 +13,24 @@ import okhttp3.OkHttpClient;
  * Created by chengxin on 2017/6/27.
  */
 public class OkConfig {
-    private final OkHttpClient client;
     private final String baseUrl;
-    private final HttpParser.Factory factory;
     private final boolean postUiIfCanceled;
+    private boolean mustTag;
+
+    private final OkHttpClient client;
+    private final HttpParser.Factory factory;
 
     public static Builder newBuilder() {
         return new Builder();
     }
 
     private OkConfig(Builder builder) {
-        client = builder.client;
         baseUrl = builder.baseUrl;
         postUiIfCanceled = builder.postUiIfCanceled;
-        factory = builder.factory;
-    }
+        mustTag = builder.mustTag;
 
-    public OkHttpClient client() {
-        return client;
+        factory = builder.factory;
+        client = builder.client;
     }
 
     public String baseUrl() {
@@ -42,27 +42,33 @@ public class OkConfig {
         return postUiIfCanceled;
     }
 
+    public boolean mustTag() {
+        return mustTag;
+    }
+
+    public OkHttpClient client() {
+        return client;
+    }
+
     public HttpParser.Factory parserFactory() {
         return factory;
     }
 
     public static class Builder {
-        private OkHttpClient client;
         private String baseUrl;
         private boolean postUiIfCanceled;
+        private boolean mustTag;
+
+        private OkHttpClient client;
         private HttpParser.Factory factory;
 
         public Builder() {
             postUiIfCanceled = false;
+            mustTag = false;
         }
 
         public Builder baseUrl(String baseUrl) {
             this.baseUrl = EasyPreconditions.checkNotNull(baseUrl, "baseUrl==null");
-            return this;
-        }
-
-        public Builder client(OkHttpClient client) {
-            this.client = EasyPreconditions.checkNotNull(client, "client==null");
             return this;
         }
 
@@ -71,6 +77,19 @@ public class OkConfig {
          */
         public Builder postUiIfCanceled(boolean postUiIfCanceled) {
             this.postUiIfCanceled = postUiIfCanceled;
+            return this;
+        }
+
+        /**
+         * @param mustTag true EasyOkHttp请求必须设置tag 否则抛异常，false 可以不传tag
+         */
+        public Builder mustTag(boolean mustTag) {
+            this.mustTag = mustTag;
+            return this;
+        }
+
+        public Builder client(OkHttpClient client) {
+            this.client = EasyPreconditions.checkNotNull(client, "client==null");
             return this;
         }
 
