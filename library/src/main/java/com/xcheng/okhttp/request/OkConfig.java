@@ -9,7 +9,7 @@ import com.xcheng.okhttp.util.EasyPreconditions;
 import okhttp3.OkHttpClient;
 
 /**
- * 全局的EasyOkHttp配置类
+ * 全局的EasyOkHttp配置类,具备全局属性的字段
  * Created by chengxin on 2017/6/27.
  */
 public class OkConfig {
