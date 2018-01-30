@@ -81,7 +81,9 @@ public class OkConfig {
         public Builder baseUrl(String baseUrl) {
             EasyPreconditions.checkNotNull(baseUrl, "baseUrl==null");
             HttpUrl httpUrl = HttpUrl.parse(baseUrl);
-            EasyPreconditions.checkArgument(httpUrl != null, "Illegal URL: " + baseUrl);
+            if (httpUrl == null) {
+                throw new IllegalArgumentException("Illegal URL: " + baseUrl);
+            }
             List<String> pathSegments = httpUrl.pathSegments();
             if (!"".equals(pathSegments.get(pathSegments.size() - 1))) {
                 throw new IllegalArgumentException("baseUrl must end in /: " + baseUrl);
