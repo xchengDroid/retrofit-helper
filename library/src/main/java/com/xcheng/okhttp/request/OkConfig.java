@@ -6,6 +6,9 @@ import com.xcheng.okhttp.callback.HttpParser;
 import com.xcheng.okhttp.callback.JsonParser;
 import com.xcheng.okhttp.util.EasyPreconditions;
 
+import java.util.List;
+
+import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 
 /**
@@ -13,7 +16,7 @@ import okhttp3.OkHttpClient;
  * Created by chengxin on 2017/6/27.
  */
 public class OkConfig {
-    private final String baseUrl;
+    private final HttpUrl baseUrl;
     private final boolean postUiIfCanceled;
     private boolean mustTag;
 
@@ -33,7 +36,7 @@ public class OkConfig {
         client = builder.client;
     }
 
-    public String baseUrl() {
+    public HttpUrl baseUrl() {
         return baseUrl;
     }
 
@@ -54,7 +57,7 @@ public class OkConfig {
     }
 
     public static class Builder {
-        private String baseUrl;
+        private HttpUrl baseUrl;
         private boolean postUiIfCanceled;
         private boolean mustTag;
 
@@ -76,7 +79,14 @@ public class OkConfig {
         }
 
         public Builder baseUrl(String baseUrl) {
-            this.baseUrl = EasyPreconditions.checkNotNull(baseUrl, "baseUrl==null");
+            EasyPreconditions.checkNotNull(baseUrl, "baseUrl==null");
+            HttpUrl httpUrl = HttpUrl.parse(baseUrl);
+            EasyPreconditions.checkArgument(httpUrl != null, "Illegal URL: " + baseUrl);
+            List<String> pathSegments = httpUrl.pathSegments();
+            if (!"".equals(pathSegments.get(pathSegments.size() - 1))) {
+                throw new IllegalArgumentException("baseUrl must end in /: " + baseUrl);
+            }
+            this.baseUrl = httpUrl;
             return this;
         }
 
