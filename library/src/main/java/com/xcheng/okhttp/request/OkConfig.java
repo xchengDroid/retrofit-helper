@@ -78,6 +78,9 @@ public class OkConfig {
             factory = okConfig.factory;
         }
 
+        /**
+         * like Retrofit to set baseUrl
+         */
         public Builder baseUrl(String baseUrl) {
             EasyPreconditions.checkNotNull(baseUrl, "baseUrl==null");
             HttpUrl httpUrl = HttpUrl.parse(baseUrl);

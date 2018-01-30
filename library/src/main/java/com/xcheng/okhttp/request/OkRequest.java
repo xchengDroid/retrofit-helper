@@ -16,6 +16,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import okhttp3.Headers;
+import okhttp3.HttpUrl;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -43,7 +44,7 @@ public abstract class OkRequest {
     public static final String PATCH = "PATCH";
 
     private final String method;
-    private final String url;
+    private final HttpUrl url;
     private final Object tag;
     private final int id;
     private final Map<String, String> params;
@@ -81,7 +82,7 @@ public abstract class OkRequest {
         return method;
     }
 
-    public String url() {
+    public HttpUrl url() {
         return url;
     }
 
@@ -155,7 +156,7 @@ public abstract class OkRequest {
     @SuppressWarnings("unchecked")
     public static abstract class Builder<T extends Builder> {
         private String method;
-        private String url;
+        private HttpUrl url;
         private Object tag;
         private Headers.Builder headers;
 
@@ -200,26 +201,19 @@ public abstract class OkRequest {
         }
 
         /**
-         * 设置Http请求的判断url地址，如果url不是以https或者http开头则追加host地址
+         * 设置Http请求的判断url地址，see {@link HttpUrl#resolve(String)}
          *
          * @param url http请求的url
          */
         public T url(String url) {
             EasyPreconditions.checkNotNull(url, "url==null");
-            if (!url.regionMatches(true, 0, "https:", 0, 6)
-                    && !url.regionMatches(true, 0, "http:", 0, 5)) {
-                String host = EasyOkHttp.okConfig().baseUrl();
-                boolean hostEnd = host.endsWith("/");
-                boolean urlStart = url.startsWith("/");
-                if (hostEnd && urlStart) {
-                    url = host + url.substring(1);
-                } else if (!hostEnd && !urlStart) {
-                    url = host + "/" + url;
-                } else {
-                    url = host + url;
-                }
+            HttpUrl baseUrl = EasyOkHttp.okConfig().baseUrl();
+            HttpUrl resolveUrl = baseUrl.resolve(url);
+            if (resolveUrl == null) {
+                throw new IllegalArgumentException(
+                        "Malformed URL. Base: " + baseUrl + ", url: " + url);
             }
-            this.url = url;
+            this.url = resolveUrl;
             return (T) this;
         }
 
