@@ -2,8 +2,6 @@ package com.xcheng.okhttp.request;
 
 import android.net.Uri;
 
-import com.xcheng.okhttp.util.EasyPreconditions;
-
 import java.util.Map;
 
 import okhttp3.HttpUrl;
@@ -14,28 +12,26 @@ import okhttp3.Request;
  * Created by chengxin on 2017/6/22.
  */
 public class GetRequest extends OkRequest {
-    private final HttpUrl httpUrl;
+    private final HttpUrl paramUrl;
 
     private GetRequest(Builder builder) {
         super(builder);
-        HttpUrl parsedUrl = HttpUrl.parse(url());
-        EasyPreconditions.checkNotNull(parsedUrl, "unexpected url: " + url());
-        HttpUrl.Builder urlBuilder = parsedUrl.newBuilder();
+        HttpUrl.Builder urlBuilder = url().newBuilder();
         final boolean encoded = builder.encoded;
         for (Map.Entry<String, String> entry : params().entrySet()) {
             String value = encoded ? entry.getValue() : Uri.encode(entry.getValue()/* ' ' space encoded %20 */);
             urlBuilder.addEncodedQueryParameter(entry.getKey(), value);
         }
-        this.httpUrl = urlBuilder.build();
+        this.paramUrl = urlBuilder.build();
     }
 
-    public HttpUrl httpUrl() {
-        return httpUrl;
+    public HttpUrl paramUrl() {
+        return paramUrl;
     }
 
     @Override
     public Request createRequest() {
-        return new Request.Builder().url(httpUrl).headers(headers()).tag(tag()).build();
+        return new Request.Builder().url(paramUrl).headers(headers()).tag(tag()).build();
     }
 
     public static class Builder extends OkRequest.Builder<Builder> {
