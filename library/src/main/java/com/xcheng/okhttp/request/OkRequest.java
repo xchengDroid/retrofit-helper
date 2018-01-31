@@ -154,7 +154,7 @@ public abstract class OkRequest {
      * Created by cx on 17/6/22.
      */
     @SuppressWarnings("unchecked")
-    public static abstract class Builder<T extends Builder> {
+    protected static abstract class Builder<T extends Builder> {
         private String method;
         private HttpUrl url;
         private Object tag;
