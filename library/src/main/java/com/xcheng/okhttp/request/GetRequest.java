@@ -12,7 +12,7 @@ import okhttp3.Request;
  * Created by chengxin on 2017/6/22.
  */
 public class GetRequest extends OkRequest {
-    private final HttpUrl paramUrl;
+    private final HttpUrl queryUrl;
 
     private GetRequest(Builder builder) {
         super(builder);
@@ -25,16 +25,16 @@ public class GetRequest extends OkRequest {
                 queryEncoder.addQuery(urlBuilder, entry.getKey(), entry.getValue());
             }
         }
-        this.paramUrl = urlBuilder.build();
+        this.queryUrl = urlBuilder.build();
     }
 
-    public HttpUrl paramUrl() {
-        return paramUrl;
+    public HttpUrl queryUrl() {
+        return queryUrl;
     }
 
     @Override
     public Request createRequest() {
-        return new Request.Builder().url(paramUrl).headers(headers()).tag(tag()).build();
+        return new Request.Builder().url(queryUrl).headers(headers()).tag(tag()).build();
     }
 
     public static class Builder extends OkRequest.Builder<Builder> {
@@ -57,7 +57,6 @@ public class GetRequest extends OkRequest {
     }
 
     public interface IQueryEncoder {
-
         /**
          * call {@link HttpUrl.Builder#addQueryParameter(String, String)}
          * or {@link HttpUrl.Builder#addEncodedQueryParameter(String, String)}
