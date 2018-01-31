@@ -1,6 +1,6 @@
 package com.xcheng.okhttp.request;
 
-import android.net.Uri;
+import android.support.annotation.Nullable;
 
 import java.util.Map;
 
@@ -17,10 +17,13 @@ public class GetRequest extends OkRequest {
     private GetRequest(Builder builder) {
         super(builder);
         HttpUrl.Builder urlBuilder = url().newBuilder();
-        final boolean encoded = builder.encoded;
+        final IQueryEncoder queryEncoder = builder.queryEncoder;
         for (Map.Entry<String, String> entry : params().entrySet()) {
-            String value = encoded ? entry.getValue() : Uri.encode(entry.getValue()/* ' ' space encoded %20 */);
-            urlBuilder.addEncodedQueryParameter(entry.getKey(), value);
+            if (queryEncoder == null) {
+                urlBuilder.addQueryParameter(entry.getKey(), entry.getValue());
+            } else {
+                queryEncoder.addQuery(urlBuilder, entry.getKey(), entry.getValue());
+            }
         }
         this.paramUrl = urlBuilder.build();
     }
@@ -35,11 +38,13 @@ public class GetRequest extends OkRequest {
     }
 
     public static class Builder extends OkRequest.Builder<Builder> {
-        //是否已经编码过了
-        private boolean encoded = false;
+        private IQueryEncoder queryEncoder;
 
-        public Builder encoded(boolean encoded) {
-            this.encoded = encoded;
+        /**
+         * @param queryEncoder 自定义编码转换
+         */
+        public Builder queryEncoder(IQueryEncoder queryEncoder) {
+            this.queryEncoder = queryEncoder;
             return this;
         }
 
@@ -49,5 +54,19 @@ public class GetRequest extends OkRequest {
             method(OkRequest.GET);
             return new GetRequest(this);
         }
+    }
+
+    public interface IQueryEncoder {
+
+        /**
+         * call {@link HttpUrl.Builder#addQueryParameter(String, String)}
+         * or {@link HttpUrl.Builder#addEncodedQueryParameter(String, String)}
+         * to addQuery
+         *
+         * @param builder HttpUrl构造器
+         * @param name    查询的名字
+         * @param value   查询的参数值
+         */
+        void addQuery(HttpUrl.Builder builder, String name, @Nullable String value);
     }
 }
