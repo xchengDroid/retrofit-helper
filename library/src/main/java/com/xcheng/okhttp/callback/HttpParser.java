@@ -19,8 +19,10 @@ import okhttp3.Response;
 public interface HttpParser<T> {
 
     /**
-     * @param okCall 允许拦截模拟数据
-     * @return 模拟http响应, 如果为null,则会正常请求服务端数据
+     * 拦截http请求，模拟服务端返回的数据
+     *
+     * @param okCall call
+     * @return 模拟的响应, 如果为null,则会正常请求服务端数据
      */
     @Nullable
     OkResponse<T> mockResponse(OkCall<T> okCall);
