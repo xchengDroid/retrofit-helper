@@ -1,6 +1,7 @@
 package com.xcheng.okhttp.callback;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.xcheng.okhttp.error.EasyError;
 import com.xcheng.okhttp.request.OkCall;
@@ -16,6 +17,14 @@ import okhttp3.Response;
  * http 请求返回解析接口类，解析{@link Response}和{@link IOException}
  */
 public interface HttpParser<T> {
+
+    /**
+     * @param okCall 允许拦截模拟数据
+     * @return 模拟http响应, 如果为null,则会正常请求服务端数据
+     */
+    @Nullable
+    OkResponse<T> mockResponse(OkCall<T> okCall);
+
     /**
      * called by {@link okhttp3.Callback#onResponse(Call, Response)}}
      *
