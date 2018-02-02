@@ -84,10 +84,12 @@ final class ExecutorCallback<T> extends UICallback<T> {
         PLATFORM.execute(new Runnable() {
             @Override
             public void run() {
-                if (!okCall.isCanceled()) {
-                    delegate.onSuccess(okCall, response);
-                } else {
-                    if (okCall.isPostUi()) {
+                if (okCall.isPostUi()) {
+                    if (!okCall.isCanceled()) {
+                        //如果请求未被取消，回调主线程onSuccess函数
+                        delegate.onSuccess(okCall, response);
+                    } else {
+                        //如果请求被取消，回调onError函数
                         delegate.onError(okCall, new EasyError("Canceled"));
                     }
                 }

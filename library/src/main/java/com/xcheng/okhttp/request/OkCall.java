@@ -45,7 +45,7 @@ public interface OkCall<T> extends Cloneable {
     Type getType();
 
     /**
-     * 是否回调UI
+     * 是否回调{@link UICallback}
      *
      * @return true代表回调，否则false
      */
