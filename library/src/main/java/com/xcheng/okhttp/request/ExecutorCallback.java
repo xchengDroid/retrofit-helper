@@ -87,7 +87,9 @@ final class ExecutorCallback<T> extends UICallback<T> {
                 if (!okCall.isCanceled()) {
                     delegate.onSuccess(okCall, response);
                 } else {
-                    onError(okCall, new EasyError("Canceled"));
+                    if (okCall.isPostUi()) {
+                        delegate.onError(okCall, new EasyError("Canceled"));
+                    }
                 }
             }
         });
