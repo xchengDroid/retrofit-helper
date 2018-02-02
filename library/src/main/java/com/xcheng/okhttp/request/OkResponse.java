@@ -21,7 +21,7 @@ import com.xcheng.okhttp.error.EasyError;
 import com.xcheng.okhttp.util.EasyPreconditions;
 
 /**
- * An HTTP response.
+ * An HTTP response. like Retrofit
  */
 public final class OkResponse<T> {
 
@@ -54,12 +54,12 @@ public final class OkResponse<T> {
     }
 
     @Nullable
-    public EasyError getError() {
+    public EasyError error() {
         return easyError;
     }
 
     @Nullable
-    public T getBody() {
+    public T body() {
         return body;
     }
 
