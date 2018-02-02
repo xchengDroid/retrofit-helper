@@ -67,14 +67,13 @@ public final class ExecutorCall<T> implements OkCall<T> {
         return okRequest.client().newCall(request);
     }
 
-    private void callFailure(EasyError error) {
-        EasyPreconditions.checkNotNull(error, "error==null");
-        executorCallback.onError(this, error);
-        executorCallback.onFinish(this);
-    }
-
-    private void callSuccess(T t) {
-        executorCallback.onSuccess(this, t);
+    private void callOkResponse(OkResponse<T> okResponse) {
+        EasyPreconditions.checkNotNull(okResponse, "okResponse==null");
+        if (okResponse.isSuccess()) {
+            executorCallback.onSuccess(this, okResponse.body());
+        } else {
+            executorCallback.onError(this, okResponse.error());
+        }
         executorCallback.onFinish(this);
     }
 
@@ -90,6 +89,10 @@ public final class ExecutorCall<T> implements OkCall<T> {
             rawCall.cancel();
         }
         try {
+            OkResponse<T> mockResponse = httpParser.mockResponse(this);
+            if (mockResponse != null) {
+                return mockResponse;
+            }
             return httpParser.parseNetworkResponse(this, rawCall.execute());
         } finally {
             finished(ExecutorCall.this);
@@ -118,10 +121,18 @@ public final class ExecutorCall<T> implements OkCall<T> {
         if (canceled) {
             rawCall.cancel();
         }
+
+        OkResponse<T> mockResponse = httpParser.mockResponse(this);
+        if (mockResponse != null) {
+            callOkResponse(mockResponse);
+            return;
+        }
         rawCall.enqueue(new okhttp3.Callback() {
             @Override
             public void onFailure(okhttp3.Call call, IOException e) {
-                callFailure(httpParser.parseException(ExecutorCall.this, e));
+                EasyError error = httpParser.parseException(ExecutorCall.this, e);
+                OkResponse<T> okResponse = OkResponse.error(error);
+                callOkResponse(okResponse);
             }
 
             @Override
@@ -129,12 +140,7 @@ public final class ExecutorCall<T> implements OkCall<T> {
                 try {
                     response = wrapResponse(response);
                     OkResponse<T> okResponse = httpParser.parseNetworkResponse(ExecutorCall.this, response);
-                    EasyPreconditions.checkNotNull(okResponse, "okResponse==null");
-                    if (okResponse.isSuccess()) {
-                        callSuccess(okResponse.getBody());
-                        return;
-                    }
-                    callFailure(okResponse.getError());
+                    callOkResponse(okResponse);
                 } catch (IOException e) {
                     onFailure(call, e);
                 } finally {
