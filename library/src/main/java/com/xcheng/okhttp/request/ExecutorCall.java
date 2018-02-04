@@ -23,7 +23,9 @@ import okhttp3.ResponseBody;
 
 /**
  * Created by cx on 17/6/22.
- * 发起http请求的封装类
+ * {@link OkCall}实现类,用于发起http请求
+ *
+ * @param <T> Successful response body type.
  */
 public final class ExecutorCall<T> implements OkCall<T> {
     //保存所有未结束的OkCall

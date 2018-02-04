@@ -8,8 +8,10 @@ import com.xcheng.okhttp.util.EasyPreconditions;
 import com.xcheng.okhttp.util.Platform;
 
 /**
- * UICallBack 处理类
+ * UICallBack 回调到主线程处理类
  * Created by chengxin on 2017/6/26.
+ *
+ * @param <T> Successful response body type.
  */
 public final class PostCallback<T> extends UICallback<T> {
     private static final Platform PLATFORM = Platform.get();
