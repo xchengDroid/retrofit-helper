@@ -40,7 +40,7 @@ public interface OkCall<T> extends Cloneable {
     OkRequest request();
 
     /**
-     * if called {@link #enqueue(UICallback)},it will return result Type;
+     * if called {@link #enqueue(UICallback)},it will return responseType;
      */
     Type getType();
 

@@ -8,12 +8,12 @@ import com.xcheng.okhttp.util.Platform;
  * UICallBack 处理类
  * Created by chengxin on 2017/6/26.
  */
-final class ExecutorCallback<T> extends UICallback<T> {
+final class PostCallback<T> extends UICallback<T> {
     private static final Platform PLATFORM = Platform.get();
     private final UICallback<T> delegate;
     private final OnFinishedListener listener;
 
-    ExecutorCallback(UICallback<T> delegate, OnFinishedListener listener) {
+    PostCallback(UICallback<T> delegate, OnFinishedListener listener) {
         this.delegate = delegate;
         this.listener = listener;
     }

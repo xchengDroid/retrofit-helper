@@ -33,7 +33,7 @@ public final class ExecutorCall<T> implements OkCall<T> {
     private final HttpParser<T> httpParser;
     //用户当json解析的TypeToken未设置的情况下，利用class动态生成Type
     private Type type;
-    private ExecutorCallback<T> executorCallback;
+    private PostCallback<T> postCallback;
 
     private Call rawCall;
     private volatile boolean canceled;
@@ -53,12 +53,12 @@ public final class ExecutorCall<T> implements OkCall<T> {
     private Call createRawCall() {
         Request request = okRequest.createRequest();
         RequestBody body = request.body();
-        if (okRequest.inProgress() && body != null && executorCallback != null) {
+        if (okRequest.inProgress() && body != null && postCallback != null) {
             Request.Builder builder = request.newBuilder();
             RequestBody requestBody = new ProgressRequestBody(body, new ProgressRequestBody.Listener() {
                 @Override
                 public void onRequestProgress(long bytesWritten, long contentLength, boolean done) {
-                    executorCallback.inProgress(ExecutorCall.this, bytesWritten * 1.0f / contentLength, contentLength, done);
+                    postCallback.inProgress(ExecutorCall.this, bytesWritten * 1.0f / contentLength, contentLength, done);
                 }
             });
             builder.method(request.method(), requestBody);
@@ -70,11 +70,11 @@ public final class ExecutorCall<T> implements OkCall<T> {
     private void callOkResponse(OkResponse<T> okResponse) {
         EasyPreconditions.checkNotNull(okResponse, "okResponse==null");
         if (okResponse.isSuccess()) {
-            executorCallback.onSuccess(this, okResponse.body());
+            postCallback.onSuccess(this, okResponse.body());
         } else {
-            executorCallback.onError(this, okResponse.error());
+            postCallback.onError(this, okResponse.error());
         }
-        executorCallback.onFinish(this);
+        postCallback.onFinish(this);
     }
 
     @Override
@@ -103,7 +103,7 @@ public final class ExecutorCall<T> implements OkCall<T> {
     public void enqueue(UICallback<T> uiCallback) {
         EasyPreconditions.checkNotNull(uiCallback, "uiCallback==null");
         this.type = ParamUtil.getType(uiCallback.getClass());
-        this.executorCallback = new ExecutorCallback<>(uiCallback, new ExecutorCallback.OnFinishedListener() {
+        this.postCallback = new PostCallback<>(uiCallback, new PostCallback.OnFinishedListener() {
             @Override
             public void onFinished() {
                 //等uiCallback所有主线程回调函数执行完才将call从列表移除，
@@ -117,7 +117,7 @@ public final class ExecutorCall<T> implements OkCall<T> {
             rawCall = createRawCall();
         }
         addCall(this);
-        executorCallback.onStart(this);
+        postCallback.onStart(this);
         if (canceled) {
             rawCall.cancel();
         }
@@ -151,11 +151,11 @@ public final class ExecutorCall<T> implements OkCall<T> {
     }
 
     private Response wrapResponse(Response response) {
-        if (okRequest.outProgress() && executorCallback != null) {
+        if (okRequest.outProgress() && postCallback != null) {
             ResponseBody wrapBody = new ProgressResponseBody(response.body(), new ProgressResponseBody.Listener() {
                 @Override
                 public void onResponseProgress(long bytesRead, long contentLength, boolean done) {
-                    executorCallback.outProgress(ExecutorCall.this, bytesRead * 1.0f / contentLength, contentLength, done);
+                    postCallback.outProgress(ExecutorCall.this, bytesRead * 1.0f / contentLength, contentLength, done);
                 }
             });
             response = response.newBuilder()
@@ -163,7 +163,6 @@ public final class ExecutorCall<T> implements OkCall<T> {
         }
         return response;
     }
-
 
     @Override
     public Type getType() {
