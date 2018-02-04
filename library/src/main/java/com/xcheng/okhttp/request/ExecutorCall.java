@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 
 import com.xcheng.okhttp.EasyOkHttp;
 import com.xcheng.okhttp.callback.HttpParser;
+import com.xcheng.okhttp.callback.PostCallback;
 import com.xcheng.okhttp.callback.UICallback;
 import com.xcheng.okhttp.error.EasyError;
 import com.xcheng.okhttp.util.EasyPreconditions;

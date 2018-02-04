@@ -1,19 +1,23 @@
-package com.xcheng.okhttp.request;
+package com.xcheng.okhttp.callback;
 
-import com.xcheng.okhttp.callback.UICallback;
+import android.support.annotation.Nullable;
+
 import com.xcheng.okhttp.error.EasyError;
+import com.xcheng.okhttp.request.OkCall;
+import com.xcheng.okhttp.util.EasyPreconditions;
 import com.xcheng.okhttp.util.Platform;
 
 /**
  * UICallBack 处理类
  * Created by chengxin on 2017/6/26.
  */
-final class PostCallback<T> extends UICallback<T> {
+public final class PostCallback<T> extends UICallback<T> {
     private static final Platform PLATFORM = Platform.get();
     private final UICallback<T> delegate;
     private final OnFinishedListener listener;
 
-    PostCallback(UICallback<T> delegate, OnFinishedListener listener) {
+    public PostCallback(UICallback<T> delegate, @Nullable OnFinishedListener listener) {
+        EasyPreconditions.checkNotNull(delegate, "delegate==null");
         this.delegate = delegate;
         this.listener = listener;
     }
@@ -38,7 +42,9 @@ final class PostCallback<T> extends UICallback<T> {
                 if (okCall.isPostUi()) {
                     delegate.onFinish(okCall);
                 }
-                listener.onFinished();
+                if (listener != null) {
+                    listener.onFinished();
+                }
             }
         });
     }
@@ -100,7 +106,7 @@ final class PostCallback<T> extends UICallback<T> {
     /**
      * 请求已经结束回调
      */
-    interface OnFinishedListener {
+    public interface OnFinishedListener {
         void onFinished();
     }
 }
