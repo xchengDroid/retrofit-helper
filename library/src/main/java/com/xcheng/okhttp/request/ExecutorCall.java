@@ -4,7 +4,6 @@ import android.support.annotation.NonNull;
 
 import com.xcheng.okhttp.EasyOkHttp;
 import com.xcheng.okhttp.callback.HttpParser;
-import com.xcheng.okhttp.callback.PostCallback;
 import com.xcheng.okhttp.callback.UICallback;
 import com.xcheng.okhttp.error.EasyError;
 import com.xcheng.okhttp.util.EasyPreconditions;
@@ -106,12 +105,12 @@ public final class ExecutorCall<T> implements OkCall<T> {
     public void enqueue(UICallback<T> uiCallback) {
         EasyPreconditions.checkNotNull(uiCallback, "uiCallback==null");
         this.type = ParamUtil.getType(uiCallback.getClass());
-        this.postCallback = new PostCallback<>(uiCallback, new PostCallback.OnFinishedListener() {
+        this.postCallback = new PostCallback<>(uiCallback, new PostCallback.OnFinishedListener<T>() {
             @Override
-            public void onFinished() {
+            public void onFinished(OkCall<T> okCall) {
                 //等uiCallback所有主线程回调函数执行完才将call从列表移除，
                 //这样的目的是为了在回调函数执行完之前的任意时刻都能在主线程取消当前的请求
-                finished(ExecutorCall.this);
+                finished(okCall);
             }
         });
         synchronized (this) {

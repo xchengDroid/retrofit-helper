@@ -1,9 +1,9 @@
-package com.xcheng.okhttp.callback;
+package com.xcheng.okhttp.request;
 
 import android.support.annotation.Nullable;
 
+import com.xcheng.okhttp.callback.UICallback;
 import com.xcheng.okhttp.error.EasyError;
-import com.xcheng.okhttp.request.OkCall;
 import com.xcheng.okhttp.util.EasyPreconditions;
 import com.xcheng.okhttp.util.Platform;
 
@@ -13,12 +13,12 @@ import com.xcheng.okhttp.util.Platform;
  *
  * @param <T> Successful response body type.
  */
-public final class PostCallback<T> extends UICallback<T> {
+final class PostCallback<T> extends UICallback<T> {
     private static final Platform PLATFORM = Platform.get();
     private final UICallback<T> delegate;
     private final OnFinishedListener listener;
 
-    public PostCallback(UICallback<T> delegate, @Nullable OnFinishedListener listener) {
+    PostCallback(UICallback<T> delegate, @Nullable OnFinishedListener<T> listener) {
         EasyPreconditions.checkNotNull(delegate, "delegate==null");
         this.delegate = delegate;
         this.listener = listener;
@@ -45,7 +45,7 @@ public final class PostCallback<T> extends UICallback<T> {
                     delegate.onFinish(okCall);
                 }
                 if (listener != null) {
-                    listener.onFinished();
+                    listener.onFinished(okCall);
                 }
             }
         });
@@ -108,7 +108,7 @@ public final class PostCallback<T> extends UICallback<T> {
     /**
      * 请求已经结束回调
      */
-    public interface OnFinishedListener {
-        void onFinished();
+    public interface OnFinishedListener<T> {
+        void onFinished(OkCall<T> okCall);
     }
 }
