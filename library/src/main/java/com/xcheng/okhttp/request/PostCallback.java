@@ -18,7 +18,7 @@ final class PostCallback<T> extends UICallback<T> {
     private final UICallback<T> delegate;
     private final OnFinishedListener listener;
 
-    PostCallback(UICallback<T> delegate, @Nullable OnFinishedListener<T> listener) {
+    PostCallback(UICallback<T> delegate, @Nullable OnFinishedListener listener) {
         EasyPreconditions.checkNotNull(delegate, "delegate==null");
         this.delegate = delegate;
         this.listener = listener;
@@ -108,7 +108,7 @@ final class PostCallback<T> extends UICallback<T> {
     /**
      * 请求已经结束回调
      */
-    public interface OnFinishedListener<T> {
-        void onFinished(OkCall<T> okCall);
+    public interface OnFinishedListener {
+        void onFinished(OkCall<?> okCall);
     }
 }
