@@ -45,7 +45,7 @@ final class PostCallback<T> extends UICallback<T> {
                     delegate.onFinish(okCall);
                 }
                 if (listener != null) {
-                    listener.onFinished(okCall);
+                    listener.onFinished();
                 }
             }
         });
@@ -109,6 +109,6 @@ final class PostCallback<T> extends UICallback<T> {
      * 请求已经结束回调
      */
     public interface OnFinishedListener {
-        void onFinished(OkCall<?> okCall);
+        void onFinished();
     }
 }
