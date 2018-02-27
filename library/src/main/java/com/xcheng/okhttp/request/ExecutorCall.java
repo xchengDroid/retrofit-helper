@@ -91,7 +91,8 @@ public final class ExecutorCall<T> implements OkCall<T> {
             rawCall.cancel();
         }
         try {
-            OkResponse<T> mockResponse = httpParser.mockResponse(this);
+            //noinspection unchecked
+            OkResponse<T> mockResponse = (OkResponse<T>) okRequest.mockResponse();
             if (mockResponse != null) {
                 return mockResponse;
             }
@@ -123,8 +124,8 @@ public final class ExecutorCall<T> implements OkCall<T> {
         if (canceled) {
             rawCall.cancel();
         }
-
-        OkResponse<T> mockResponse = httpParser.mockResponse(this);
+        //noinspection unchecked
+        OkResponse<T> mockResponse = (OkResponse<T>) okRequest.mockResponse();
         if (mockResponse != null) {
             callOkResponse(mockResponse);
             return;

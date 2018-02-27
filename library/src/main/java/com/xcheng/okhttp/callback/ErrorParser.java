@@ -1,11 +1,9 @@
 package com.xcheng.okhttp.callback;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import com.xcheng.okhttp.error.EasyError;
 import com.xcheng.okhttp.request.OkCall;
-import com.xcheng.okhttp.request.OkResponse;
 
 import java.io.IOException;
 import java.net.ConnectException;
@@ -19,12 +17,6 @@ import java.net.UnknownHostException;
  * @param <T>
  */
 public abstract class ErrorParser<T> implements HttpParser<T> {
-
-    @Nullable
-    @Override
-    public OkResponse<T> mockResponse(OkCall<T> okCall) {
-        return null;
-    }
 
     @Override
     @NonNull

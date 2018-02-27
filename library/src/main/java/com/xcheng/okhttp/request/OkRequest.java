@@ -51,6 +51,7 @@ public abstract class OkRequest {
     private final Headers headers;
     private final boolean inProgress;
     private final boolean outProgress;
+    private OkResponse<?> mockResponse;
 
     //发起请求 解析相关
     private final OkHttpClient client;
@@ -73,6 +74,7 @@ public abstract class OkRequest {
         this.id = builder.id;
         this.inProgress = builder.inProgress;
         this.outProgress = builder.outProgress;
+        this.mockResponse = builder.mockResponse;
         this.client = ParamUtil.defValueIfNull(builder.client, EasyOkHttp.okConfig().client());
         this.extraMap = builder.extraMap;
         this.factory = ParamUtil.defValueIfNull(builder.factory, EasyOkHttp.okConfig().parserFactory());
@@ -135,6 +137,11 @@ public abstract class OkRequest {
         return outProgress;
     }
 
+    @Nullable
+    public OkResponse<?> mockResponse() {
+        return mockResponse;
+    }
+
     @Override
     public String toString() {
         return getClass().getSimpleName() + "{method="
@@ -172,6 +179,7 @@ public abstract class OkRequest {
         private OkHttpClient client;
         private Map<String, Object> extraMap;
         private HttpParser.Factory factory;
+        private OkResponse<?> mockResponse;
 
         public Builder() {
             this.headers = new Headers.Builder();
@@ -297,6 +305,14 @@ public abstract class OkRequest {
                 this.extraMap = new LinkedHashMap<>();
             }
             this.extraMap.put(key, value);
+            return (T) this;
+        }
+
+        /**
+         * @param mockResponse if is null,will call Http
+         */
+        public T mockResponse(OkResponse<?> mockResponse) {
+            this.mockResponse = mockResponse;
             return (T) this;
         }
 
