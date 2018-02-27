@@ -7,7 +7,6 @@ import android.support.annotation.StringDef;
 
 import com.xcheng.okhttp.EasyOkHttp;
 import com.xcheng.okhttp.callback.HttpParser;
-import com.xcheng.okhttp.util.EasyPreconditions;
 import com.xcheng.okhttp.util.ParamUtil;
 
 import java.lang.annotation.Retention;
@@ -21,6 +20,9 @@ import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+
+import static com.xcheng.okhttp.util.EasyPreconditions.checkNotNull;
+import static com.xcheng.okhttp.util.EasyPreconditions.checkState;
 
 /**
  * 构造OkHttp请求相关参数
@@ -60,12 +62,12 @@ public abstract class OkRequest {
 
     protected OkRequest(Builder<?> builder) {
         //build方法是抽象，本来应该在build方法里面做检测，现在放到构造函数里面统一检测
-        EasyPreconditions.checkState(builder.url != null, "url==null");
+        checkState(builder.url != null, "url==null");
         if (EasyOkHttp.okConfig().mustTag()) {
-            EasyPreconditions.checkState(builder.tag != null, "tag==null");
+            checkState(builder.tag != null, "tag==null");
         }
         //如果没有设置 默认为POST
-        this.method = ParamUtil.defValueIfNull(builder.method, POST);
+        this.method = builder.method;
         this.url = builder.url;
         this.tag = ParamUtil.defValueIfNull(builder.tag, this);
         this.params = builder.params;
@@ -173,14 +175,15 @@ public abstract class OkRequest {
         private OkResponse<?> mockResponse;
 
         public Builder() {
+            //如果没有设置 默认为POST
+            this.method = POST;
             this.headers = new Headers.Builder();
             this.inProgress = false;
             this.outProgress = false;
         }
 
         public T method(@Method String method) {
-            EasyPreconditions.checkNotNull(method, "method==null");
-            this.method = method;
+            this.method = checkNotNull(method, "method==null");
             return (T) this;
         }
 
@@ -200,7 +203,7 @@ public abstract class OkRequest {
          * @param url http请求的url
          */
         public T url(String url) {
-            EasyPreconditions.checkNotNull(url, "url==null");
+            checkNotNull(url, "url==null");
             HttpUrl baseUrl = EasyOkHttp.okConfig().baseUrl();
             HttpUrl resolveUrl = baseUrl.resolve(url);
             if (resolveUrl == null) {
@@ -249,8 +252,7 @@ public abstract class OkRequest {
         }
 
         public T param(String key, String value) {
-            EasyPreconditions.checkNotNull(key, "key==null");
-            params.put(key, value);
+            params.put(checkNotNull(key, "key==null"), value);
             return (T) this;
         }
 
