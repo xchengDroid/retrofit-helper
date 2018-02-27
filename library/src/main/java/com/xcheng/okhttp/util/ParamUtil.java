@@ -2,8 +2,6 @@ package com.xcheng.okhttp.util;
 
 import android.support.annotation.NonNull;
 
-import com.google.gson.reflect.TypeToken;
-
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -63,15 +61,5 @@ public class ParamUtil {
         }
         ParameterizedType parameterized = (ParameterizedType) superclass;
         return parameterized.getActualTypeArguments()[0];
-    }
-
-    @SuppressWarnings("unchecked")
-    public static <C> TypeToken<List<C>> createListTypeToken(@NonNull Class<?> tokenClazz) {
-        return (TypeToken<List<C>>) TypeToken.getParameterized(List.class, getType(tokenClazz));
-    }
-
-    @SuppressWarnings("unchecked")
-    public static <C> TypeToken<C> createTypeToken(@NonNull Class<?> tokenClazz) {
-        return (TypeToken<C>) TypeToken.get(getType(tokenClazz));
     }
 }
