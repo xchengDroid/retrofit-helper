@@ -25,7 +25,7 @@ public interface HttpParser<T> {
     OkResponse<T> parseNetworkResponse(OkCall<T> okCall, Response response) throws IOException;
 
     /**
-     * called by {@link okhttp3.Callback#onFailure(Call, IOException)}
+     * if have IOException, parse it to EasyError
      *
      * @param e IO错误
      * @return EasyError  对应IOException的error信息
