@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
                     @NonNull
                     @Override
                     public HttpParser<?> parser(OkRequest request) {
-                        if (request.id() == BITMAP_ID) {
+                        if ("bitmap".equals(request.extra("type"))) {
                             return BitmapParser.INSTANCE;
                         }
                         return JsonParser.INSTANCE;
@@ -95,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
     public void bitmap(final View view) {
         GetRequest getRequest = EasyOkHttp.get("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1499010173&di=9599915fd6f9eb51f527cbbf62a84bd6&imgtype=jpg&er=1&src=http%3A%2F%2F4493bz.1985t.com%2Fuploads%2Fallimg%2F160119%2F5-16011Z92519.jpg")
                 .outProgress()
-                .id(BITMAP_ID)
+                .extra("type", "bitmap")
                 .build();
         ExecutorCall<Bitmap> okCall = new ExecutorCall<>(getRequest);
         okCall.enqueue(new UICallback<Bitmap>() {
