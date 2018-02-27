@@ -166,6 +166,9 @@ public final class ExecutorCall<T> implements OkCall<T> {
         return response;
     }
 
+    /**
+     * if called {@link #enqueue(UICallback)},it will return responseType, else return null.
+     */
     @Override
     public Type getType() {
         return type;
