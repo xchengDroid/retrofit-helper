@@ -46,7 +46,6 @@ public abstract class OkRequest {
     private final String method;
     private final HttpUrl url;
     private final Object tag;
-    private final int id;
     private final Map<String, String> params;
     private final Headers headers;
     private final boolean inProgress;
@@ -71,7 +70,6 @@ public abstract class OkRequest {
         this.tag = ParamUtil.defValueIfNull(builder.tag, this);
         this.params = builder.params;
         this.headers = builder.headers.build();
-        this.id = builder.id;
         this.inProgress = builder.inProgress;
         this.outProgress = builder.outProgress;
         this.mockResponse = builder.mockResponse;
@@ -115,10 +113,6 @@ public abstract class OkRequest {
         return tag;
     }
 
-    public int id() {
-        return id;
-    }
-
     @NonNull
     public Map<String, String> params() {
         return params;
@@ -150,8 +144,6 @@ public abstract class OkRequest {
                 + url
                 + ", tag="
                 + (tag != this ? tag : null)
-                + ", id="
-                + id
                 + '}';
     }
 
@@ -171,7 +163,6 @@ public abstract class OkRequest {
          * 保存http请求String类型参数，如Get请求查询参数，form表单等，根据需要子类自己实现
          */
         private final Map<String, String> params = new LinkedHashMap<>();
-        private int id;
         private boolean inProgress;
         private boolean outProgress;
 
@@ -190,11 +181,6 @@ public abstract class OkRequest {
         public T method(@Method String method) {
             EasyPreconditions.checkNotNull(method, "method==null");
             this.method = method;
-            return (T) this;
-        }
-
-        public T id(int id) {
-            this.id = id;
             return (T) this;
         }
 
