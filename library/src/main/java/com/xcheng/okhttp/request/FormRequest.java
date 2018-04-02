@@ -109,6 +109,7 @@ public class FormRequest extends OkRequest {
 
         @Override
         public FormRequest build() {
+            super.build();
             return new FormRequest(this);
         }
     }

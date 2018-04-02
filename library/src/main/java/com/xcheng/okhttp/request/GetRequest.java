@@ -45,6 +45,7 @@ public class GetRequest extends OkRequest {
 
         @Override
         public GetRequest build() {
+            super.build();
             //忽略method设置
             method(OkRequest.GET);
             return new GetRequest(this);

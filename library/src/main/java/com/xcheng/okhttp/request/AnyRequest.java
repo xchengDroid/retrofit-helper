@@ -47,6 +47,7 @@ public class AnyRequest extends OkRequest {
 
         @Override
         public AnyRequest build() {
+            super.build();
             return new AnyRequest(this);
         }
     }

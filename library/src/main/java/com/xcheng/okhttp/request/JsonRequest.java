@@ -84,6 +84,7 @@ public class JsonRequest extends OkRequest {
 
         @Override
         public JsonRequest build() {
+            super.build();
             if (json == null) {
                 if (nameValuePairs == null || nameValuePairs.isEmpty()) {
                     throw new IllegalStateException("json==null,it must have a request body.");

@@ -2,7 +2,6 @@ package com.xcheng.okhttp.request;
 
 import android.support.annotation.NonNull;
 
-import com.xcheng.okhttp.EasyOkHttp;
 import com.xcheng.okhttp.callback.HttpParser;
 import com.xcheng.okhttp.callback.UICallback;
 import com.xcheng.okhttp.error.EasyError;
@@ -44,7 +43,7 @@ public final class ExecutorCall<T> implements OkCall<T> {
     public ExecutorCall(@NonNull OkRequest okRequest) {
         this.okRequest = okRequest;
         //noinspection unchecked
-        this.httpParser = (HttpParser<T>) okRequest.parserFactory().parser(okRequest);
+        this.httpParser = (HttpParser<T>) okRequest.okConfig().parserFactory().parser(okRequest);
     }
 
     @Override
@@ -66,7 +65,7 @@ public final class ExecutorCall<T> implements OkCall<T> {
             builder.method(request.method(), requestBody);
             request = builder.build();
         }
-        return okRequest.client().newCall(request);
+        return okRequest.okConfig().client().newCall(request);
     }
 
     private void callOkResponse(OkResponse<T> okResponse) {
@@ -177,7 +176,7 @@ public final class ExecutorCall<T> implements OkCall<T> {
 
     @Override
     public boolean isPostUi() {
-        return !isCanceled() || EasyOkHttp.okConfig().postUiIfCanceled();
+        return !isCanceled() || okRequest.okConfig().postUiIfCanceled();
     }
 
     @Override

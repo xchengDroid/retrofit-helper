@@ -284,9 +284,9 @@ public abstract class OkRequest {
         }
 
         @CallSuper
-        public T build() {
+        public OkRequest build() {
             if (okConfig == null) {
-                //设置为全局的,这样做的目的可以动态设置地址，和解析器等
+                //设置为全局的,这样做的目的可以动态设置地址，和解析器等,如果没有设置此方法会奔溃
                 okConfig = EasyOkHttp.okConfig();
             }
             if (okConfig.mustTag()) {
