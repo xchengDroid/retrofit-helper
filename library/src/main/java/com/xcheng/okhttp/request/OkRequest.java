@@ -1,5 +1,6 @@
 package com.xcheng.okhttp.request;
 
+import android.support.annotation.CallSuper;
 import android.support.annotation.CheckResult;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -59,25 +60,8 @@ public abstract class OkRequest {
     private final Map<String, Object> extraMap;
 
     protected OkRequest(Builder<?> builder) {
-        //==========START==============
-        //build方法是抽象，本来应该在build方法里面做检测，现在放到构造函数里面统一检测
-        final OkConfig okConfig = ParamUtil.defValueIfNull(builder.okConfig, EasyOkHttp.okConfig());
-        if (okConfig.mustTag()) {
-            checkState(builder.tag != null, "tag==null");
-        }
-        //构造Url
-        final String url = builder.url;
-        checkState(url != null, "url==null");
-        HttpUrl baseUrl = okConfig.baseUrl();
-        HttpUrl resolveUrl = baseUrl.resolve(url);
-        if (resolveUrl == null) {
-            throw new IllegalArgumentException(
-                    "Malformed URL. Base: " + baseUrl + ", url: " + url);
-        }
-        //==========END==============
-
-        this.okConfig = okConfig;
-        this.url = resolveUrl;
+        this.okConfig = builder.okConfig;
+        this.url = builder.resolveUrl;
         //如果没有设置 默认为POST
         this.method = builder.method;
         this.tag = ParamUtil.defValueIfNull(builder.tag, this);
@@ -163,6 +147,8 @@ public abstract class OkRequest {
     protected static abstract class Builder<T extends Builder> {
         private String method;
         private String url;
+        private HttpUrl resolveUrl;
+
         private Object tag;
         private Headers.Builder headers;
 
@@ -297,6 +283,24 @@ public abstract class OkRequest {
             return (T) this;
         }
 
-        public abstract T build();
+        @CallSuper
+        public T build() {
+            if (okConfig == null) {
+                //设置为全局的,这样做的目的可以动态设置地址，和解析器等
+                okConfig = EasyOkHttp.okConfig();
+            }
+            if (okConfig.mustTag()) {
+                checkState(tag != null, "tag==null");
+            }
+            checkState(url != null, "url==null");
+            //构造Url
+            HttpUrl baseUrl = okConfig.baseUrl();
+            resolveUrl = baseUrl.resolve(url);
+            if (resolveUrl == null) {
+                throw new IllegalArgumentException(
+                        "Malformed URL. Base: " + baseUrl + ", url: " + url);
+            }
+            return null;
+        }
     }
 }
