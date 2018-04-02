@@ -17,7 +17,6 @@ import java.util.Map;
 import okhttp3.Headers;
 import okhttp3.HttpUrl;
 import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
@@ -55,29 +54,39 @@ public abstract class OkRequest {
     private OkResponse<?> mockResponse;
 
     //发起请求 解析相关
-    private final OkHttpClient client;
+    private final OkConfig okConfig;
     //额外入参
     private final Map<String, Object> extraMap;
-    private HttpParser.Factory factory;
 
     protected OkRequest(Builder<?> builder) {
+        //==========START==============
         //build方法是抽象，本来应该在build方法里面做检测，现在放到构造函数里面统一检测
-        checkState(builder.url != null, "url==null");
-        if (EasyOkHttp.okConfig().mustTag()) {
+        final OkConfig okConfig = ParamUtil.defValueIfNull(builder.okConfig, EasyOkHttp.okConfig());
+        if (okConfig.mustTag()) {
             checkState(builder.tag != null, "tag==null");
         }
+        //构造Url
+        final String url = builder.url;
+        checkState(url != null, "url==null");
+        HttpUrl baseUrl = okConfig.baseUrl();
+        HttpUrl resolveUrl = baseUrl.resolve(url);
+        if (resolveUrl == null) {
+            throw new IllegalArgumentException(
+                    "Malformed URL. Base: " + baseUrl + ", url: " + url);
+        }
+        //==========END==============
+
+        this.okConfig = okConfig;
+        this.url = resolveUrl;
         //如果没有设置 默认为POST
         this.method = builder.method;
-        this.url = builder.url;
         this.tag = ParamUtil.defValueIfNull(builder.tag, this);
         this.params = builder.params;
         this.headers = builder.headers.build();
         this.inProgress = builder.inProgress;
         this.outProgress = builder.outProgress;
         this.mockResponse = builder.mockResponse;
-        this.client = ParamUtil.defValueIfNull(builder.client, EasyOkHttp.okConfig().client());
         this.extraMap = builder.extraMap;
-        this.factory = ParamUtil.defValueIfNull(builder.factory, EasyOkHttp.okConfig().parserFactory());
     }
 
     public String method() {
@@ -86,10 +95,6 @@ public abstract class OkRequest {
 
     public HttpUrl url() {
         return url;
-    }
-
-    public OkHttpClient client() {
-        return client;
     }
 
     @Nullable
@@ -107,8 +112,8 @@ public abstract class OkRequest {
         return extraMap;
     }
 
-    public HttpParser.Factory parserFactory() {
-        return factory;
+    public OkConfig okConfig() {
+        return okConfig;
     }
 
     public Object tag() {
@@ -157,7 +162,7 @@ public abstract class OkRequest {
     @SuppressWarnings("unchecked")
     protected static abstract class Builder<T extends Builder> {
         private String method;
-        private HttpUrl url;
+        private String url;
         private Object tag;
         private Headers.Builder headers;
 
@@ -168,11 +173,10 @@ public abstract class OkRequest {
         private boolean inProgress;
         private boolean outProgress;
 
-        //发起请求 解析相关
-        private OkHttpClient client;
         private Map<String, Object> extraMap;
-        private HttpParser.Factory factory;
         private OkResponse<?> mockResponse;
+        //http请求通用的配置
+        private OkConfig okConfig;
 
         public Builder() {
             //如果没有设置 默认为POST
@@ -197,6 +201,11 @@ public abstract class OkRequest {
             return (T) this;
         }
 
+        public T okConfig(OkConfig okConfig) {
+            this.okConfig = checkNotNull(okConfig, "okConfig==null");
+            return (T) this;
+        }
+
         /**
          * 设置Http请求的判断url地址，see {@link HttpUrl#resolve(String)}
          *
@@ -204,13 +213,7 @@ public abstract class OkRequest {
          */
         public T url(String url) {
             checkNotNull(url, "url==null");
-            HttpUrl baseUrl = EasyOkHttp.okConfig().baseUrl();
-            HttpUrl resolveUrl = baseUrl.resolve(url);
-            if (resolveUrl == null) {
-                throw new IllegalArgumentException(
-                        "Malformed URL. Base: " + baseUrl + ", url: " + url);
-            }
-            this.url = resolveUrl;
+            this.url = url;
             return (T) this;
         }
 
@@ -269,16 +272,6 @@ public abstract class OkRequest {
             return param(key, result);
         }
 
-        public T client(OkHttpClient client) {
-            this.client = client;
-            return (T) this;
-        }
-
-        public T parserFactory(HttpParser.Factory factory) {
-            this.factory = factory;
-            return (T) this;
-        }
-
         /**
          * 约定大于配置，在{@link HttpParser#parseNetworkResponse(OkCall, Response)}方法中获取需要的的参数解析即可。
          * Http 响应解析所需要的额外数据 eg：gson解析需要的{@link java.lang.reflect.Type},
@@ -304,6 +297,6 @@ public abstract class OkRequest {
             return (T) this;
         }
 
-        public abstract OkRequest build();
+        public abstract T build();
     }
 }

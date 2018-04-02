@@ -22,7 +22,10 @@ public class OkConfig {
 
     private final OkHttpClient client;
     private final HttpParser.Factory factory;
-    
+
+    public Builder newBuilder() {
+        return new Builder(this);
+    }
     private OkConfig(Builder builder) {
         baseUrl = builder.baseUrl;
         postUiIfCanceled = builder.postUiIfCanceled;
