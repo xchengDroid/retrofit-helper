@@ -243,16 +243,15 @@ public abstract class OkRequest {
             return (T) this;
         }
 
-        public T path(String key, String value) {
-            String result = null;
-            if (value != null) {
-                result = String.valueOf(value);
-            }
+        public T path(String key, Object value) {
+            checkNotNull(key, "key==null");
+            checkNotNull(value, "value==null");
+            String result = String.valueOf(value);
             if (paths == null) {
                 //Lazy Initialization
                 paths = new LinkedHashMap<>();
             }
-            paths.put(checkNotNull(key, "key==null"), result);
+            paths.put(key, result);
             return (T) this;
         }
 
@@ -262,11 +261,12 @@ public abstract class OkRequest {
          * @return Builder
          */
         public T param(String key, Object value) {
+            checkNotNull(key, "key==null");
             String result = null;
             if (value != null) {
                 result = String.valueOf(value);
             }
-            params.put(checkNotNull(key, "key==null"), result);
+            params.put(key, result);
             return (T) this;
         }
 
@@ -306,6 +306,11 @@ public abstract class OkRequest {
             }
             checkState(url != null, "url==null");
 
+            if (ParamUtil.isEmpty(paths)) {
+                for (Map.Entry<String, String> entry : paths.entrySet()) {
+                    url = url.replace("{" + entry.getKey() + "}", entry.getValue());
+                }
+            }
             //构造Url
             HttpUrl baseUrl = okConfig.baseUrl();
             HttpUrl resolveUrl = baseUrl.resolve(url);
