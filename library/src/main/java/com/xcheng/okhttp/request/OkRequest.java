@@ -22,7 +22,6 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 import static com.xcheng.okhttp.util.EasyPreconditions.checkNotNull;
-import static com.xcheng.okhttp.util.EasyPreconditions.checkState;
 
 /**
  * 构造OkHttp请求相关参数
@@ -289,17 +288,20 @@ public abstract class OkRequest {
                 //设置为全局的,这样做的目的可以动态设置地址，和解析器等,如果没有设置此方法会奔溃
                 okConfig = EasyOkHttp.okConfig();
             }
-            if (okConfig.mustTag()) {
-                checkState(tag != null, "tag==null");
+            if (okConfig.mustTag() && tag == null) {
+                throw new IllegalStateException("tag==null");
             }
-            checkState(url != null, "url==null");
+            if (url == null) {
+                throw new IllegalStateException("url==null");
+            }
             //构造Url
             HttpUrl baseUrl = okConfig.baseUrl();
-            resolveUrl = baseUrl.resolve(url);
+            HttpUrl resolveUrl = baseUrl.resolve(url);
             if (resolveUrl == null) {
                 throw new IllegalArgumentException(
                         "Malformed URL. Base: " + baseUrl + ", url: " + url);
             }
+            this.resolveUrl = resolveUrl;
             return null;
         }
     }
