@@ -78,11 +78,6 @@ public class JsonRequest extends OkRequest {
         }
 
         @Override
-        public Builder param(String key, String value) {
-            throw new UnsupportedOperationException("Unsupported for JsonRequest");
-        }
-
-        @Override
         public JsonRequest build() {
             super.build();
             if (json == null) {

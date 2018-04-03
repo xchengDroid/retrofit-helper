@@ -156,10 +156,13 @@ public abstract class OkRequest {
          * 保存http请求String类型参数，如Get请求查询参数，form表单等，根据需要子类自己实现
          */
         private final Map<String, String> params = new LinkedHashMap<>();
+
         private boolean inProgress;
         private boolean outProgress;
 
         private Map<String, Object> extraMap;
+        private Map<String, String> paths;
+
         private OkResponse<?> mockResponse;
         //http请求通用的配置
         private OkConfig okConfig;
@@ -240,8 +243,16 @@ public abstract class OkRequest {
             return (T) this;
         }
 
-        public T param(String key, String value) {
-            params.put(checkNotNull(key, "key==null"), value);
+        public T path(String key, String value) {
+            String result = null;
+            if (value != null) {
+                result = String.valueOf(value);
+            }
+            if (paths == null) {
+                //Lazy Initialization
+                paths = new LinkedHashMap<>();
+            }
+            paths.put(checkNotNull(key, "key==null"), result);
             return (T) this;
         }
 
@@ -255,7 +266,8 @@ public abstract class OkRequest {
             if (value != null) {
                 result = String.valueOf(value);
             }
-            return param(key, result);
+            params.put(checkNotNull(key, "key==null"), result);
+            return (T) this;
         }
 
         /**

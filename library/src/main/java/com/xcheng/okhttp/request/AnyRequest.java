@@ -41,11 +41,6 @@ public class AnyRequest extends OkRequest {
         }
 
         @Override
-        public Builder param(String key, String value) {
-            throw new UnsupportedOperationException("Unsupported for AnyRequest");
-        }
-
-        @Override
         public AnyRequest build() {
             super.build();
             return new AnyRequest(this);
