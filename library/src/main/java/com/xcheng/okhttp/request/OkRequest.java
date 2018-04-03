@@ -306,7 +306,7 @@ public abstract class OkRequest {
             }
             checkState(url != null, "url==null");
 
-            if (ParamUtil.isEmpty(paths)) {
+            if (!ParamUtil.isEmpty(paths)) {
                 for (Map.Entry<String, String> entry : paths.entrySet()) {
                     url = url.replace("{" + entry.getKey() + "}", entry.getValue());
                 }
