@@ -28,7 +28,7 @@ public class HttpError extends RuntimeException {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "{msg="
+        return "{msg="
                 + msg
                 + ", body="
                 + body
