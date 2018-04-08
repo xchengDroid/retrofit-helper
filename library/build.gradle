@@ -27,8 +27,7 @@ dependencies {
     api fileTree(dir: 'libs', include: ['*.jar'])
     //noinspection GradleDependency
     compileOnly 'com.android.support:support-annotations:26.1.0'
-    api 'com.squareup.okhttp3:okhttp:3.9.1'
-    api 'com.google.code.gson:gson:2.8.2'
+    api 'com.squareup.retrofit2:retrofit:2.4.0'
 }
 //添加
 publish {
@@ -36,7 +35,7 @@ publish {
     userOrg = 'xcheng'//bintray.com用户名
     groupId = 'com.xcheng'//jcenter上的路径
     artifactId = 'easyokhttp'//项目名称
-    publishVersion = '1.9.2'//版本号
-    desc = 'make okhttp more simple'//描述，不重要
+    publishVersion = '2.0.0'//版本号
+    desc = 'make retrofit more simple'//描述，不重要
     website = 'https://github.com/xchengDroid/EasyOkHttp'//网站，不重要；尽量模拟github上的地址，例如我这样的；当然你有地址最好了
 }

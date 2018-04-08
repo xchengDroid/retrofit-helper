@@ -10,7 +10,7 @@ import java.net.UnknownHostException;
 import retrofit2.Response;
 
 /**
- * @param <T>
+ * @param <T> Successful response body type.
  */
 public abstract class Callback2<T> {
 

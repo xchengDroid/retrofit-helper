@@ -29,7 +29,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 
 /**
- * just for android
+ * just for android post UI thread
  */
 public final class ExecutorCallAdapterFactory extends CallAdapter.Factory {
 
@@ -69,7 +69,7 @@ public final class ExecutorCallAdapterFactory extends CallAdapter.Factory {
         private final Executor callbackExecutor;
         private final Call<T> delegate;
 
-        public ExecutorCallbackCall2(Executor callbackExecutor, Call<T> delegate) {
+        ExecutorCallbackCall2(Executor callbackExecutor, Call<T> delegate) {
             this.callbackExecutor = callbackExecutor;
             this.delegate = delegate;
         }
