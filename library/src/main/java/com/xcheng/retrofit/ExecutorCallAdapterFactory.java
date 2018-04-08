@@ -117,7 +117,7 @@ public final class ExecutorCallAdapterFactory extends CallAdapter.Factory {
         }
 
         private void callResult(Callback2<T> callback2, Result<T> result) {
-            Utils.checkNotNull(result, "parser==null");
+            Utils.checkNotNull(result, "result==null");
             if (isCanceled()) {
                 callback2.onCancel(this);
             } else {
