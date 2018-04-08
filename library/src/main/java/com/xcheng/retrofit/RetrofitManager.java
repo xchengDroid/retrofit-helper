@@ -73,7 +73,7 @@ public class RetrofitManager {
 
     private static List<CallWrap> callWraps() {
         synchronized (CALL_WRAPS) {
-            return Util.immutableList(CALL_WRAPS);
+            return Utils.immutableList(CALL_WRAPS);
         }
     }
 
