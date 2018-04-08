@@ -17,21 +17,22 @@ public abstract class Callback2<T> {
     @NonNull
     public Result<T> parseResponse(Call2<T> call2, Response<T> response) {
         T body = response.body();
-        if (body != null) {
-            return Result.success(body);
-        }
-        HttpError httpError;
         if (response.isSuccessful()) {
-            httpError = new HttpError("暂无数据");
-        } else {
-            int httpCode = response.code();
-            if (httpCode == 404) {
-                httpError = new HttpError("地址未找到");
-            } else if (httpCode == 400) {
-                httpError = new HttpError("参数错误");
+            if (body != null) {
+                return Result.success(body);
             } else {
-                httpError = new HttpError("请求失败");
+                return Result.error(new HttpError("暂无数据"));
             }
+        }
+
+        HttpError httpError;
+        int httpCode = response.code();
+        if (httpCode == 404) {
+            httpError = new HttpError("地址未找到");
+        } else if (httpCode == 400) {
+            httpError = new HttpError("参数错误");
+        } else {
+            httpError = new HttpError("请求失败");
         }
         return Result.error(httpError);
     }
