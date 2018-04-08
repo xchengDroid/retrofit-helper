@@ -3,9 +3,9 @@ package com.xcheng.retrofit;
 import android.support.annotation.NonNull;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
+import okhttp3.internal.Util;
 import retrofit2.Call;
 import retrofit2.Retrofit;
 
@@ -73,7 +73,7 @@ public class RetrofitManager {
 
     private static List<CallWrap> callWraps() {
         synchronized (CALL_WRAPS) {
-            return Collections.unmodifiableList(new ArrayList<>(CALL_WRAPS));
+            return Util.immutableList(CALL_WRAPS);
         }
     }
 
