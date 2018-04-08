@@ -13,49 +13,48 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.xcheng.okhttp.request;
+package com.xcheng.retrofit;
 
 import android.support.annotation.Nullable;
 
-import com.xcheng.okhttp.error.EasyError;
-import com.xcheng.okhttp.util.EasyPreconditions;
+import static com.xcheng.retrofit.Utils.checkNotNull;
 
 /**
- * An HTTP response. like Retrofit
+ * An HTTP Result. like Retrofit
  */
-public final class OkResponse<T> {
+public final class Result<T> {
 
     /**
      * @param body 请求成功返回的body
      * @throws NullPointerException if body==null
      */
-    public static <T> OkResponse<T> success(T body) {
-        EasyPreconditions.checkNotNull(body, "body==null");
-        return new OkResponse<>(body, null);
+    public static <T> Result<T> success(T body) {
+        checkNotNull(body, "body==null");
+        return new Result<>(body, null);
     }
 
     /**
-     * @param easyError 请求失败返回的错误信息
-     * @throws NullPointerException if easyError==null
+     * @param error 请求失败返回的错误信息
+     * @throws NullPointerException if error==null
      */
-    public static <T> OkResponse<T> error(EasyError easyError) {
-        EasyPreconditions.checkNotNull(easyError, "easyError==null");
-        return new OkResponse<>(null, easyError);
+    public static <T> Result<T> error(HttpError error) {
+        checkNotNull(error, "error==null");
+        return new Result<>(null, error);
     }
 
     @Nullable
-    private final EasyError easyError;
+    private final HttpError error;
     @Nullable
     private final T body;
 
-    private OkResponse(@Nullable T body, @Nullable EasyError easyError) {
-        this.easyError = easyError;
+    private Result(@Nullable T body, @Nullable HttpError error) {
+        this.error = error;
         this.body = body;
     }
 
     @Nullable
-    public EasyError error() {
-        return easyError;
+    public HttpError error() {
+        return error;
     }
 
     @Nullable
