@@ -69,6 +69,10 @@ public final class ExecutorCallAdapterFactory extends CallAdapter.Factory {
         private final Executor callbackExecutor;
         private final Call<T> delegate;
 
+        /**
+         * The executor used for {@link Callback} methods on a {@link Call}. This may be {@code null},
+         * in which case callbacks should be made synchronously on the background thread.
+         */
         ExecutorCallbackCall2(Executor callbackExecutor, Call<T> delegate) {
             this.callbackExecutor = callbackExecutor;
             this.delegate = delegate;
