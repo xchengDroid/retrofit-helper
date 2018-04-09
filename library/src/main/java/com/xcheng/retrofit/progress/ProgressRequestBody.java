@@ -1,4 +1,4 @@
-package com.xcheng.retrofit;
+package com.xcheng.retrofit.progress;
 
 import java.io.IOException;
 
@@ -18,8 +18,8 @@ import okio.Sink;
  * @author Leo Nikkilä
  */
 class ProgressRequestBody extends RequestBody {
-    private RequestBody delegate;
-    private ProgressListener listener;
+    private final RequestBody delegate;
+    private final ProgressListener listener;
 
     ProgressRequestBody(RequestBody delegate, ProgressListener listener) {
         this.delegate = delegate;

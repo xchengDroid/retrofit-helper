@@ -1,4 +1,4 @@
-package com.xcheng.retrofit;
+package com.xcheng.retrofit.progress;
 
 import java.io.IOException;
 
