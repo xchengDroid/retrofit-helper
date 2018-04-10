@@ -21,18 +21,18 @@ public abstract class Callback2<T> {
             if (body != null) {
                 return Result.success(body);
             } else {
-                return Result.error(new HttpError("暂无数据"));
+                return Result.error(new HttpError("暂无数据", response));
             }
         }
 
         HttpError httpError;
         int httpCode = response.code();
         if (httpCode == 404) {
-            httpError = new HttpError("地址未找到");
+            httpError = new HttpError("地址未找到", response);
         } else if (httpCode == 400) {
-            httpError = new HttpError("参数错误");
+            httpError = new HttpError("参数错误", response);
         } else {
-            httpError = new HttpError("请求失败");
+            httpError = new HttpError("请求失败", response);
         }
         return Result.error(httpError);
     }
