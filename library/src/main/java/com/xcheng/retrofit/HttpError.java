@@ -6,7 +6,7 @@ import android.support.annotation.Nullable;
  * 通用的错误信息，一般请求是失败只需要弹出一些错误信息即可
  * Created by chengxin on 2017/6/22.
  */
-public class HttpError extends RuntimeException {
+public final class HttpError extends RuntimeException {
     private static final long serialVersionUID = -134024482758434333L;
     /**
      * /**
