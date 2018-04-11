@@ -25,16 +25,24 @@ public abstract class Callback2<T> {
             }
         }
 
-        HttpError httpError;
-        int httpCode = response.code();
-        if (httpCode == 404) {
-            httpError = new HttpError("地址未找到", response);
-        } else if (httpCode == 400) {
-            httpError = new HttpError("参数错误", response);
-        } else {
-            httpError = new HttpError("请求失败", response);
+        final String msg;
+        switch (response.code()) {
+            case 400:
+                msg = "参数错误";
+                break;
+            case 401:
+                msg = "身份未授权";
+                break;
+            case 403:
+                msg = "禁止访问";
+                break;
+            case 404:
+                msg = "地址未找到";
+                break;
+            default:
+                msg = "服务异常";
         }
-        return Result.error(httpError);
+        return Result.error(new HttpError(msg, response));
     }
 
     @NonNull

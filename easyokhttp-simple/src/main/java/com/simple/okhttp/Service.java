@@ -11,6 +11,6 @@ import retrofit2.http.GET;
  * 功能描述：
  */
 public interface Service {
-    @GET("https://github.com/")
+    @GET("https://github.com/123")
     Call2<ResponseBody> gitHub();
 }
