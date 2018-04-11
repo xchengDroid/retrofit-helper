@@ -9,10 +9,10 @@ import android.support.annotation.Nullable;
 public final class HttpError extends RuntimeException {
     private static final long serialVersionUID = -134024482758434333L;
     /**
-     * /**
      * 展示在前端的错误描述信息
      */
     public String msg;
+
     /**
      * 请求失败保存失败信息,for example:<br/>
      * BusiModel: {code:xxx,msg:xxx} 业务错误信息<br/>
