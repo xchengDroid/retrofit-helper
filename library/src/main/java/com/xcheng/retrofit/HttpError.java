@@ -32,7 +32,7 @@ public final class HttpError extends RuntimeException {
         if (body instanceof Throwable) {
             initCause((Throwable) body);
         }
-        this.msg = getMessage();
+        this.msg = msg;
         this.body = body;
     }
 
@@ -41,7 +41,7 @@ public final class HttpError extends RuntimeException {
      */
     @Override
     public String getMessage() {
-        return msg == null ? "null message" : msg;
+        return msg;
     }
 
     @Override
