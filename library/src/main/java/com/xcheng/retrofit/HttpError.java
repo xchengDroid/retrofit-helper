@@ -18,7 +18,7 @@ public final class HttpError extends RuntimeException {
      * BusiModel: {code:xxx,msg:xxx} 业务错误信息<br/>
      * original json:  原始的json <br/>
      * {@link retrofit2.Response}:错误响应体<br/>
-     * Exception : 抛出的异常信息
+     * Throwable : 抛出的异常信息
      */
     @Nullable
     public final transient Object body;
@@ -31,6 +31,14 @@ public final class HttpError extends RuntimeException {
         super(msg == null ? "null message" : msg);
         this.msg = getMessage();
         this.body = body;
+    }
+
+    @Override
+    public synchronized Throwable getCause() {
+        if (body instanceof Throwable) {
+            return (Throwable) body;
+        }
+        return null;
     }
 
     @Override
