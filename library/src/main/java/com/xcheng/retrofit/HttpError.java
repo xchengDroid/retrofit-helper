@@ -28,17 +28,20 @@ public final class HttpError extends RuntimeException {
     }
 
     public HttpError(String msg, @Nullable Object body) {
-        super(msg == null ? "null message" : msg);
+        super(msg);
+        if (body instanceof Throwable) {
+            initCause((Throwable) body);
+        }
         this.msg = getMessage();
         this.body = body;
     }
 
+    /**
+     * 保证和msg一致
+     */
     @Override
-    public synchronized Throwable getCause() {
-        if (body instanceof Throwable) {
-            return (Throwable) body;
-        }
-        return null;
+    public String getMessage() {
+        return msg == null ? "null message" : msg;
     }
 
     @Override
