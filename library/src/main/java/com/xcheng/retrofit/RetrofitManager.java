@@ -84,7 +84,7 @@ public class RetrofitManager {
         }
     }
 
-    public static void cancelAll(Object tag) {
+    public static void cancelAll() {
         for (CallWrap callWrap : callWraps()) {
             callWrap.call.cancel();
         }
