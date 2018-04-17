@@ -61,7 +61,7 @@ public abstract class Callback2<T> {
         } else if (t instanceof SocketException) {
             httpError = new HttpError("服务异常", t);
         } else if (t instanceof SocketTimeoutException) {
-            httpError = new HttpError("请求超时", t);
+            httpError = new HttpError("响应超时", t);
         } else {
             httpError = new HttpError("请求失败", t);
         }
