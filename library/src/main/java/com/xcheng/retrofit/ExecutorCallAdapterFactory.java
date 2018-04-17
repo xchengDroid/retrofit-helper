@@ -86,7 +86,7 @@ public final class ExecutorCallAdapterFactory extends CallAdapter.Factory {
         @Override
         public void enqueue(Object tag, final Callback2<T> callback2) {
             Utils.checkNotNull(tag, "tag==null");
-            Utils.checkNotNull(tag, "callback2==null");
+            Utils.checkNotNull(callback2, "callback2==null");
             RetrofitManager.add(this, tag);
             callbackExecutor.execute(new Runnable() {
                 @Override
