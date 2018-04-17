@@ -20,4 +20,7 @@ public interface Call2<T> extends retrofit2.Call<T> {
      * @param callback2 请求的回调
      */
     void enqueue(Object tag, Callback2<T> callback2);
+
+    @Override
+    Call2<T> clone();
 }
