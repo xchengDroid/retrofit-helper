@@ -36,7 +36,7 @@ public class RetrofitManager {
         if (sRetrofit == null) {
             synchronized (RetrofitManager.class) {
                 if (sRetrofit == null) {
-                    throw new IllegalStateException("You need to call install(Retrofit) at least once");
+                    throw new IllegalStateException("You need to call install(Retrofit) before using");
                 }
             }
         }
