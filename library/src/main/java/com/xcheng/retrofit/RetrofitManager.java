@@ -1,6 +1,6 @@
 package com.xcheng.retrofit;
 
-import android.support.annotation.NonNull;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,43 +15,38 @@ import retrofit2.Retrofit;
  */
 public class RetrofitManager {
     private static final List<CallWrap> CALL_WRAPS = new ArrayList<>();
-    private static volatile RetrofitManager instance;
-    private final Retrofit mRetrofit;
+    private static Retrofit sRetrofit;
 
-    private RetrofitManager(Retrofit retrofit) {
-        this.mRetrofit = retrofit;
+    private RetrofitManager() {
     }
 
-    public static RetrofitManager create(@NonNull Retrofit retrofit) {
-        if (instance == null) {
+    public static void install(Retrofit retrofit) {
+        if (retrofit == null) {
+            throw new NullPointerException("retrofit==null");
+        }
+        synchronized (RetrofitManager.class) {
+            if (sRetrofit != null) {
+                Log.e("RetrofitManager", "try to install retrofit which had already been installed before");
+                return;
+            }
+            sRetrofit = retrofit;
+        }
+    }
+
+    public static Retrofit retrofit() {
+        if (sRetrofit == null) {
             synchronized (RetrofitManager.class) {
-                if (instance == null) {
-                    instance = new RetrofitManager(retrofit);
+                if (sRetrofit == null) {
+                    throw new IllegalStateException("You need to call install(Retrofit) at least once");
                 }
             }
         }
-        return instance;
+        return sRetrofit;
     }
 
-    public static RetrofitManager instance() {
-        if (instance == null) {
-            synchronized (RetrofitManager.class) {
-                if (instance == null) {
-                    throw new IllegalStateException("You need to call create(Retrofit) at least once to create the singleton");
-                }
-            }
-        }
-        return instance;
+    public static <T> T create(Class<T> service) {
+        return retrofit().create(service);
     }
-
-    public <T> T create(Class<T> service) {
-        return mRetrofit.create(service);
-    }
-
-    public Retrofit retrofit() {
-        return mRetrofit;
-    }
-
 
     static void add(Call<?> call, Object tag) {
         synchronized (CALL_WRAPS) {
