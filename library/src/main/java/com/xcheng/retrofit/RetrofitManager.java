@@ -11,7 +11,7 @@ import retrofit2.Retrofit;
 /**
  * 创建时间：2018/4/3
  * 编写人： chengxin
- * 功能描述：
+ * 功能描述：管理全局的Retrofit实例和所有的请求Call
  */
 public class RetrofitManager {
     private static final List<CallWrap> CALL_WRAPS = new ArrayList<>();
