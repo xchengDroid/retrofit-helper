@@ -18,18 +18,17 @@ public class RetrofitManager {
     private static Retrofit sRetrofit;
 
     private RetrofitManager() {
+        //no instance
     }
 
-    public static void install(Retrofit retrofit) {
+    public synchronized static void install(Retrofit retrofit) {
         if (retrofit == null) {
             throw new NullPointerException("retrofit==null");
         }
-        synchronized (RetrofitManager.class) {
-            if (sRetrofit == null) {
-                sRetrofit = retrofit;
-            } else {
-                Log.e("RetrofitManager", "try to install retrofit which had already been installed before");
-            }
+        if (sRetrofit == null) {
+            sRetrofit = retrofit;
+        } else {
+            Log.e("RetrofitManager", "try to install retrofit which had already been installed before");
         }
     }
 
