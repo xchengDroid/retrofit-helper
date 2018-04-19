@@ -25,11 +25,11 @@ public class RetrofitManager {
             throw new NullPointerException("retrofit==null");
         }
         synchronized (RetrofitManager.class) {
-            if (sRetrofit != null) {
+            if (sRetrofit == null) {
+                sRetrofit = retrofit;
+            } else {
                 Log.e("RetrofitManager", "try to install retrofit which had already been installed before");
-                return;
             }
-            sRetrofit = retrofit;
         }
     }
 
