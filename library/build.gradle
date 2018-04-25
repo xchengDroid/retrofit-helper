@@ -1,8 +1,8 @@
 apply plugin: 'com.android.library'
 apply plugin: 'com.novoda.bintray-release'
 android {
-    compileSdkVersion 26
-    buildToolsVersion "26.0.2"
+    compileSdkVersion 27
+    buildToolsVersion "27.0.3"
     android {
         lintOptions {
             abortOnError false
@@ -10,7 +10,7 @@ android {
     }
     defaultConfig {
         minSdkVersion 14
-        targetSdkVersion 26
+        targetSdkVersion 27
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -26,7 +26,7 @@ android {
 dependencies {
     api fileTree(dir: 'libs', include: ['*.jar'])
     //noinspection GradleDependency
-    compileOnly 'com.android.support:support-annotations:26.1.0'
+    compileOnly 'com.android.support:support-annotations:27.1.1'
     api 'com.squareup.retrofit2:retrofit:2.4.0'
 }
 //添加
@@ -35,7 +35,7 @@ publish {
     userOrg = 'xcheng'//bintray.com用户名
     groupId = 'com.xcheng'//jcenter上的路径
     artifactId = 'easyokhttp'//项目名称
-    publishVersion = '2.1.4'//版本号
+    publishVersion = '2.1.5'//版本号
     desc = 'make retrofit more simple'//描述，不重要
     website = 'https://github.com/xchengDroid/EasyOkHttp'//网站，不重要；尽量模拟github上的地址，例如我这样的；当然你有地址最好了
 }
