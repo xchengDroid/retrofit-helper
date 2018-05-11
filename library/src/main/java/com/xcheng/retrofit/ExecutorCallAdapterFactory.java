@@ -109,7 +109,7 @@ public final class ExecutorCallAdapterFactory extends CallAdapter.Factory {
 
                 @Override
                 public void onFailure(Call<T> call2, final Throwable t) {
-                    final Result<T> result = callback2.parseThrowable(ExecutorCallbackCall2.this, t);
+                    final Result<T> result = Result.error(callback2.parseThrowable(ExecutorCallbackCall2.this, t));
                     callbackExecutor.execute(new Runnable() {
                         @Override
                         public void run() {

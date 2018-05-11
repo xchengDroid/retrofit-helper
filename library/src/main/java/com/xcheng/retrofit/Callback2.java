@@ -47,25 +47,30 @@ public abstract class Callback2<T> {
         return Result.error(new HttpError(msg, response));
     }
 
+    /**
+     * 统一解析Throwable对象转换为HttpError对象
+     *
+     * @param call2 call
+     * @param t     Throwable
+     * @return HttpError result
+     */
     @WorkerThread
     @NonNull
-    public Result<T> parseThrowable(Call2<T> call2, Throwable t) {
-        HttpError httpError;
+    public HttpError parseThrowable(Call2<T> call2, Throwable t) {
         if (t instanceof HttpError) {
             //用于convert函数直接抛出异常接收
-            httpError = (HttpError) t;
+            return (HttpError) t;
         } else if (t instanceof UnknownHostException) {
-            httpError = new HttpError("网络异常", t);
+            return new HttpError("网络异常", t);
         } else if (t instanceof ConnectException) {
-            httpError = new HttpError("网络异常", t);
+            return new HttpError("网络异常", t);
         } else if (t instanceof SocketException) {
-            httpError = new HttpError("服务异常", t);
+            return new HttpError("服务异常", t);
         } else if (t instanceof SocketTimeoutException) {
-            httpError = new HttpError("响应超时", t);
+            return new HttpError("响应超时", t);
         } else {
-            httpError = new HttpError("请求失败", t);
+            return new HttpError("请求失败", t);
         }
-        return Result.error(httpError);
     }
 
     public void onStart(Call2<T> call2) {
@@ -80,5 +85,4 @@ public abstract class Callback2<T> {
 
     public void onFinish(Call2<T> call2) {
     }
-
 }

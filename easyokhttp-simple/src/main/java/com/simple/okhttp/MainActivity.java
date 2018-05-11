@@ -70,8 +70,8 @@ public class MainActivity extends AppCompatActivity {
 
             @NonNull
             @Override
-            public Result<ResponseBody> parseThrowable(Call2<ResponseBody> call2, Throwable t) {
-                return Result.error(new HttpError("123213"));
+            public HttpError parseThrowable(Call2<ResponseBody> call2, Throwable t) {
+                return new HttpError("123213");
             }
 
             @Override
@@ -91,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onCancel(Call2<ResponseBody> call2) {
                 super.onCancel(call2);
-                Log.e("print","onCancel");
+                Log.e("print", "onCancel");
             }
         });
     }
