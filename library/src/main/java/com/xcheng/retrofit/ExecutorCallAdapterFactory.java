@@ -132,8 +132,8 @@ public final class ExecutorCallAdapterFactory extends CallAdapter.Factory {
                         callback2.onError(this, result.error());
                     }
                 }
-            } finally {
                 callback2.onFinish(this);
+            } finally {
                 RetrofitManager.remove(this);
             }
         }
