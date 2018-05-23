@@ -62,7 +62,7 @@ public final class RetrofitManager {
             for (CallWrap callWrap : CALL_WRAPS) {
                 if (call == callWrap.call) {
                     CALL_WRAPS.remove(callWrap);
-                    return;
+                    break;
                 }
             }
         }
