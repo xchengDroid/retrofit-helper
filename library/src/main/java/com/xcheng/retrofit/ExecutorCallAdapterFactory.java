@@ -121,18 +121,21 @@ public final class ExecutorCallAdapterFactory extends CallAdapter.Factory {
         }
 
         private void callResult(Callback2<T> callback2, Result<T> result) {
-            Utils.checkNotNull(result, "result==null");
-            if (isCanceled()) {
-                callback2.onCancel(this);
-            } else {
-                if (result.isSuccess()) {
-                    callback2.onSuccess(this, result.body());
+            try {
+                Utils.checkNotNull(result, "result==null");
+                if (isCanceled()) {
+                    callback2.onCancel(this);
                 } else {
-                    callback2.onError(this, result.error());
+                    if (result.isSuccess()) {
+                        callback2.onSuccess(this, result.body());
+                    } else {
+                        callback2.onError(this, result.error());
+                    }
                 }
+            } finally {
+                callback2.onFinish(this);
+                RetrofitManager.remove(this);
             }
-            callback2.onFinish(this);
-            RetrofitManager.remove(this);
         }
 
         @Override
