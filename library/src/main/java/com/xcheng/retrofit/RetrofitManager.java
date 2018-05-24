@@ -12,6 +12,8 @@ import retrofit2.Retrofit;
  * 功能描述：管理全局的Retrofit实例和所有的请求Call
  */
 public final class RetrofitManager {
+    // 全部保存管理所有的Call,用于取消请求时遍历
+    // like EventBust#eventTypesCache
     private static final List<CallWrap> CALL_WRAPS = new ArrayList<>();
     private static volatile RetrofitManager instance;
     private final Retrofit mRetrofit;
