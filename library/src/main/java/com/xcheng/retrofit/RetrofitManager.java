@@ -1,5 +1,7 @@
 package com.xcheng.retrofit;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,56 +16,59 @@ import retrofit2.Retrofit;
 public final class RetrofitManager {
     // 全部保存管理所有的Call,用于取消请求时遍历
     // like EventBust#eventTypesCache
-    private static final List<CallWrap> CALL_WRAPS = new ArrayList<>();
-    private static volatile RetrofitManager instance;
-    private final Retrofit mRetrofit;
+    private static final List<CallWrap> sCallWraps = new ArrayList<>();
+    //全局的Retrofit对象
+    private static Retrofit sRetrofit;
 
-    private RetrofitManager(Retrofit retrofit) {
-        this.mRetrofit = retrofit;
+    private RetrofitManager() {
     }
 
-    public static RetrofitManager create(Retrofit retrofit) {
-        if (instance == null) {
+    /**
+     * 初始化全局的Retrofit对象,like ARouter#LogisticsCenter,ImageLoader#ImageLoaderConfiguration
+     *
+     * @param retrofit 全局{@link Retrofit}对象
+     */
+    public static synchronized void init(Retrofit retrofit) {
+        if (sRetrofit == null) {
+            Utils.checkNotNull(retrofit, "retrofit==null");
+            sRetrofit = retrofit;
+        } else {
+            Log.e("RetrofitManager", "RetrofitManager had already been initialized before.");
+        }
+    }
+
+    private static void checkRetrofit() {
+        if (sRetrofit == null) {
             synchronized (RetrofitManager.class) {
-                if (instance == null) {
-                    Utils.checkNotNull(retrofit, "retrofit==null");
-                    instance = new RetrofitManager(retrofit);
+                if (sRetrofit == null) {
+                    throw new IllegalStateException("RetrofitManager must be init with retrofit before using.");
                 }
             }
         }
-        return instance;
     }
 
-    public static RetrofitManager instance() {
-        if (instance == null) {
-            synchronized (RetrofitManager.class) {
-                if (instance == null) {
-                    throw new IllegalStateException("You need to call create(Retrofit) at least once to create the singleton");
-                }
-            }
-        }
-        return instance;
+    public static <T> T create(Class<T> service) {
+        checkRetrofit();
+        return sRetrofit.create(service);
     }
 
-    public <T> T create(Class<T> service) {
-        return mRetrofit.create(service);
+    public static Retrofit retrofit() {
+        checkRetrofit();
+        return sRetrofit;
     }
 
-    public Retrofit retrofit() {
-        return mRetrofit;
-    }
 
     static void add(Call<?> call, Object tag) {
-        synchronized (CALL_WRAPS) {
-            CALL_WRAPS.add(new CallWrap(call, tag));
+        synchronized (sCallWraps) {
+            sCallWraps.add(new CallWrap(call, tag));
         }
     }
 
     static void remove(Call<?> call) {
-        synchronized (CALL_WRAPS) {
-            for (CallWrap callWrap : CALL_WRAPS) {
+        synchronized (sCallWraps) {
+            for (CallWrap callWrap : sCallWraps) {
                 if (call == callWrap.call) {
-                    CALL_WRAPS.remove(callWrap);
+                    sCallWraps.remove(callWrap);
                     break;
                 }
             }
@@ -71,10 +76,11 @@ public final class RetrofitManager {
     }
 
     private static List<CallWrap> callWraps() {
-        synchronized (CALL_WRAPS) {
-            return Utils.immutableList(CALL_WRAPS);
+        synchronized (sCallWraps) {
+            return Utils.immutableList(sCallWraps);
         }
     }
+
 
     public static void cancel(Object tag) {
         for (CallWrap callWrap : callWraps()) {
