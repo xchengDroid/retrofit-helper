@@ -11,7 +11,7 @@ import retrofit2.Retrofit;
 /**
  * 创建时间：2018/4/3
  * 编写人： chengxin
- * 功能描述：管理全局的Retrofit实例和所有的请求Call
+ * 功能描述：管理全局的Retrofit实例和所有的请求Call,面向过程编程
  */
 public final class RetrofitManager {
     // 全部保存管理所有的Call,用于取消请求时遍历
