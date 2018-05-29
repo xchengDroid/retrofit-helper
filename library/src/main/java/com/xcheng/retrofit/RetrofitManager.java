@@ -1,6 +1,5 @@
 package com.xcheng.retrofit;
 
-import android.support.annotation.GuardedBy;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -17,7 +16,6 @@ import retrofit2.Retrofit;
 public final class RetrofitManager {
     // 全部保存管理所有的Call,用于取消请求时遍历
     // like EventBust#eventTypesCache
-    @GuardedBy("sCallWraps")
     private static final List<CallWrap> sCallWraps = new ArrayList<>();
     //全局的Retrofit对象
     private static Retrofit sRetrofit;
