@@ -18,7 +18,7 @@ public final class CallManager {
     private volatile static CallManager instance;
 
     private CallManager() {
-        callTags = new ArrayList<>();
+        callTags = new ArrayList<>(4);
     }
 
     public static CallManager getInstance() {
