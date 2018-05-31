@@ -14,11 +14,11 @@ import retrofit2.Call;
  */
 public final class CallManager {
     @GuardedBy("this")
-    private final List<CallWrap> callWraps;
+    private final List<CallTag> callTags;
     private volatile static CallManager instance;
 
     private CallManager() {
-        callWraps = new ArrayList<>();
+        callTags = new ArrayList<>();
     }
 
     public static CallManager getInstance() {
@@ -33,40 +33,50 @@ public final class CallManager {
     }
 
     synchronized void add(Call<?> call, Object tag) {
-        callWraps.add(new CallWrap(call, tag));
+        callTags.add(new CallTag(call, tag));
     }
 
     synchronized void remove(Call<?> call) {
-        for (CallWrap callWrap : callWraps) {
-            if (call == callWrap.call) {
-                callWraps.remove(callWrap);
+        if (callTags.isEmpty())
+            return;
+        for (CallTag callTag : callTags) {
+            if (call == callTag.call) {
+                callTags.remove(callTag);
                 break;
             }
         }
     }
 
     public synchronized void cancel(Object tag) {
-        for (CallWrap callWrap : callWraps) {
-            if (callWrap.tag.equals(tag)) {
-                callWrap.call.cancel();
+        if (callTags.isEmpty())
+            return;
+        for (int index = 0; index < callTags.size(); index++) {
+            CallTag callTag = callTags.get(index);
+            if (callTag.tag.equals(tag)) {
+                callTag.call.cancel();
+                callTags.remove(callTag);
+                index--;
             }
         }
     }
 
     public synchronized void cancelAll() {
-        for (CallWrap callWrap : callWraps) {
-            callWrap.call.cancel();
+        if (callTags.isEmpty())
+            return;
+        for (CallTag callTag : callTags) {
+            callTag.call.cancel();
         }
+        callTags.clear();
     }
 
     /**
-     * 包裹Call和其tag
+     * 保存call和tag
      */
-    final static class CallWrap {
-        private final Object tag;
+    final static class CallTag {
         private final Call<?> call;
+        private final Object tag;
 
-        CallWrap(Call<?> call, Object tag) {
+        CallTag(Call<?> call, Object tag) {
             this.call = call;
             this.tag = tag;
         }
