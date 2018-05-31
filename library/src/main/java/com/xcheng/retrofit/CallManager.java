@@ -10,7 +10,7 @@ import retrofit2.Call;
 /**
  * 创建时间：2018/5/31
  * 编写人： chengxin
- * 功能描述：全局管理http请求
+ * 功能描述：全局管理Call请求管理
  */
 public class CallManager {
     @GuardedBy("this")
