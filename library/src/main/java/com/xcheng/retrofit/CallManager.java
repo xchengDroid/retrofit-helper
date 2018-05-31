@@ -39,6 +39,7 @@ public final class CallManager {
     synchronized void remove(Call<?> call) {
         if (callTags.isEmpty())
             return;
+
         for (CallTag callTag : callTags) {
             if (call == callTag.call) {
                 callTags.remove(callTag);
@@ -50,11 +51,12 @@ public final class CallManager {
     public synchronized void cancel(Object tag) {
         if (callTags.isEmpty())
             return;
+
         for (int index = 0; index < callTags.size(); index++) {
             CallTag callTag = callTags.get(index);
             if (callTag.tag.equals(tag)) {
                 callTag.call.cancel();
-                callTags.remove(callTag);
+                callTags.remove(index);
                 index--;
             }
         }
@@ -63,6 +65,7 @@ public final class CallManager {
     public synchronized void cancelAll() {
         if (callTags.isEmpty())
             return;
+
         for (CallTag callTag : callTags) {
             callTag.call.cancel();
         }

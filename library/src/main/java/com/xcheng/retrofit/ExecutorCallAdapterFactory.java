@@ -87,7 +87,7 @@ public final class ExecutorCallAdapterFactory extends CallAdapter.Factory {
         public void enqueue(Object tag, final Callback2<T> callback2) {
             Utils.checkNotNull(tag, "tag==null");
             Utils.checkNotNull(callback2, "callback2==null");
-            RetrofitManager.add(this, tag);
+            CallManager.getInstance().add(this, tag);
             callbackExecutor.execute(new Runnable() {
                 @Override
                 public void run() {
@@ -134,7 +134,7 @@ public final class ExecutorCallAdapterFactory extends CallAdapter.Factory {
                 }
                 callback2.onFinish(this);
             } finally {
-                RetrofitManager.remove(this);
+                CallManager.getInstance().remove(this);
             }
         }
 
