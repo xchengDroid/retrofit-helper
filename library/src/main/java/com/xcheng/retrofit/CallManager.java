@@ -12,7 +12,7 @@ import retrofit2.Call;
  * 编写人： chengxin
  * 功能描述：全局管理Call请求管理,just like {@link okhttp3.Dispatcher}
  */
-public class CallManager {
+public final class CallManager {
     @GuardedBy("this")
     private final List<CallWrap> callWraps;
     private volatile static CallManager instance;
