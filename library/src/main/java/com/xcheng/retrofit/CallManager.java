@@ -36,6 +36,11 @@ public final class CallManager {
         callTags.add(new CallTag(call, tag));
     }
 
+    /**
+     * 当call结束时移除
+     *
+     * @param call Retrofit Call
+     */
     synchronized void remove(Call<?> call) {
         if (callTags.isEmpty())
             return;
@@ -48,6 +53,11 @@ public final class CallManager {
         }
     }
 
+    /**
+     * 取消并移除对应tag的call
+     *
+     * @param tag call对应的tag
+     */
     public synchronized void cancel(Object tag) {
         if (callTags.isEmpty())
             return;
@@ -63,6 +73,9 @@ public final class CallManager {
         }
     }
 
+    /**
+     * 取消并移除所有的call
+     */
     public synchronized void cancelAll() {
         if (callTags.isEmpty())
             return;
