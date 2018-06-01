@@ -45,9 +45,16 @@ public final class CallManager {
         if (callTags.isEmpty())
             return;
 
-        for (CallTag callTag : callTags) {
+       /* for (CallTag callTag : callTags) {
             if (call == callTag.call) {
                 callTags.remove(callTag);
+                break;
+            }
+        }*/
+        //效率高于上面实现
+        for (int index = 0; index < callTags.size(); index++) {
+            if (call == callTags.get(index).call) {
+                callTags.remove(index);
                 break;
             }
         }
