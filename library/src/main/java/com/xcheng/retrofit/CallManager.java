@@ -46,7 +46,6 @@ public final class CallManager {
             return;
         for (int index = 0; index < callTags.size(); index++) {
             if (call == callTags.get(index).call) {
-                //remove(int index) 方法优于 remove(Object o)，无需再次遍历
                 callTags.remove(index);
                 break;
             }
@@ -54,22 +53,28 @@ public final class CallManager {
     }
 
     /**
-     * 取消对应tag的call
+     * 取消并移除对应tag的call
      *
      * @param tag call对应的tag
      */
     public synchronized void cancel(Object tag) {
         if (callTags.isEmpty())
             return;
-        for (CallTag callTag : callTags) {
+
+        for (int index = 0; index < callTags.size(); index++) {
+            CallTag callTag = callTags.get(index);
             if (callTag.tag.equals(tag)) {
                 callTag.call.cancel();
+                //like okhttp3.Headers#removeAll(String name)
+                //remove(int index) 方法优于 remove(Object o)，无需再次遍历
+                callTags.remove(index);
+                index--;
             }
         }
     }
 
     /**
-     * 取消所有的call
+     * 取消并移除所有的call
      */
     public synchronized void cancelAll() {
         if (callTags.isEmpty())
@@ -78,6 +83,7 @@ public final class CallManager {
         for (CallTag callTag : callTags) {
             callTag.call.cancel();
         }
+        callTags.clear();
     }
 
     /**
