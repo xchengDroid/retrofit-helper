@@ -74,7 +74,8 @@ public final class CallManager {
             if (callTag.tag.equals(tag)) {
                 callTag.call.cancel();
                 //like okhttp3.Headers#removeAll(String name)
-                callTags.remove(index);//remove(int index) 方法优于 remove(Object o)，无需再次遍历
+                //remove(int index) 方法优于 remove(Object o)，无需再次遍历
+                callTags.remove(index);
                 index--;
             }
         }
