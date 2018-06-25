@@ -132,7 +132,7 @@ public final class ExecutorCallAdapterFactory extends CallAdapter.Factory {
                         callback2.onError(this, result.error());
                     }
                 }
-                callback2.onFinish(this);
+                callback2.onCompleted(this);
             } finally {
                 CallManager.getInstance().remove(this);
             }

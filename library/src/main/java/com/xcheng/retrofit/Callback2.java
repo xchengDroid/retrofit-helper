@@ -83,6 +83,11 @@ public abstract class Callback2<T> {
 
     public abstract void onSuccess(Call2<T> call2, T response);
 
-    public void onFinish(Call2<T> call2) {
+    /**
+     * 请求回调全部完成时执行
+     *
+     * @param call2 Call
+     */
+    public void onCompleted(Call2<T> call2) {
     }
 }
