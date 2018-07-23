@@ -12,6 +12,7 @@ import retrofit2.Retrofit;
 public final class RetrofitManager {
     //全局的Retrofit对象
     private static Retrofit sRetrofit;
+    private volatile static boolean sHasInit = false;
 
     private RetrofitManager() {
     }
@@ -25,28 +26,27 @@ public final class RetrofitManager {
         if (sRetrofit == null) {
             Utils.checkNotNull(retrofit, "retrofit==null");
             sRetrofit = retrofit;
+            sHasInit = true;
         } else {
             Log.e("RetrofitManager", "RetrofitManager had already been initialized before.");
         }
     }
 
-    private static void checkRetrofit() {
-        if (sRetrofit == null) {
-            synchronized (RetrofitManager.class) {
-                if (sRetrofit == null) {
-                    throw new IllegalStateException("RetrofitManager must be init with retrofit before using.");
-                }
-            }
-        }
+    public static boolean hasInit() {
+        return sHasInit;
     }
 
     public static <T> T create(Class<T> service) {
-        checkRetrofit();
+        if (!sHasInit) {
+            throw new IllegalStateException("RetrofitManager must be init with retrofit before using.");
+        }
         return sRetrofit.create(service);
     }
 
     public static Retrofit retrofit() {
-        checkRetrofit();
+        if (!sHasInit) {
+            throw new IllegalStateException("RetrofitManager must be init with retrofit before using.");
+        }
         return sRetrofit;
     }
 }
