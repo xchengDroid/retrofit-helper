@@ -12,6 +12,7 @@ import retrofit2.Retrofit;
 public final class RetrofitManager {
     //全局的Retrofit对象
     private static Retrofit sRetrofit;
+    //判断是否已经初始化
     private volatile static boolean sHasInit = false;
 
     private RetrofitManager() {
