@@ -10,7 +10,7 @@ import retrofit2.Retrofit;
  * 功能描述：管理全局的Retrofit实例
  */
 public final class RetrofitManager {
-    //全局的Retrofit对象，volatile 保证赋值后同步刷新到内存
+    //全局的Retrofit对象，volatile 保证可见性赋值后同步刷新到内存
     private volatile static Retrofit sRetrofit;
 
     private RetrofitManager() {
