@@ -34,7 +34,7 @@ public final class RetrofitManager {
     /**
      * @return true代表已经被初始化了
      */
-    public static boolean hasInit() {
+    public static boolean isInited() {
         return sRetrofit != null;
     }
 
@@ -49,16 +49,16 @@ public final class RetrofitManager {
         return sRetrofit;
     }
 
-    public synchronized static void put(String name, Retrofit retrofit) {
+    public synchronized static void put(String key, Retrofit retrofit) {
         Utils.checkNotNull(retrofit, "retrofit==null");
-        sRetrofitMap.put(name, retrofit);
+        sRetrofitMap.put(key, retrofit);
     }
 
-    public synchronized static Retrofit get(String name) {
-        return sRetrofitMap.get(name);
+    public synchronized static Retrofit get(String key) {
+        return sRetrofitMap.get(key);
     }
 
-    public synchronized static void remove(String name) {
-        sRetrofitMap.remove(name);
+    public synchronized static void remove(String key) {
+        sRetrofitMap.remove(key);
     }
 }
