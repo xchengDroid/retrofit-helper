@@ -26,7 +26,7 @@ public final class RetrofitManager {
     }
 
     /**
-     * 创建全局的RRetrofitManager实例
+     * 创建全局的RetrofitManager实例
      *
      * @param retrofit 全局的retrofit实例
      * @return true代表创建成功  false代表失败
@@ -45,7 +45,7 @@ public final class RetrofitManager {
     }
 
     /**
-     * @return 如果为空表示未初始化
+     * @return 如果为null, 表示未初始化
      */
     public static RetrofitManager instance() {
         if (instance == null) {
@@ -79,6 +79,6 @@ public final class RetrofitManager {
     public synchronized void removeRetrofit(String tag) {
         retrofitMap.remove(tag);
     }
-    /*================end===========================*/
+    /*=====================end===========================*/
 
 }
