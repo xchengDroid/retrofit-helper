@@ -2,9 +2,6 @@ package com.xcheng.retrofit;
 
 import android.util.Log;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import retrofit2.Retrofit;
 
 /**
@@ -13,72 +10,41 @@ import retrofit2.Retrofit;
  * 功能描述：管理全局的Retrofit实例
  */
 public final class RetrofitManager {
-    private volatile static RetrofitManager instance;
-    //全局的retrofit对象
-    private final Retrofit retrofit;
-    //不同配置的retrofit集合，如url ,converter等
-    private final Map<String, Retrofit> retrofitMap;
+    //全局的Retrofit对象，volatile保证可见性，赋值后同步刷新到主内存
+    private volatile static Retrofit sRetrofit;
 
-    private RetrofitManager(Retrofit retrofit) {
-        Utils.checkNotNull(retrofit, "retrofit==null");
-        this.retrofit = retrofit;
-        this.retrofitMap = new HashMap<>(4);
+    private RetrofitManager() {
     }
 
     /**
-     * 创建全局的RetrofitManager实例
+     * 初始化全局的Retrofit对象,like ARouter#LogisticsCenter,ImageLoader#ImageLoaderConfiguration
      *
-     * @param retrofit 全局的retrofit实例
-     * @return true代表创建成功  false代表失败
+     * @param retrofit 全局{@link Retrofit}对象
      */
-    public static boolean create(Retrofit retrofit) {
-        if (instance == null) {
-            synchronized (RetrofitManager.class) {
-                if (instance == null) {
-                    instance = new RetrofitManager(retrofit);
-                    return true;
-                }
-            }
+    public static synchronized void init(Retrofit retrofit) {
+        if (sRetrofit == null) {
+            Utils.checkNotNull(retrofit, "retrofit==null");
+            sRetrofit = retrofit;
+        } else {
+            Log.e("RetrofitManager", "RetrofitManager had already been initialized before.");
         }
-        Log.e("RetrofitManager", "RetrofitManager had already been created before.");
-        return false;
     }
 
-    /**
-     * @return 如果为null, 表示未初始化
-     */
-    public static RetrofitManager instance() {
-        if (instance == null) {
-            synchronized (RetrofitManager.class) {
-                if (instance == null) {
-                    Log.e("RetrofitManager", "You need to call create(Retrofit) at least once to create the singleton");
-                }
-            }
+    public static boolean hasInit() {
+        return sRetrofit != null;
+    }
+
+    public static <T> T create(Class<T> service) {
+        if (!hasInit()) {
+            throw new IllegalStateException("RetrofitManager must be init with retrofit before using.");
         }
-        return instance;
+        return sRetrofit.create(service);
     }
 
-    public <T> T create(Class<T> service) {
-        return retrofit.create(service);
+    public static Retrofit retrofit() {
+        if (!hasInit()) {
+            throw new IllegalStateException("RetrofitManager must be init with retrofit before using.");
+        }
+        return sRetrofit;
     }
-
-    public Retrofit retrofit() {
-        return retrofit;
-    }
-
-    /*全局保存不同配置的Retrofit,如 baseUrl不一样等*/
-    public synchronized void put(String tag, Retrofit retrofit) {
-        Utils.checkNotNull(retrofit, "retrofit==null");
-        retrofitMap.put(tag, retrofit);
-    }
-
-    public synchronized Retrofit get(String tag) {
-        return retrofitMap.get(tag);
-    }
-
-    public synchronized void remove(String tag) {
-        retrofitMap.remove(tag);
-    }
-    /*=====================end===========================*/
-
 }
