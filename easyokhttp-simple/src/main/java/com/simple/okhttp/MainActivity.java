@@ -36,8 +36,7 @@ public class MainActivity extends AppCompatActivity {
                 .baseUrl("http://www.weather.com.cn/")
                 .addCallAdapterFactory(ExecutorCallAdapterFactory.INSTANCE)
                 .build();
-        RetrofitManager.init(retrofit);
-
+        RetrofitManager.create(retrofit);
     }
 
     public void json(View view) {
@@ -59,7 +58,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void string(View view) {
-        Call2<ResponseBody> call2 = RetrofitManager.create(Service.class).gitHub();
+        Call2<ResponseBody> call2 = RetrofitManager.instance()
+                .create(Service.class)
+                .gitHub();
         call2.cancel();
         call2.enqueue("", new Callback2<ResponseBody>() {
             @NonNull
