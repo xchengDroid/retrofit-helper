@@ -17,6 +17,10 @@ import okhttp3.ResponseBody;
  * 功能描述：拦截器实现监听进度
  */
 public class ProgressInterceptor implements Interceptor {
+    //标记头部上传
+    private static final String KEY_UPLOAD = "Content-Upload";
+    //标记头部下载
+    private static final String KEY_DOWNLOAD = "Content-Download";
     private final ProgressListener upListener;
     private final ProgressListener downListener;
     private final Executor callbackExecutor;
