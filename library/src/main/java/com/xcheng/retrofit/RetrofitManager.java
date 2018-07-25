@@ -32,7 +32,7 @@ public final class RetrofitManager {
     }
 
     /**
-     * @return true代表已经被初始化了
+     * @return true 代表已经被初始化{@link #init(Retrofit)}
      */
     public static boolean isInited() {
         return sRetrofit != null;
