@@ -15,8 +15,9 @@ import retrofit2.Retrofit;
 public final class RetrofitManager {
 
     private static final String TAG = RetrofitManager.class.getSimpleName();
+
     private static final String LOG_INIT_RETROFIT = "Initialize RetrofitManager with retrofit";
-    private static final String WARNING_RE_INIT_RETROFIT = "Try to initialize RetrofitManager which had already been initialized before.";
+    private static final String WARNING_RE_INIT_RETROFIT = "Try to initialize RetrofitManager which had already been initialized before";
     private static final String ERROR_NOT_INIT = "RetrofitManager must be init with retrofit before using";
 
     private volatile static RetrofitManager instance;
