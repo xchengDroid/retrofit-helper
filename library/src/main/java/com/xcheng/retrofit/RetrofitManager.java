@@ -78,7 +78,7 @@ public final class RetrofitManager {
     }
 
     /**
-     * 全局保存不同配置的Retrofit,如 baseUrl不一样等
+     * 全局保存不同配置的Retrofit,如不同的baseUrl等
      *
      * @param tag      标记key
      * @param retrofit 对应的retrofit对象
