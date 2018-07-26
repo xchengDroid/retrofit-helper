@@ -20,9 +20,14 @@ public final class RetrofitManager {
     private static final String ERROR_NOT_INIT = "RetrofitManager must be init with retrofit before using";
 
     private volatile static RetrofitManager instance;
-    //全局的retrofit对象
+    /**
+     * 全局的retrofit对象
+     */
     private Retrofit retrofit;
-    //不同配置的retrofit集合，如url ,converter等
+
+    /**
+     * 不同配置的retrofit集合，如url ,converter等
+     */
     private final Map<String, Retrofit> retrofitMap = new HashMap<>(4);
 
     private RetrofitManager() {
@@ -72,7 +77,12 @@ public final class RetrofitManager {
         return retrofit;
     }
 
-    /*全局保存不同配置的Retrofit,如 baseUrl不一样等*/
+    /**
+     * 全局保存不同配置的Retrofit,如 baseUrl不一样等
+     *
+     * @param tag      标记key
+     * @param retrofit 对应的retrofit对象
+     */
     public void put(String tag, Retrofit retrofit) {
         Utils.checkNotNull(retrofit, "retrofit==null");
         synchronized (retrofitMap) {
@@ -91,5 +101,4 @@ public final class RetrofitManager {
             retrofitMap.remove(tag);
         }
     }
-    /*=====================end===========================*/
 }
