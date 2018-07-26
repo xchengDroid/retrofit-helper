@@ -73,18 +73,23 @@ public final class RetrofitManager {
     }
 
     /*全局保存不同配置的Retrofit,如 baseUrl不一样等*/
-    public synchronized void put(String tag, Retrofit retrofit) {
+    public void put(String tag, Retrofit retrofit) {
         Utils.checkNotNull(retrofit, "retrofit==null");
-        retrofitMap.put(tag, retrofit);
+        synchronized (retrofitMap) {
+            retrofitMap.put(tag, retrofit);
+        }
     }
 
-    public synchronized Retrofit get(String tag) {
-        return retrofitMap.get(tag);
+    public Retrofit get(String tag) {
+        synchronized (retrofitMap) {
+            return retrofitMap.get(tag);
+        }
     }
 
-    public synchronized void remove(String tag) {
-        retrofitMap.remove(tag);
+    public void remove(String tag) {
+        synchronized (retrofitMap) {
+            retrofitMap.remove(tag);
+        }
     }
     /*=====================end===========================*/
-
 }
