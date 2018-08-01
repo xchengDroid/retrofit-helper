@@ -1,6 +1,7 @@
 package com.xcheng.retrofit.progress;
 
 import java.io.IOException;
+import java.util.List;
 
 import okhttp3.MediaType;
 import okhttp3.ResponseBody;
@@ -13,12 +14,12 @@ import okio.Source;
 class ProgressResponseBody extends ResponseBody {
 
     private final ResponseBody delegate;
-    private final ProgressListener listener;
+    private final List<ProgressListener> listeners;
     private BufferedSource bufferedSource;
 
-    ProgressResponseBody(ResponseBody delegate, ProgressListener progressListener) {
+    ProgressResponseBody(ResponseBody delegate, List<ProgressListener> listeners) {
         this.delegate = delegate;
-        this.listener = progressListener;
+        this.listeners = listeners;
     }
 
     @Override
@@ -53,7 +54,9 @@ class ProgressResponseBody extends ResponseBody {
                     //避免多次调用
                     contentLength = contentLength();
                 }
-                listener.onProgress(totalBytesRead, contentLength, bytesRead == -1);
+                for (ProgressListener listener : listeners) {
+                    listener.onProgress(totalBytesRead, contentLength, bytesRead == -1);
+                }
                 return bytesRead;
             }
         };
