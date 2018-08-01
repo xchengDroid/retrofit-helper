@@ -12,7 +12,10 @@ import retrofit2.Converter;
  * Created by cx on 2017/7/31.
  */
 public class FileResponseBodyConverter implements Converter<ResponseBody, File> {
-
+    /**
+     * 标记Header的key ,如果header上有此键值对，尝试获取文件的路径
+     */
+    public static final String KEY_FILE_PATH = "File-Path";
     private final String path;
 
     public FileResponseBodyConverter(String path) {
