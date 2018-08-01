@@ -22,6 +22,41 @@ import okhttp3.ResponseBody;
  * 功能描述：管理进度监听类
  */
 public class ProgressManager {
+    /**
+     * 标记Header的key ,如果header上有此键值对，尝试监听进度
+     */
+    static final String KEY_HTTP_PROGRESS = "Http-Progress";
+
+    public static Interceptor INTERCEPTOR = new Interceptor() {
+        @Override
+        public Response intercept(Chain chain) throws IOException {
+            Request request = chain.request();
+            String tag = request.header(KEY_HTTP_PROGRESS);
+            //先判断是否有进度需求
+            if (tag == null)
+                return chain.proceed(request);
+
+            RequestBody requestBody = request.body();
+            //判断是否有上传需求
+            if (requestBody != null) {
+                List<ProgressListener> upListeners = getInstance().getListeners(tag, false);
+                if (upListeners.size() != 0) {
+                    Request.Builder builder = request.newBuilder();
+                    RequestBody newRequestBody = new ProgressRequestBody(requestBody, upListeners);
+                    request = builder.method(request.method(), newRequestBody).build();
+                }
+            }
+            Response response = chain.proceed(request);
+            ResponseBody responseBody = response.body();
+            if (responseBody != null) {
+                List<ProgressListener> downListeners = getInstance().getListeners(tag, true);
+                Response.Builder builder = response.newBuilder();
+                ResponseBody newResponseBody = new ProgressResponseBody(responseBody, downListeners);
+                response = builder.body(newResponseBody).build();
+            }
+            return response;
+        }
+    };
 
     private volatile static ProgressManager instance;
 
@@ -125,40 +160,4 @@ public class ProgressManager {
             listeners.clear();
         }
     }
-
-    /**
-     * 标记Header的key ,如果header上有此键值对，尝试监听进度
-     */
-    static final String KEY_HTTP_PROGRESS = "HttpProgress";
-
-    public static Interceptor INTERCEPTOR = new Interceptor() {
-        @Override
-        public Response intercept(Chain chain) throws IOException {
-            Request request = chain.request();
-            String tag = request.header(KEY_HTTP_PROGRESS);
-            //先判断是否有进度需求
-            if (tag == null)
-                return chain.proceed(request);
-
-            RequestBody requestBody = request.body();
-            //判断是否有上传需求
-            if (requestBody != null) {
-                List<ProgressListener> upListeners = getInstance().getListeners(tag, false);
-                if (upListeners.size() != 0) {
-                    Request.Builder builder = request.newBuilder();
-                    RequestBody newRequestBody = new ProgressRequestBody(requestBody, upListeners);
-                    request = builder.method(request.method(), newRequestBody).build();
-                }
-            }
-            Response response = chain.proceed(request);
-            ResponseBody responseBody = response.body();
-            if (responseBody != null) {
-                List<ProgressListener> downListeners = getInstance().getListeners(tag, true);
-                Response.Builder builder = response.newBuilder();
-                ResponseBody newResponseBody = new ProgressResponseBody(responseBody, downListeners);
-                response = builder.body(newResponseBody).build();
-            }
-            return response;
-        }
-    };
 }
