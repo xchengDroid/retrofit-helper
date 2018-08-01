@@ -126,6 +126,9 @@ public class ProgressManager {
         }
     }
 
+    /**
+     * 标记Header的key ,如果header上有此键值对，尝试监听进度
+     */
     static final String KEY_HTTP_PROGRESS = "HttpProgress";
 
     public static Interceptor INTERCEPTOR = new Interceptor() {
