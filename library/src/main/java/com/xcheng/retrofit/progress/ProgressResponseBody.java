@@ -2,7 +2,6 @@ package com.xcheng.retrofit.progress;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.Executor;
 
 import okhttp3.MediaType;
 import okhttp3.ResponseBody;
@@ -17,7 +16,6 @@ class ProgressResponseBody extends ResponseBody {
     private final ResponseBody delegate;
     private final List<ProgressListener> listeners;
     private BufferedSource bufferedSource;
-    private final Executor executor = ProgressManager.getInstance().callbackExecutor();
 
     ProgressResponseBody(ResponseBody delegate, List<ProgressListener> listeners) {
         this.delegate = delegate;
@@ -57,15 +55,17 @@ class ProgressResponseBody extends ResponseBody {
                     contentLength = contentLength();
                 }
                 for (final ProgressListener listener : listeners) {
-                    if (executor==null){
+                    if (ProgressManager.getInstance().isOnMainThread()) {
+                        ProgressManager.getInstance()
+                                .getMainHandler()
+                                .post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        listener.onProgress(totalBytesRead, contentLength, bytesRead == -1);
+                                    }
+                                });
+                    } else {
                         listener.onProgress(totalBytesRead, contentLength, bytesRead == -1);
-                    }else{
-                        executor.execute(new Runnable() {
-                            @Override
-                            public void run() {
-                                listener.onProgress(totalBytesRead, contentLength, bytesRead == -1);
-                            }
-                        });
                     }
                 }
                 return bytesRead;

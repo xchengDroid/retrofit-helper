@@ -2,7 +2,6 @@ package com.xcheng.retrofit.progress;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.Executor;
 
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
@@ -22,7 +21,6 @@ import okio.Sink;
 class ProgressRequestBody extends RequestBody {
     private final RequestBody delegate;
     private final List<ProgressListener> listeners;
-    private final Executor executor = ProgressManager.getInstance().callbackExecutor();
 
     ProgressRequestBody(RequestBody delegate, List<ProgressListener> listeners) {
         this.delegate = delegate;
@@ -60,15 +58,17 @@ class ProgressRequestBody extends RequestBody {
                     contentLength = contentLength();
                 }
                 for (final ProgressListener listener : listeners) {
-                    if (executor == null) {
-                        listener.onProgress(bytesWritten, contentLength, bytesWritten == contentLength);
+                    if (ProgressManager.getInstance().isOnMainThread()) {
+                        ProgressManager.getInstance()
+                                .getMainHandler()
+                                .post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        listener.onProgress(bytesWritten, contentLength, bytesWritten == contentLength);
+                                    }
+                                });
                     } else {
-                        executor.execute(new Runnable() {
-                            @Override
-                            public void run() {
-                                listener.onProgress(bytesWritten, contentLength, bytesWritten == contentLength);
-                            }
-                        });
+                        listener.onProgress(bytesWritten, contentLength, bytesWritten == contentLength);
                     }
                 }
             }

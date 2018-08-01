@@ -1,11 +1,20 @@
 package com.xcheng.retrofit.progress;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.GuardedBy;
 
 import com.xcheng.retrofit.Utils;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import okhttp3.Interceptor;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
 
 /**
  * 创建时间：2018/7/31
@@ -19,8 +28,15 @@ public class ProgressManager {
     @GuardedBy("listeners")
     private final ArrayList<ProgressListener> listeners =
             new ArrayList<>();
+    /**
+     * 回调函数是否在主线程,默认为true
+     */
+    private volatile boolean onMainThread;
+    private final Handler mainHandler;
 
     private ProgressManager() {
+        mainHandler = new Handler(Looper.getMainLooper());
+        onMainThread = true;
     }
 
     public static ProgressManager getInstance() {
@@ -34,11 +50,23 @@ public class ProgressManager {
         return instance;
     }
 
+    public void setOnMainThread(boolean onMainThread) {
+        this.onMainThread = onMainThread;
+    }
+
+    public boolean isOnMainThread() {
+        return onMainThread;
+    }
+
+    public Handler getMainHandler() {
+        return mainHandler;
+    }
+
     public void registerListener(ProgressListener listener) {
         Utils.checkNotNull(listener, "listener==null");
         synchronized (listeners) {
             if (listeners.contains(listener)) {
-                throw new IllegalStateException("Listener " + listener + " is already registered.");
+                throw new IllegalStateException("ProgressListener " + listener + " is already registered.");
             }
             listeners.add(listener);
         }
@@ -49,7 +77,7 @@ public class ProgressManager {
         synchronized (listeners) {
             int index = listeners.indexOf(listener);
             if (index == -1) {
-                throw new IllegalStateException("Listener " + listener + " was not registered.");
+                throw new IllegalStateException("ProgressListener " + listener + " was not registered.");
             }
             listeners.remove(index);
         }
@@ -97,4 +125,37 @@ public class ProgressManager {
             listeners.clear();
         }
     }
+
+    static final String KEY_HTTP_PROGRESS = "HttpProgress";
+
+    public static Interceptor INTERCEPTOR = new Interceptor() {
+        @Override
+        public Response intercept(Chain chain) throws IOException {
+            Request request = chain.request();
+            String tag = request.header(KEY_HTTP_PROGRESS);
+            //先判断是否有进度需求
+            if (tag == null)
+                return chain.proceed(request);
+
+            RequestBody requestBody = request.body();
+            //判断是否有上传需求
+            if (requestBody != null) {
+                List<ProgressListener> upListeners = getInstance().getListeners(tag, false);
+                if (upListeners.size() != 0) {
+                    Request.Builder builder = request.newBuilder();
+                    RequestBody newRequestBody = new ProgressRequestBody(requestBody, upListeners);
+                    request = builder.method(request.method(), newRequestBody).build();
+                }
+            }
+            Response response = chain.proceed(request);
+            ResponseBody responseBody = response.body();
+            if (responseBody != null) {
+                List<ProgressListener> downListeners = getInstance().getListeners(tag, true);
+                Response.Builder builder = response.newBuilder();
+                ResponseBody newResponseBody = new ProgressResponseBody(responseBody, downListeners);
+                response = builder.body(newResponseBody).build();
+            }
+            return response;
+        }
+    };
 }
