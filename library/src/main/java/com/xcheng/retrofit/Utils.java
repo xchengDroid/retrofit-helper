@@ -14,7 +14,7 @@ import java.util.Map;
  * 功能描述：retrofit2工具类
  */
 public class Utils {
-    static <T> T checkNotNull(@Nullable T object, String message) {
+    public static <T> T checkNotNull(@Nullable T object, String message) {
         if (object == null) {
             throw new NullPointerException(message);
         }

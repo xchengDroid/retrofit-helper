@@ -1,9 +1,7 @@
 package com.xcheng.retrofit.progress;
 
-import android.support.annotation.Nullable;
-
 import java.io.IOException;
-import java.util.concurrent.Executor;
+import java.util.List;
 
 import okhttp3.Interceptor;
 import okhttp3.Request;
@@ -17,54 +15,38 @@ import okhttp3.ResponseBody;
  * 功能描述：拦截器实现监听进度
  */
 public class ProgressInterceptor implements Interceptor {
-    private final ProgressListener upListener;
-    private final ProgressListener downListener;
-    private final Executor callbackExecutor;
+    public static ProgressInterceptor INSTANCE = new ProgressInterceptor();
+    public static final String KEY_HEADER_PROGRESS = "HeaderProgress";
 
-    /**
-     * @param upListener       上传进度
-     * @param downListener     下载进度
-     * @param callbackExecutor
-     */
-    public ProgressInterceptor(@Nullable ProgressListener upListener, @Nullable ProgressListener downListener, @Nullable Executor callbackExecutor) {
-        this.upListener = upListener;
-        this.downListener = downListener;
-        this.callbackExecutor = callbackExecutor;
+    private ProgressInterceptor() {
     }
 
     @Override
     public Response intercept(Chain chain) throws IOException {
         Request request = chain.request();
+        String tag = request.header(KEY_HEADER_PROGRESS);
+        //先判断是否有进度需求
+        if (tag == null)
+            return chain.proceed(request);
+
         RequestBody requestBody = request.body();
-        if (upListener != null && requestBody != null) {
-            Request.Builder builder = request.newBuilder();
-            RequestBody newRequestBody = new ProgressRequestBody(requestBody, wrapListener(upListener));
-            request = builder.method(request.method(), newRequestBody).build();
+        //判断是否有上传需求
+        if (requestBody != null) {
+            List<ProgressListener> upListeners = ProgressManager.getInstance().getListeners(tag, false);
+            if (upListeners.size() != 0) {
+                Request.Builder builder = request.newBuilder();
+                RequestBody newRequestBody = new ProgressRequestBody(requestBody, upListeners);
+                request = builder.method(request.method(), newRequestBody).build();
+            }
         }
         Response response = chain.proceed(request);
         ResponseBody responseBody = response.body();
-        if (downListener != null && responseBody != null) {
+        if (responseBody != null) {
+            List<ProgressListener> downListeners = ProgressManager.getInstance().getListeners(tag, true);
             Response.Builder builder = response.newBuilder();
-            ResponseBody newResponseBody = new ProgressResponseBody(responseBody, wrapListener(downListener));
+            ResponseBody newResponseBody = new ProgressResponseBody(responseBody, downListeners);
             response = builder.body(newResponseBody).build();
         }
         return response;
-    }
-
-    private ProgressListener wrapListener(final ProgressListener progressListener) {
-        if (callbackExecutor == null) {
-            return progressListener;
-        }
-        return new ProgressListener() {
-            @Override
-            public void onProgress(final long progress, final long contentLength, final boolean done) {
-                callbackExecutor.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        progressListener.onProgress(progress, contentLength, done);
-                    }
-                });
-            }
-        };
     }
 }

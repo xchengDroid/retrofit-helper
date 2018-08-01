@@ -12,6 +12,7 @@ import com.xcheng.retrofit.Call2;
 import com.xcheng.retrofit.Callback2;
 import com.xcheng.retrofit.ExecutorCallAdapterFactory;
 import com.xcheng.retrofit.HttpError;
+import com.xcheng.retrofit.progress.ProgressManager;
 import com.xcheng.retrofit.Result;
 import com.xcheng.retrofit.RetrofitManager;
 
@@ -43,6 +44,16 @@ public class MainActivity extends AppCompatActivity {
         RetrofitManager.getInstance().put("2", retrofit);
         RetrofitManager.getInstance().put("3", retrofit);
         RetrofitManager.getInstance().put(null, retrofit);
+
+//        OkHttpClient okHttpClient = ProgressManager.getInstance().with(new OkHttpClient.Builder())
+//                .build();
+        //   ProgressManager.getInstance().addResponseListener("", null);
+        ProgressManager.getInstance().registerListener(new ProgressManager.Listener("fileApk", true) {
+            @Override
+            protected void onProgress(long progress, long contentLength, boolean done) {
+
+            }
+        });
     }
 
     public void json(View view) {

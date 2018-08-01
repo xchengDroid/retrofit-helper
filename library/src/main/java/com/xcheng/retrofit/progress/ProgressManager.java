@@ -1,6 +1,8 @@
-package com.xcheng.retrofit;
+package com.xcheng.retrofit.progress;
 
 import android.support.annotation.Nullable;
+
+import com.xcheng.retrofit.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +17,7 @@ public class ProgressManager {
 
     private volatile static ProgressManager instance;
 
-    private final ArrayList<Listener> listeners =
+    private final ArrayList<ProgressListener> listeners =
             new ArrayList<>();
     @Nullable
     private volatile Executor callbackExecutor;
@@ -43,7 +45,7 @@ public class ProgressManager {
         return callbackExecutor;
     }
 
-    public void registerListener(Listener listener) {
+    public void registerListener(ProgressListener listener) {
         Utils.checkNotNull(listener, "listener==null");
         synchronized (listeners) {
             if (listeners.contains(listener)) {
@@ -53,7 +55,7 @@ public class ProgressManager {
         }
     }
 
-    public void unregisterListener(Listener listener) {
+    public void unregisterListener(ProgressListener listener) {
         Utils.checkNotNull(listener, "listener==null");
         synchronized (listeners) {
             int index = listeners.indexOf(listener);
@@ -64,11 +66,11 @@ public class ProgressManager {
         }
     }
 
-    public void unregisterListener(String tag) {
+    public void unregisterListeners(String tag) {
         Utils.checkNotNull(tag, "tag==null");
         synchronized (listeners) {
             for (int index = 0; index < listeners.size(); index++) {
-                Listener listener = listeners.get(index);
+                ProgressListener listener = listeners.get(index);
                 if (listener.tag.equals(tag)) {
                     listeners.remove(index);
                     index--;
@@ -85,12 +87,12 @@ public class ProgressManager {
      * @param download true代表下载，false代表上传
      * @return
      */
-    public List<Listener> getListeners(String tag, boolean download) {
+    public List<ProgressListener> getListeners(String tag, boolean download) {
         Utils.checkNotNull(tag, "tag==null");
-        List<Listener> listeners = new ArrayList<>();
+        List<ProgressListener> listeners = new ArrayList<>();
         synchronized (this.listeners) {
             for (int index = 0; index < this.listeners.size(); index++) {
-                Listener listener = this.listeners.get(index);
+                ProgressListener listener = this.listeners.get(index);
                 if (listener.tag.equals(tag)
                         && listener.download == download) {
                     listeners.add(listener);
@@ -107,32 +109,5 @@ public class ProgressManager {
         synchronized (listeners) {
             listeners.clear();
         }
-    }
-
-    /**
-     * 进度监听回调接口
-     */
-    public static abstract class Listener {
-        /**
-         * 标记是下载还是上传
-         */
-        public final boolean download;
-        /**
-         * 标记此Listener
-         */
-        public final String tag;
-
-        public Listener(String tag, boolean download) {
-            Utils.checkNotNull(tag, "tag==null");
-            this.tag = tag;
-            this.download = download;
-        }
-
-        /**
-         * @param progress      当前进度
-         * @param contentLength 总长度
-         * @param done          是否已经结束
-         */
-        protected abstract void onProgress(long progress, long contentLength, boolean done);
     }
 }
