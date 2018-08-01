@@ -1,7 +1,10 @@
 package com.xcheng.retrofit;
 
+import android.support.annotation.Nullable;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executor;
 
 /**
  * 创建时间：2018/7/31
@@ -9,10 +12,13 @@ import java.util.List;
  * 功能描述：管理进度监听类
  */
 public class ProgressManager {
-    private final ArrayList<Listener> mListeners =
-            new ArrayList<>();
 
     private volatile static ProgressManager instance;
+
+    private final ArrayList<Listener> listeners =
+            new ArrayList<>();
+    @Nullable
+    private volatile Executor callbackExecutor;
 
     private ProgressManager() {
     }
@@ -28,48 +34,49 @@ public class ProgressManager {
         return instance;
     }
 
+    public void with(@Nullable Executor callbackExecutor) {
+        this.callbackExecutor = callbackExecutor;
+    }
+
+    @Nullable
+    public Executor callbackExecutor() {
+        return callbackExecutor;
+    }
+
     public void registerListener(Listener listener) {
         Utils.checkNotNull(listener, "listener==null");
-        synchronized (mListeners) {
-            if (mListeners.contains(listener)) {
+        synchronized (listeners) {
+            if (listeners.contains(listener)) {
                 throw new IllegalStateException("Listener " + listener + " is already registered.");
             }
-            mListeners.add(listener);
+            listeners.add(listener);
         }
     }
 
     public void unregisterListener(Listener listener) {
         Utils.checkNotNull(listener, "listener==null");
-        synchronized (mListeners) {
-            int index = mListeners.indexOf(listener);
+        synchronized (listeners) {
+            int index = listeners.indexOf(listener);
             if (index == -1) {
                 throw new IllegalStateException("Listener " + listener + " was not registered.");
             }
-            mListeners.remove(index);
+            listeners.remove(index);
         }
     }
 
     public void unregisterListener(String tag) {
         Utils.checkNotNull(tag, "tag==null");
-        synchronized (mListeners) {
-            for (int index = 0; index < mListeners.size(); index++) {
-                Listener listener = mListeners.get(index);
+        synchronized (listeners) {
+            for (int index = 0; index < listeners.size(); index++) {
+                Listener listener = listeners.get(index);
                 if (listener.tag.equals(tag)) {
-                    mListeners.remove(index);
+                    listeners.remove(index);
                     index--;
                 }
             }
         }
     }
 
-    /**
-     * Remove all registered observers.
-     */
-    public void unregisterAll() {
-        synchronized (mListeners) {
-            mListeners.clear();
-        }
-    }
 
     /**
      * 获取对应的Listener,如果不存在返回size==0的ArrayList
@@ -81,9 +88,9 @@ public class ProgressManager {
     public List<Listener> getListeners(String tag, boolean download) {
         Utils.checkNotNull(tag, "tag==null");
         List<Listener> listeners = new ArrayList<>();
-        synchronized (mListeners) {
-            for (int index = 0; index < mListeners.size(); index++) {
-                Listener listener = mListeners.get(index);
+        synchronized (this.listeners) {
+            for (int index = 0; index < this.listeners.size(); index++) {
+                Listener listener = this.listeners.get(index);
                 if (listener.tag.equals(tag)
                         && listener.download == download) {
                     listeners.add(listener);
@@ -91,6 +98,15 @@ public class ProgressManager {
             }
         }
         return listeners;
+    }
+
+    /**
+     * Remove all registered observers.
+     */
+    public void unregisterAll() {
+        synchronized (listeners) {
+            listeners.clear();
+        }
     }
 
     /**
@@ -117,6 +133,6 @@ public class ProgressManager {
          * @param contentLength 总长度
          * @param done          是否已经结束
          */
-        abstract void onProgress(long progress, long contentLength, boolean done);
+        protected abstract void onProgress(long progress, long contentLength, boolean done);
     }
 }
