@@ -1,12 +1,11 @@
 package com.xcheng.retrofit.progress;
 
-import android.support.annotation.Nullable;
+import android.support.annotation.GuardedBy;
 
 import com.xcheng.retrofit.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Executor;
 
 /**
  * 创建时间：2018/7/31
@@ -17,10 +16,9 @@ public class ProgressManager {
 
     private volatile static ProgressManager instance;
 
+    @GuardedBy("listeners")
     private final ArrayList<ProgressListener> listeners =
             new ArrayList<>();
-    @Nullable
-    private volatile Executor callbackExecutor;
 
     private ProgressManager() {
     }
@@ -34,15 +32,6 @@ public class ProgressManager {
             }
         }
         return instance;
-    }
-
-    public void with(@Nullable Executor callbackExecutor) {
-        this.callbackExecutor = callbackExecutor;
-    }
-
-    @Nullable
-    public Executor callbackExecutor() {
-        return callbackExecutor;
     }
 
     public void registerListener(ProgressListener listener) {
@@ -81,11 +70,9 @@ public class ProgressManager {
 
 
     /**
-     * 获取对应的Listener,如果不存在返回size==0的ArrayList
-     *
      * @param tag      对应的tag
      * @param download true代表下载，false代表上传
-     * @return
+     * @return 获取对应的Listener, 如果不存在返回size==0的ArrayList
      */
     public List<ProgressListener> getListeners(String tag, boolean download) {
         Utils.checkNotNull(tag, "tag==null");
