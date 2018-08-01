@@ -1,5 +1,6 @@
 package com.xcheng.retrofit;
 
+import android.support.annotation.GuardedBy;
 import android.util.Log;
 
 import java.util.HashMap;
@@ -29,6 +30,7 @@ public final class RetrofitManager {
     /**
      * 不同配置的retrofit集合，如url ,converter等
      */
+    @GuardedBy("retrofitMap")
     private final Map<String, Retrofit> retrofitMap = new HashMap<>(4);
 
     private RetrofitManager() {

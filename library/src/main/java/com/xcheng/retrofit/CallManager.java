@@ -14,11 +14,10 @@ import retrofit2.Call;
  */
 public final class CallManager {
     @GuardedBy("this")
-    private final List<CallTag> callTags;
+    private final List<CallTag> callTags = new ArrayList<>(4);
     private volatile static CallManager instance;
 
     private CallManager() {
-        callTags = new ArrayList<>(4);
     }
 
     public static CallManager getInstance() {
