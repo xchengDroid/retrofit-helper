@@ -1,23 +1,29 @@
 package com.simple.okhttp;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.webkit.WebView;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.xcheng.retrofit.Call2;
 import com.xcheng.retrofit.Callback2;
 import com.xcheng.retrofit.ExecutorCallAdapterFactory;
 import com.xcheng.retrofit.HttpError;
-import com.xcheng.retrofit.progress.ProgressManager;
 import com.xcheng.retrofit.Result;
 import com.xcheng.retrofit.RetrofitManager;
+import com.xcheng.retrofit.progress.ProgressListener;
+import com.xcheng.retrofit.progress.ProgressManager;
 
 import java.io.IOException;
 
+import okhttp3.OkHttpClient;
 import okhttp3.ResponseBody;
 import retrofit2.Response;
 import retrofit2.Retrofit;
@@ -26,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
     private WebView webView;
     ImageView imageView;
     public static final int BITMAP_ID = 12;
+    Button btnProgress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,24 +40,36 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         webView = findViewById(R.id.web_easyokhttp);
         imageView = findViewById(R.id.iv_easyokhttp);
+
+
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("http://www.weather.com.cn/")
+                .callFactory(new OkHttpClient.Builder()
+                        .addInterceptor(ProgressManager.INTERCEPTOR)
+                        .build())
                 .addCallAdapterFactory(ExecutorCallAdapterFactory.INSTANCE)
                 .build();
         RetrofitManager.getInstance().init(retrofit);
-
 
         RetrofitManager.getInstance().put("1", retrofit);
         RetrofitManager.getInstance().put("2", retrofit);
         RetrofitManager.getInstance().put("3", retrofit);
         RetrofitManager.getInstance().put(null, retrofit);
+        btnProgress = findViewById(R.id.btn_progress);
 
 //        OkHttpClient okHttpClient = ProgressManager.getInstance().with(new OkHttpClient.Builder())
 //                .build();
         //   ProgressManager.getInstance().addResponseListener("", null);
-        ProgressManager.getInstance().registerListener(new ProgressManager.Listener("fileApk", true) {
+        ProgressManager.getInstance().registerListener(new ProgressListener("bitmap", true) {
             @Override
             protected void onProgress(long progress, long contentLength, boolean done) {
+                btnProgress.setText(progress / (float) contentLength * 100 + "%");
+            }
+        });
+        ProgressManager.getInstance().registerListener(new ProgressListener("bitmap", true) {
+            @Override
+            protected void onProgress(long progress, long contentLength, boolean done) {
+                Log.e("print", "Http-Progress-" + progress / (float) contentLength);
 
             }
         });
@@ -93,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onError(Call2<ResponseBody> call2, HttpError error) {
-
+                Log.e("print", error.msg);
             }
 
             @Override
@@ -104,57 +123,34 @@ public class MainActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
             }
-
-            @Override
-            public void onCancel(Call2<ResponseBody> call2) {
-                super.onCancel(call2);
-                Log.e("print", "onCancel");
-            }
         });
     }
 
     public void bitmap(final View view) {
-//        GetRequest getRequest = EasyOkHttp.get("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1499010173&di=9599915fd6f9eb51f527cbbf62a84bd6&imgtype=jpg&er=1&src=http%3A%2F%2F4493bz.1985t.com%2Fuploads%2Fallimg%2F160119%2F5-16011Z92519.jpg")
-//                .outProgress()
-//                .extra("type", "bitmap")
-//                .build();
-//        ExecutorCall<Bitmap> okCall = new ExecutorCall<>(getRequest);
-//        okCall.enqueue(new UICallback<Bitmap>() {
-//            @Override
-//            public void onStart(OkCall<Bitmap> okCall) {
-//                super.onStart(okCall);
-//                Log.e("print", "before");
-//            }
-//
-//            @Override
-//            public void onFinish(OkCall<Bitmap> okCall) {
-//                super.onFinish(okCall);
-//                Log.e("print", "onAfter");
-//            }
-//
-//            @Override
-//            public void outProgress(OkCall<Bitmap> okCall, float progress, long total, boolean done) {
-//                super.outProgress(okCall, progress, total, done);
-//                TextView textView = (TextView) view;
-//                textView.setText(progress * 100 + "%");
-//                Log.e("print", "outProgress");
-//            }
-//
-//            @Override
-//            public void onError(OkCall<Bitmap> okCall, EasyError error) {
-//                Log.e("print", "onError");
-//
-//                Toast.makeText(MainActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
-//            }
-//
-//            @Override
-//            public void onSuccess(OkCall<Bitmap> okCall, Bitmap response) {
-//                Log.e("print", "onSuccess");
-//
-//                webView.setVisibility(View.GONE);
-//                imageView.setVisibility(View.VISIBLE);
-//                imageView.setImageBitmap(response);
-//            }
-//        });
+        Call2<ResponseBody> call2 = RetrofitManager
+                .create(Service.class)
+                .getBitmap();
+
+        call2.enqueue(hashCode(), new Callback2<ResponseBody>() {
+            @Override
+            public void onError(Call2<ResponseBody> call2, HttpError error) {
+                Toast.makeText(MainActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
+
+            }
+
+            @Override
+            public void onSuccess(Call2<ResponseBody> call2, ResponseBody response) {
+                Bitmap bitmap = BitmapFactory.decodeStream(response.byteStream());
+                webView.setVisibility(View.GONE);
+                imageView.setVisibility(View.VISIBLE);
+                imageView.setImageBitmap(bitmap);
+            }
+        });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        ProgressManager.getInstance().unregisterListeners("1");
     }
 }
