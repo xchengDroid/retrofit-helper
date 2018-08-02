@@ -18,8 +18,8 @@ import com.xcheng.retrofit.ExecutorCallAdapterFactory;
 import com.xcheng.retrofit.HttpError;
 import com.xcheng.retrofit.Result;
 import com.xcheng.retrofit.RetrofitManager;
+import com.xcheng.retrofit.progress.ProgressInterceptor;
 import com.xcheng.retrofit.progress.ProgressListener;
-import com.xcheng.retrofit.progress.ProgressManager;
 
 import java.io.IOException;
 
@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("http://www.weather.com.cn/")
                 .callFactory(new OkHttpClient.Builder()
-                        .addInterceptor(ProgressManager.INTERCEPTOR)
+                        .addInterceptor(ProgressInterceptor.INSTANCE)
                         .build())
                 .addCallAdapterFactory(ExecutorCallAdapterFactory.INSTANCE)
                 .build();
@@ -60,17 +60,11 @@ public class MainActivity extends AppCompatActivity {
 //        OkHttpClient okHttpClient = ProgressManager.getInstance().with(new OkHttpClient.Builder())
 //                .build();
         //   ProgressManager.getInstance().addResponseListener("", null);
-        ProgressManager.getInstance().registerListener(new ProgressListener("bitmap", true) {
+        ProgressInterceptor.INSTANCE.setExecutor(retrofit.callbackExecutor());
+        ProgressInterceptor.INSTANCE.registerListener(new ProgressListener("bitmap", true) {
             @Override
             protected void onProgress(long progress, long contentLength, boolean done) {
                 btnProgress.setText(progress / (float) contentLength * 100 + "%");
-            }
-        });
-        ProgressManager.getInstance().registerListener(new ProgressListener("bitmap", true) {
-            @Override
-            protected void onProgress(long progress, long contentLength, boolean done) {
-                Log.e("print", "Http-Progress-" + progress / (float) contentLength);
-
             }
         });
     }
@@ -127,6 +121,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void bitmap(final View view) {
+
         Call2<ResponseBody> call2 = RetrofitManager
                 .create(Service.class)
                 .getBitmap();
@@ -135,7 +130,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onError(Call2<ResponseBody> call2, HttpError error) {
                 Toast.makeText(MainActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
-
+                error.getCause().printStackTrace();
+                error.printStackTrace();
             }
 
             @Override
@@ -150,7 +146,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
+        ProgressInterceptor.INSTANCE.unregisterAll();
         super.onDestroy();
-        ProgressManager.getInstance().unregisterListeners("1");
     }
 }
