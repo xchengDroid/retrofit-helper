@@ -31,7 +31,7 @@ public class ProgressInterceptor implements Interceptor {
     @GuardedBy("listeners")
     private final ArrayList<ProgressListener> listeners =
             new ArrayList<>();
-    private volatile Executor callbackExecutor;
+    private volatile Executor executor;
 
     private ProgressInterceptor() {
     }
@@ -67,12 +67,17 @@ public class ProgressInterceptor implements Interceptor {
         return response;
     }
 
-    public void setCallbackExecutor(@Nullable Executor callbackExecutor) {
-        this.callbackExecutor = callbackExecutor;
+    /**
+     * The executor on which {@link ProgressListener#onProgress(long, long, boolean)}
+     * methods are invoked when returning from your service method.
+     * <p>
+     */
+    public void setExecutor(@Nullable Executor executor) {
+        this.executor = executor;
     }
 
-    Executor getCallbackExecutor() {
-        return callbackExecutor;
+    public Executor getExecutor() {
+        return executor;
     }
 
     public void registerListener(ProgressListener listener) {
@@ -96,6 +101,11 @@ public class ProgressInterceptor implements Interceptor {
         }
     }
 
+    /**
+     * 解绑对应tag的{@link ProgressListener}
+     *
+     * @param tag 解绑所需
+     */
     public void unregisterListeners(String tag) {
         Utils.checkNotNull(tag, "tag==null");
         synchronized (listeners) {
@@ -115,7 +125,7 @@ public class ProgressInterceptor implements Interceptor {
      * @param download true代表下载，false代表上传
      * @return 获取对应的Listener, 如果不存在返回size==0的ArrayList
      */
-    public List<ProgressListener> getListeners(String tag, boolean download) {
+    private List<ProgressListener> getListeners(String tag, boolean download) {
         Utils.checkNotNull(tag, "tag==null");
         List<ProgressListener> listeners = new ArrayList<>();
         synchronized (this.listeners) {
