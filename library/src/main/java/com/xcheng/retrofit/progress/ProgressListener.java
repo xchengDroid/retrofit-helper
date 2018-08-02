@@ -15,7 +15,7 @@ public abstract class ProgressListener {
      */
     public final String tag;
 
-    public ProgressListener(String tag, boolean download) {
+    protected ProgressListener(String tag, boolean download) {
         Utils.checkNotNull(tag, "tag==null");
         this.tag = tag;
         this.download = download;
