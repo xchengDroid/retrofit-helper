@@ -8,9 +8,13 @@ import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 
+import retrofit2.Call;
 import retrofit2.Response;
 
 /**
+ * if {@link Call#cancel()}called {@link #onStart(Call2)}、 {@link #onSuccess(Call2, Object)}、
+ * {@link #onError(Call2, HttpError)}、 {@link #onCompleted(Call2)} will not be called
+ *
  * @param <T> Successful response body type.
  */
 public abstract class Callback2<T> {

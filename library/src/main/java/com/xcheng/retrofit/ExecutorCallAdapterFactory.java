@@ -91,7 +91,9 @@ public final class ExecutorCallAdapterFactory extends CallAdapter.Factory {
             callbackExecutor.execute(new Runnable() {
                 @Override
                 public void run() {
-                    callback2.onStart(ExecutorCallbackCall2.this);
+                    if (!isCanceled()) {
+                        callback2.onStart(ExecutorCallbackCall2.this);
+                    }
                 }
             });
 
@@ -131,8 +133,9 @@ public final class ExecutorCallAdapterFactory extends CallAdapter.Factory {
                     } else {
                         callback2.onError(this, result.error());
                     }
+                    //like AsyncTask if canceled ,not call
+                    callback2.onCompleted(this);
                 }
-                callback2.onCompleted(this);
             } finally {
                 CallManager.getInstance().remove(this);
             }
