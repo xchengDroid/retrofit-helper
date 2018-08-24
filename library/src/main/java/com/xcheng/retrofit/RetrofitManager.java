@@ -66,12 +66,7 @@ public final class RetrofitManager {
      * @return true 代表已经被初始化{@link #init(Retrofit)}
      */
     public boolean isInited() {
-        if (retrofit == null) {
-            synchronized (RetrofitManager.class) {
-                return retrofit != null;
-            }
-        }
-        return true;
+        return retrofit != null;
     }
 
     public static <T> T create(Class<T> service) {
@@ -79,7 +74,7 @@ public final class RetrofitManager {
     }
 
     public Retrofit retrofit() {
-        if (!isInited()) {
+        if (retrofit == null) {
             throw new IllegalStateException(ERROR_NOT_INIT);
         }
         return retrofit;
