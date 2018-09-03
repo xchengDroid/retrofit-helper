@@ -110,7 +110,7 @@ public final class ExecutorCallAdapterFactory extends CallAdapter.Factory {
                 }
 
                 @Override
-                public void onFailure(Call<T> call2, Throwable t) {
+                public void onFailure(Call<T> call, Throwable t) {
                     HttpError error = callback2.parseThrowable(ExecutorCallbackCall2.this, t);
                     final Result<T> result = Result.error(error);
                     callbackExecutor.execute(new Runnable() {
