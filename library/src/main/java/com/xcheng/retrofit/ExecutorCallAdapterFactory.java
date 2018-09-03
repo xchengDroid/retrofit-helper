@@ -99,23 +99,24 @@ public final class ExecutorCallAdapterFactory extends CallAdapter.Factory {
 
             delegate.enqueue(new Callback<T>() {
                 @Override
-                public void onResponse(Call<T> call, Response<T> response) {
-                    final Result<T> result = callback2.parseResponse(ExecutorCallbackCall2.this, response);
+                public void onResponse(Call<T> call, final Response<T> response) {
                     callbackExecutor.execute(new Runnable() {
                         @Override
                         public void run() {
+                            //放在此处由主线程处理的目的是防止parseResponse异常被捕获无法抛出
+                            Result<T> result = callback2.parseResponse(ExecutorCallbackCall2.this, response);
                             callResult(callback2, result);
                         }
                     });
                 }
 
                 @Override
-                public void onFailure(Call<T> call, Throwable t) {
-                    HttpError error = callback2.parseThrowable(ExecutorCallbackCall2.this, t);
-                    final Result<T> result = Result.error(error);
+                public void onFailure(Call<T> call, final Throwable t) {
                     callbackExecutor.execute(new Runnable() {
                         @Override
                         public void run() {
+                            HttpError error = callback2.parseThrowable(ExecutorCallbackCall2.this, t);
+                            Result<T> result = Result.error(error);
                             callResult(callback2, result);
                         }
                     });

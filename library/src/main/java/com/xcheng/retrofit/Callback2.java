@@ -1,7 +1,7 @@
 package com.xcheng.retrofit;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.WorkerThread;
+import android.support.annotation.UiThread;
 
 import java.net.ConnectException;
 import java.net.SocketException;
@@ -17,9 +17,9 @@ import retrofit2.Response;
  *
  * @param <T> Successful response body type.
  */
+@UiThread
 public abstract class Callback2<T> {
 
-    @WorkerThread
     @NonNull
     public Result<T> parseResponse(Call2<T> call2, Response<T> response) {
         T body = response.body();
@@ -59,7 +59,6 @@ public abstract class Callback2<T> {
      * @param t     Throwable
      * @return HttpError result
      */
-    @WorkerThread
     @NonNull
     public HttpError parseThrowable(Call2<T> call2, Throwable t) {
         if (t instanceof HttpError) {
