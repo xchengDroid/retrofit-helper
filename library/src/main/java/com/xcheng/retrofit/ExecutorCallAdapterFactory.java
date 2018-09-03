@@ -99,7 +99,7 @@ public final class ExecutorCallAdapterFactory extends CallAdapter.Factory {
 
             delegate.enqueue(new Callback<T>() {
                 @Override
-                public void onResponse(Call<T> call, final Response<T> response) {
+                public void onResponse(Call<T> call, Response<T> response) {
                     final Result<T> result = callback2.parseResponse(ExecutorCallbackCall2.this, response);
                     callbackExecutor.execute(new Runnable() {
                         @Override
@@ -110,8 +110,9 @@ public final class ExecutorCallAdapterFactory extends CallAdapter.Factory {
                 }
 
                 @Override
-                public void onFailure(Call<T> call2, final Throwable t) {
-                    final Result<T> result = Result.error(callback2.parseThrowable(ExecutorCallbackCall2.this, t));
+                public void onFailure(Call<T> call2, Throwable t) {
+                    HttpError error = callback2.parseThrowable(ExecutorCallbackCall2.this, t);
+                    final Result<T> result = Result.error(error);
                     callbackExecutor.execute(new Runnable() {
                         @Override
                         public void run() {
