@@ -28,9 +28,8 @@ public class OKApplication extends Application {
                         .build())
                 .addCallAdapterFactory(ExecutorCallAdapterFactory.INSTANCE)
                 .build();
-        RetrofitManager.getInstance().init(retrofit);
+        RetrofitManager.init(retrofit);
 
-        RetrofitManager.getInstance().put("1", retrofit);
 //        Picasso.setSingletonInstance(new Picasso.Builder(this)
 //                // .indicatorsEnabled(true)
 //                .loggingEnabled(true)

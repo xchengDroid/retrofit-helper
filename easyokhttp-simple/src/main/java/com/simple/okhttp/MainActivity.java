@@ -14,7 +14,6 @@ import android.widget.Toast;
 
 import com.xcheng.retrofit.Call2;
 import com.xcheng.retrofit.Callback2;
-import com.xcheng.retrofit.ExecutorCallAdapterFactory;
 import com.xcheng.retrofit.HttpError;
 import com.xcheng.retrofit.Result;
 import com.xcheng.retrofit.RetrofitManager;
@@ -23,10 +22,8 @@ import com.xcheng.retrofit.progress.ProgressListener;
 
 import java.io.IOException;
 
-import okhttp3.OkHttpClient;
 import okhttp3.ResponseBody;
 import retrofit2.Response;
-import retrofit2.Retrofit;
 
 public class MainActivity extends AppCompatActivity {
     private WebView webView;
@@ -41,26 +38,12 @@ public class MainActivity extends AppCompatActivity {
         webView = findViewById(R.id.web_easyokhttp);
         imageView = findViewById(R.id.iv_easyokhttp);
 
-
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://www.weather.com.cn/")
-                .callFactory(new OkHttpClient.Builder()
-                        .addInterceptor(ProgressInterceptor.INSTANCE)
-                        .build())
-                .addCallAdapterFactory(ExecutorCallAdapterFactory.INSTANCE)
-                .build();
-        RetrofitManager.getInstance().init(retrofit);
-
-        RetrofitManager.getInstance().put("1", retrofit);
-        RetrofitManager.getInstance().put("2", retrofit);
-        RetrofitManager.getInstance().put("3", retrofit);
-        RetrofitManager.getInstance().put(null, retrofit);
         btnProgress = findViewById(R.id.btn_progress);
 
 //        OkHttpClient okHttpClient = ProgressManager.getInstance().with(new OkHttpClient.Builder())
 //                .build();
         //   ProgressManager.getInstance().addResponseListener("", null);
-        ProgressInterceptor.INSTANCE.setExecutor(retrofit.callbackExecutor());
+        ProgressInterceptor.INSTANCE.setExecutor(RetrofitManager.retrofit().callbackExecutor());
         ProgressInterceptor.INSTANCE.registerListener(new ProgressListener("bitmap", true) {
             @Override
             protected void onProgress(long progress, long contentLength, boolean done) {
