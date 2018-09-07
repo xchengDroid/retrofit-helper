@@ -27,7 +27,7 @@ public final class RetrofitManager {
     /**
      * 缓存不同配置的retrofit集合，如url ,converter等
      */
-    @GuardedBy("retrofitMap")
+    @GuardedBy("sRetrofitsCache")
     private static final Map<String, Retrofit> sRetrofitsCache = new HashMap<>(2);
 
     private RetrofitManager() {
