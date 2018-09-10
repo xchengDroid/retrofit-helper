@@ -54,7 +54,7 @@ public final class RetrofitManager {
     public static boolean isInited() {
         if (sRetrofit == null) {
             synchronized (RetrofitManager.class) {
-                //synchronized获得锁时会清空工作内存，重主内存重新获取最新数据
+                //synchronized获得锁时会清空工作内存，从主内存重新获取最新数据
                 //同步判断Retrofit是否已经初始化，防止此时正在同步块初始化
                 return sRetrofit != null;
             }
