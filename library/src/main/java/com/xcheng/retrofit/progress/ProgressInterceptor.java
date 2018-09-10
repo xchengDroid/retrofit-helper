@@ -31,6 +31,12 @@ public class ProgressInterceptor implements Interceptor {
     @GuardedBy("listeners")
     private final ArrayList<ProgressListener> listeners =
             new ArrayList<>();
+
+
+    /**
+     * AsyncTask#sDefaultExecutor
+     * AsyncTask#mStatus
+     */
     private volatile Executor executor;
 
     private ProgressInterceptor() {
