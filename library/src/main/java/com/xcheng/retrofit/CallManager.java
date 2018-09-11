@@ -12,7 +12,7 @@ import retrofit2.Call;
  * 编写人： chengxin
  * 功能描述：全局管理Call请求管理,just like {@link okhttp3.Dispatcher}
  */
-public final class CallManager {
+public final class CallManager implements ActionManager<Call<?>> {
     @GuardedBy("this")
     private final List<CallTag> callTags = new ArrayList<>(4);
     private volatile static CallManager instance;
@@ -31,7 +31,8 @@ public final class CallManager {
         return instance;
     }
 
-    synchronized void add(Call<?> call, Object tag) {
+    @Override
+    public synchronized void add(Call<?> call, Object tag) {
         callTags.add(new CallTag(call, tag));
     }
 
@@ -40,7 +41,8 @@ public final class CallManager {
      *
      * @param call Retrofit Call
      */
-    synchronized void remove(Call<?> call) {
+    @Override
+    public synchronized void remove(Call<?> call) {
         if (callTags.isEmpty())
             return;
         for (int index = 0; index < callTags.size(); index++) {
@@ -56,6 +58,7 @@ public final class CallManager {
      *
      * @param tag call对应的tag
      */
+    @Override
     public synchronized void cancel(Object tag) {
         if (callTags.isEmpty())
             return;
@@ -75,6 +78,7 @@ public final class CallManager {
     /**
      * 取消并移除所有的call
      */
+    @Override
     public synchronized void cancelAll() {
         if (callTags.isEmpty())
             return;
