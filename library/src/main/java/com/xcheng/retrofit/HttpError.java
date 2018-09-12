@@ -14,11 +14,13 @@ public final class HttpError extends RuntimeException {
     public String msg;
 
     /**
-     * 请求失败保存失败信息,for example:<br/>
-     * BusiModel: {code:xxx,msg:xxx} 业务错误信息<br/>
-     * original json:  原始的json <br/>
-     * {@link retrofit2.Response}:错误响应体<br/>
-     * Throwable : 抛出的异常信息
+     * <p>
+     * 请求失败保存失败信息,for example:
+     * <li>BusiModel: {code:xxx,msg:xxx} 业务错误信息</li>
+     * <li>original json:  原始的json</li>
+     * <li>{@link retrofit2.Response}:错误响应体->Response<?></li>
+     * <li>Throwable: 抛出的异常信息</li>
+     * </p>
      */
     @Nullable
     public final transient Object body;
