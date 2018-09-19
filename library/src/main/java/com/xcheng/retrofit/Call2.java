@@ -7,7 +7,7 @@ package com.xcheng.retrofit;
  */
 public interface Call2<T> extends retrofit2.Call<T> {
     /**
-     * @param tag       请求的tag
+     * @param tag       请求的tag,用于取消请求使用
      * @param callback2 请求的回调
      */
     void enqueue(Object tag, Callback2<T> callback2);
