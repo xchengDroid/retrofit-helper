@@ -15,6 +15,8 @@
  */
 package com.xcheng.retrofit;
 
+import android.support.annotation.Nullable;
+
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
@@ -84,9 +86,10 @@ public final class ExecutorCallAdapterFactory extends CallAdapter.Factory {
         }
 
         @Override
-        public void enqueue(Object tag, final Callback2<T> callback2) {
-            Utils.checkNotNull(tag, "tag==null");
+        public void enqueue(@Nullable Object tag, final Callback2<T> callback2) {
             Utils.checkNotNull(callback2, "callback2==null");
+            //如果为空设置为默认的url为其tag
+            tag = tag != null ? tag : request().url().toString();
             CallManager.getInstance().add(this, tag);
             callbackExecutor.execute(new Runnable() {
                 @Override
