@@ -1,18 +1,3 @@
-/*
- * Copyright (C) 2015 Square, Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package com.xcheng.retrofit;
 
 import android.support.annotation.Nullable;
@@ -88,7 +73,7 @@ public final class ExecutorCallAdapterFactory extends CallAdapter.Factory {
         @Override
         public void enqueue(@Nullable Object tag, final Callback2<T> callback2) {
             Utils.checkNotNull(callback2, "callback2==null");
-            //如果为空设置为默认的url为其tag
+            //如果为空设置url为默认的tag
             tag = tag != null ? tag : request().url().toString();
             CallManager.getInstance().add(this, tag);
             callbackExecutor.execute(new Runnable() {
