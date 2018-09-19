@@ -97,6 +97,8 @@ public final class CallManager implements ActionManager<Call<?>> {
         private final Object tag;
 
         CallTag(Call<?> call, Object tag) {
+            Utils.checkNotNull(call == null, "call==null");
+            Utils.checkNotNull(tag == null, "tag==null");
             this.call = call;
             this.tag = tag;
         }
