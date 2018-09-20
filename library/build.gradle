@@ -35,7 +35,7 @@ publish {
     userOrg = 'xcheng'//bintray.com用户名
     groupId = 'com.xcheng'//jcenter上的路径
     artifactId = 'easyokhttp'//项目名称
-    publishVersion = '2.4.0'//版本号
+    publishVersion = '2.4.1'//版本号
     desc = 'make retrofit more simple'//描述，不重要
     website = 'https://github.com/xchengDroid/EasyOkHttp'//网站，不重要；尽量模拟github上的地址，例如我这样的；当然你有地址最好了
 }
