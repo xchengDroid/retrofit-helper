@@ -1,6 +1,5 @@
 package com.xcheng.retrofit;
 
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 /**
@@ -12,7 +11,6 @@ public final class HttpError extends RuntimeException {
     /**
      * 展示在前端的错误描述信息
      */
-    @NonNull
     public String msg;
 
     /**
@@ -36,7 +34,7 @@ public final class HttpError extends RuntimeException {
         if (body instanceof Throwable) {
             initCause((Throwable) body);
         }
-        this.msg = msg != null ? msg : "";
+        this.msg = msg;
         this.body = body;
     }
 
