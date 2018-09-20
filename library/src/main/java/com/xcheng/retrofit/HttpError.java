@@ -36,7 +36,8 @@ public final class HttpError extends RuntimeException {
         if (body instanceof Throwable) {
             initCause((Throwable) body);
         }
-        this.msg = msg != null ? msg : "";
+        //FastPrintWriter#print(String str)
+        this.msg = msg != null ? msg : "null";
         this.body = body;
     }
 
