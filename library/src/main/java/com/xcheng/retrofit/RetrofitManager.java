@@ -1,10 +1,9 @@
 package com.xcheng.retrofit;
 
-import android.support.annotation.GuardedBy;
 import android.util.Log;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import retrofit2.Retrofit;
 
@@ -23,12 +22,11 @@ public final class RetrofitManager {
     /**
      * 全局的retrofit对象
      */
-    private static Retrofit sRetrofit;
+    private static volatile Retrofit sRetrofit;
     /**
      * 缓存不同配置的retrofit集合，如url ,converter等
      */
-    @GuardedBy("sRetrofitsCache")
-    private static final Map<String, Retrofit> sRetrofitsCache = new HashMap<>(2);
+    private static final Map<String, Retrofit> sRetrofitsCache = new ConcurrentHashMap<>(2);
 
     private RetrofitManager() {
     }
@@ -38,7 +36,7 @@ public final class RetrofitManager {
      *
      * @param retrofit 全局的Retrofit对象
      */
-    public synchronized static void init(Retrofit retrofit) {
+    public static void init(Retrofit retrofit) {
         Utils.checkNotNull(retrofit, "retrofit==null");
         if (sRetrofit == null) {
             Log.d(TAG, LOG_INIT_RETROFIT);
@@ -54,14 +52,16 @@ public final class RetrofitManager {
      * @return true if has init
      */
     public static boolean isInited() {
-        if (sRetrofit == null) {
-            synchronized (RetrofitManager.class) {
-                //synchronized获得锁时会清空工作内存，从主内存重新获取最新数据
-                //同步判断Retrofit是否已经初始化，防止此时正在同步块初始化
-                return sRetrofit != null;
-            }
+        //synchronized获得锁时会清空工作内存，从主内存重新获取最新数据
+        //同步判断Retrofit是否已经初始化，防止此时正在同步块初始化
+        return sRetrofit != null;
+    }
+
+    public void destroy(boolean isAll) {
+        sRetrofit = null;
+        if (isAll) {
+            sRetrofitsCache.clear();
         }
-        return true;
     }
 
     public static <T> T create(Class<T> service) {
@@ -69,12 +69,12 @@ public final class RetrofitManager {
     }
 
     public static Retrofit retrofit() {
-        if (!isInited()) {
+        final Retrofit retrofit = sRetrofit;
+        if (retrofit == null) {
             throw new IllegalStateException(ERROR_NOT_INIT);
         }
-        return sRetrofit;
+        return retrofit;
     }
-
 
     /**
      * 全局保存不同配置的Retrofit,如不同的baseUrl等
@@ -83,21 +83,14 @@ public final class RetrofitManager {
      * @param retrofit 对应的retrofit对象
      */
     public static void put(String tag, Retrofit retrofit) {
-        Utils.checkNotNull(retrofit, "retrofit==null");
-        synchronized (sRetrofitsCache) {
-            sRetrofitsCache.put(tag, retrofit);
-        }
+        sRetrofitsCache.put(tag, retrofit);
     }
 
     public static Retrofit get(String tag) {
-        synchronized (sRetrofitsCache) {
-            return sRetrofitsCache.get(tag);
-        }
+        return sRetrofitsCache.get(tag);
     }
 
     public static void remove(String tag) {
-        synchronized (sRetrofitsCache) {
-            sRetrofitsCache.remove(tag);
-        }
+        sRetrofitsCache.remove(tag);
     }
 }
