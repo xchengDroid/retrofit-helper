@@ -32,7 +32,8 @@ public final class RetrofitManager {
     }
 
     /**
-     * 初始化全局的Retrofit对象,like ARouter#LogisticsCenter,ImageLoader#ImageLoaderConfiguration
+     * 初始化全局的Retrofit对象,like Charset#bugLevel,HttpLoggingInterceptor#level,
+     * AsyncTask#mStatus,facebook->stetho->LogRedirector#sLogger
      *
      * @param retrofit 全局的Retrofit对象
      */
