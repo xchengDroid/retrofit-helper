@@ -57,7 +57,7 @@ public final class RetrofitManager {
         return sRetrofit != null;
     }
 
-    public void destroy(boolean isAll) {
+    public static void destroy(boolean isAll) {
         sRetrofit = null;
         if (isAll) {
             sRetrofitsCache.clear();
