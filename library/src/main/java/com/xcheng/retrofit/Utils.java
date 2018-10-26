@@ -5,6 +5,8 @@ import android.support.annotation.Nullable;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -57,5 +59,18 @@ public class Utils {
                 e.printStackTrace();
             }
         }
+    }
+
+    public static String getStackTraceString(Throwable tr) {
+        if (tr == null) {
+            return "tr==null";
+        }
+        // Don't replace this with Log.getStackTraceString() - it hides
+        // UnknownHostException, which is not what we want.
+        StringWriter sw = new StringWriter(256);
+        PrintWriter pw = new PrintWriter(sw, false);
+        tr.printStackTrace(pw);
+        pw.flush();
+        return sw.toString();
     }
 }
