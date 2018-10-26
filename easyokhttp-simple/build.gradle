@@ -27,5 +27,4 @@ dependencies {
     implementation 'com.android.support:appcompat-v7:27.1.1'
     implementation project(':library')
     implementation 'me.jessyan:progressmanager:1.5.0'
-
 }
