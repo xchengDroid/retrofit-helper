@@ -1,6 +1,7 @@
 package com.xcheng.retrofit;
 
 import android.support.annotation.GuardedBy;
+import android.support.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,6 +48,8 @@ public final class CallManager implements ActionManager<Call<?>> {
             return;
         for (int index = 0; index < callTags.size(); index++) {
             if (call == callTags.get(index).call) {
+                //like okhttp3.Headers#removeAll(String name)
+                //remove(int index) 方法优于 remove(Object o)，无需再次遍历
                 callTags.remove(index);
                 break;
             }
@@ -59,34 +62,14 @@ public final class CallManager implements ActionManager<Call<?>> {
      * @param tag call对应的tag
      */
     @Override
-    public synchronized void cancel(Object tag) {
+    public void cancel(final @Nullable Object tag) {
         if (callTags.isEmpty())
             return;
-
-        for (int index = 0; index < callTags.size(); index++) {
-            CallTag callTag = callTags.get(index);
-            if (callTag.tag.equals(tag)) {
+        for (CallTag callTag : callTags) {
+            if (tag == null || callTag.tag.equals(tag)) {
                 callTag.call.cancel();
-                //like okhttp3.Headers#removeAll(String name)
-                //remove(int index) 方法优于 remove(Object o)，无需再次遍历
-                callTags.remove(index);
-                index--;
             }
         }
-    }
-
-    /**
-     * 取消并移除所有的call
-     */
-    @Override
-    public synchronized void cancelAll() {
-        if (callTags.isEmpty())
-            return;
-
-        for (CallTag callTag : callTags) {
-            callTag.call.cancel();
-        }
-        callTags.clear();
     }
 
     /**

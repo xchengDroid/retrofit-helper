@@ -1,5 +1,7 @@
 package com.xcheng.retrofit;
 
+import android.support.annotation.Nullable;
+
 /**
  * 创建时间：2018/9/11
  * 编写人： chengxin
@@ -18,13 +20,8 @@ public interface ActionManager<Action> {
     void remove(Action action);
 
     /**
-     * 取消某个Action
+     * if tag!=null 取消tag一致的Action, else 取消所有请求
      */
-    void cancel(Object tag);
-
-    /**
-     * 取消所有Action
-     */
-    void cancelAll();
+    void cancel(@Nullable Object tag);
 
 }
