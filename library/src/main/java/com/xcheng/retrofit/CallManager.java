@@ -62,7 +62,7 @@ public final class CallManager implements ActionManager<Call<?>> {
      * @param tag call对应的tag
      */
     @Override
-    public void cancel(final @Nullable Object tag) {
+    public synchronized void cancel(final @Nullable Object tag) {
         if (callTags.isEmpty())
             return;
         for (CallTag callTag : callTags) {
