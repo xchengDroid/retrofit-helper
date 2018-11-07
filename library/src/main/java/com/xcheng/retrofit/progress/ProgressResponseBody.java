@@ -1,8 +1,6 @@
 package com.xcheng.retrofit.progress;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.concurrent.Executor;
 
 import okhttp3.MediaType;
 import okhttp3.ResponseBody;
@@ -15,14 +13,14 @@ import okio.Source;
 class ProgressResponseBody extends ResponseBody {
 
     private final ResponseBody delegate;
-    private final List<ProgressListener> listeners;
+    private final ProgressListener listener;
+    private final String tag;
     private BufferedSource bufferedSource;
-    private final Executor executor;
 
-    ProgressResponseBody(ResponseBody delegate, List<ProgressListener> listeners) {
+    ProgressResponseBody(ResponseBody delegate, ProgressListener listener, String tag) {
         this.delegate = delegate;
-        this.listeners = listeners;
-        this.executor = ProgressInterceptor.INSTANCE.getExecutor();
+        this.listener = listener;
+        this.tag = tag;
     }
 
     @Override
@@ -57,18 +55,8 @@ class ProgressResponseBody extends ResponseBody {
                     //避免多次调用
                     contentLength = contentLength();
                 }
-                for (final ProgressListener listener : listeners) {
-                    if (executor != null) {
-                        executor.execute(new Runnable() {
-                            @Override
-                            public void run() {
-                                listener.onProgress(totalBytesRead, contentLength, bytesRead == -1);
-                            }
-                        });
-                    } else {
-                        listener.onProgress(totalBytesRead, contentLength, bytesRead == -1);
-                    }
-                }
+
+                listener.onDownload(tag, totalBytesRead, contentLength, bytesRead == -1);
                 return bytesRead;
             }
         };

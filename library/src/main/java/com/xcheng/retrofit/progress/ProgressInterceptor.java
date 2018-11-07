@@ -1,14 +1,6 @@
 package com.xcheng.retrofit.progress;
 
-import android.support.annotation.GuardedBy;
-import android.support.annotation.Nullable;
-
-import com.xcheng.retrofit.Utils;
-
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.Executor;
 
 import okhttp3.Interceptor;
 import okhttp3.Request;
@@ -26,20 +18,10 @@ public class ProgressInterceptor implements Interceptor {
      * 标记Header的key ,如果header上有此键值对，尝试监听进度
      */
     private static final String KEY_HTTP_PROGRESS = "Http-Progress";
+    private final ProgressListener mProgressListener;
 
-    public static final ProgressInterceptor INSTANCE = new ProgressInterceptor();
-    @GuardedBy("listeners")
-    private final ArrayList<ProgressListener> listeners =
-            new ArrayList<>();
-
-
-    /**
-     * AsyncTask#sDefaultExecutor
-     * AsyncTask#mStatus
-     */
-    private volatile Executor executor;
-
-    private ProgressInterceptor() {
+    public ProgressInterceptor(ProgressListener progressListener) {
+        this.mProgressListener = progressListener;
     }
 
     @Override
@@ -52,106 +34,20 @@ public class ProgressInterceptor implements Interceptor {
 
         RequestBody requestBody = request.body();
         //判断是否有上传需求
-        if (requestBody != null) {
-            List<ProgressListener> upListeners = getListeners(tag, false);
-            if (upListeners.size() != 0) {
-                Request.Builder builder = request.newBuilder();
-                RequestBody newRequestBody = new ProgressRequestBody(requestBody, upListeners);
-                request = builder.method(request.method(), newRequestBody).build();
-            }
+        if (requestBody != null && requestBody.contentLength() > 0) {
+            Request.Builder builder = request.newBuilder();
+            RequestBody newRequestBody = new ProgressRequestBody(requestBody, mProgressListener, tag);
+            request = builder.method(request.method(), newRequestBody).build();
         }
+
         Response response = chain.proceed(request);
         ResponseBody responseBody = response.body();
-        if (responseBody != null) {
-            List<ProgressListener> downListeners = getListeners(tag, true);
-            if (downListeners.size() != 0) {
-                Response.Builder builder = response.newBuilder();
-                ResponseBody newResponseBody = new ProgressResponseBody(responseBody, downListeners);
-                response = builder.body(newResponseBody).build();
-            }
+        if (responseBody != null && responseBody.contentLength() > 0) {
+            Response.Builder builder = response.newBuilder();
+            ResponseBody newResponseBody = new ProgressResponseBody(responseBody, mProgressListener, tag);
+            response = builder.body(newResponseBody).build();
         }
         return response;
     }
 
-    /**
-     * The executor on which {@link ProgressListener#onProgress(long, long, boolean)}
-     * methods are invoked when returning from your service method.
-     * <p>
-     */
-    public void setExecutor(@Nullable Executor executor) {
-        this.executor = executor;
-    }
-
-    public Executor getExecutor() {
-        return executor;
-    }
-
-    public void registerListener(ProgressListener listener) {
-        Utils.checkNotNull(listener, "listener==null");
-        synchronized (listeners) {
-            if (listeners.contains(listener)) {
-                throw new IllegalStateException("ProgressListener " + listener + " is already registered.");
-            }
-            listeners.add(listener);
-        }
-    }
-
-    public void unregisterListener(ProgressListener listener) {
-        Utils.checkNotNull(listener, "listener==null");
-        synchronized (listeners) {
-            int index = listeners.indexOf(listener);
-            if (index == -1) {
-                throw new IllegalStateException("ProgressListener " + listener + " was not registered.");
-            }
-            listeners.remove(index);
-        }
-    }
-
-    /**
-     * 解绑对应tag的{@link ProgressListener}
-     *
-     * @param tag 解绑所需
-     */
-    public void unregisterListeners(String tag) {
-        Utils.checkNotNull(tag, "tag==null");
-        synchronized (listeners) {
-            for (int index = 0; index < listeners.size(); index++) {
-                ProgressListener listener = listeners.get(index);
-                if (listener.tag.equals(tag)) {
-                    listeners.remove(index);
-                    index--;
-                }
-            }
-        }
-    }
-
-
-    /**
-     * @param tag      对应的tag
-     * @param download true代表下载，false代表上传
-     * @return 获取对应的Listener, 如果不存在返回size==0的ArrayList
-     */
-    private List<ProgressListener> getListeners(String tag, boolean download) {
-        Utils.checkNotNull(tag, "tag==null");
-        List<ProgressListener> listeners = new ArrayList<>();
-        synchronized (this.listeners) {
-            for (int index = 0; index < this.listeners.size(); index++) {
-                ProgressListener listener = this.listeners.get(index);
-                if (listener.tag.equals(tag)
-                        && listener.download == download) {
-                    listeners.add(listener);
-                }
-            }
-        }
-        return listeners;
-    }
-
-    /**
-     * Remove all registered observers.
-     */
-    public void unregisterAll() {
-        synchronized (listeners) {
-            listeners.clear();
-        }
-    }
 }

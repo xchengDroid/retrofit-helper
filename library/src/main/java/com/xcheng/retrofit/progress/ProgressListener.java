@@ -1,30 +1,21 @@
 package com.xcheng.retrofit.progress;
 
-import com.xcheng.retrofit.Utils;
+import android.support.annotation.WorkerThread;
 
 /**
  * 进度监听回调接口
  */
-public abstract class ProgressListener {
-    /**
-     * 标记是下载还是上传
-     */
-    public final boolean download;
-    /**
-     * 标记此监听
-     */
-    public final String tag;
-
-    protected ProgressListener(String tag, boolean download) {
-        Utils.checkNotNull(tag, "tag==null");
-        this.tag = tag;
-        this.download = download;
-    }
+public interface ProgressListener {
 
     /**
+     * @param tag           标记此监听
      * @param progress      当前进度
      * @param contentLength 总长度
      * @param done          是否已经结束
      */
-    protected abstract void onProgress(long progress, long contentLength, boolean done);
+    @WorkerThread
+    void onUpload(String tag, long progress, long contentLength, boolean done);
+
+    @WorkerThread
+    void onDownload(String tag, long progress, long contentLength, boolean done);
 }

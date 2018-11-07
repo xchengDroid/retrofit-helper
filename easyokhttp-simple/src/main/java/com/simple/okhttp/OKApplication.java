@@ -1,10 +1,12 @@
 package com.simple.okhttp;
 
 import android.app.Application;
+import android.util.Log;
 
 import com.xcheng.retrofit.ExecutorCallAdapterFactory;
 import com.xcheng.retrofit.RetrofitManager;
 import com.xcheng.retrofit.progress.ProgressInterceptor;
+import com.xcheng.retrofit.progress.ProgressListener;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -24,7 +26,17 @@ public class OKApplication extends Application {
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("http://www.weather.com.cn/")
                 .callFactory(new OkHttpClient.Builder()
-                        .addInterceptor(ProgressInterceptor.INSTANCE)
+                        .addInterceptor(new ProgressInterceptor(new ProgressListener() {
+                            @Override
+                            public void onUpload(String tag, long progress, long contentLength, boolean done) {
+                                Log.e("print","onUpload:"+tag+"===progress:"+progress);
+                            }
+
+                            @Override
+                            public void onDownload(String tag, long progress, long contentLength, boolean done) {
+                                Log.e("print","onDownload:"+tag+"===progress:"+progress);
+                            }
+                        }))
                         .build())
                 .addCallAdapterFactory(ExecutorCallAdapterFactory.INSTANCE)
                 .build();

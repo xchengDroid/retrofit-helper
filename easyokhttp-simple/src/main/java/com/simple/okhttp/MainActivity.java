@@ -17,8 +17,6 @@ import com.xcheng.retrofit.Callback2;
 import com.xcheng.retrofit.HttpError;
 import com.xcheng.retrofit.Result;
 import com.xcheng.retrofit.RetrofitManager;
-import com.xcheng.retrofit.progress.ProgressInterceptor;
-import com.xcheng.retrofit.progress.ProgressListener;
 
 import java.io.IOException;
 
@@ -39,35 +37,9 @@ public class MainActivity extends AppCompatActivity {
         imageView = findViewById(R.id.iv_easyokhttp);
 
         btnProgress = findViewById(R.id.btn_progress);
-
-//        OkHttpClient okHttpClient = ProgressManager.getInstance().with(new OkHttpClient.Builder())
-//                .build();
-        //   ProgressManager.getInstance().addResponseListener("", null);
-        ProgressInterceptor.INSTANCE.setExecutor(RetrofitManager.retrofit().callbackExecutor());
-        ProgressInterceptor.INSTANCE.registerListener(new ProgressListener("bitmap", true) {
-            @Override
-            protected void onProgress(long progress, long contentLength, boolean done) {
-                btnProgress.setText(progress / (float) contentLength * 100 + "%");
-            }
-        });
     }
 
     public void json(View view) {
-//        GetRequest getRequest = EasyOkHttp.get("/data/cityinfo/101010100.html").build();
-//        ExecutorCall<Weather> okCall = new ExecutorCall<>(getRequest);
-//        okCall.enqueue(new UICallback<Weather>() {
-//            @Override
-//            public void onError(OkCall<Weather> okCall, EasyError error) {
-//                Toast.makeText(MainActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
-//            }
-//
-//            @Override
-//            public void onSuccess(OkCall<Weather> okCall, Weather response) {
-//                imageView.setVisibility(View.GONE);
-//                webView.setVisibility(View.VISIBLE);
-//                webView.loadData(new Gson().toJson(response), "text/html", "utf-8");
-//            }
-//        });
     }
 
     public void string(View view) {
@@ -113,8 +85,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onError(Call2<ResponseBody> call2, HttpError error) {
                 Toast.makeText(MainActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
-                error.getCause().printStackTrace();
-                error.printStackTrace();
+//                error.getCause().printStackTrace();
+//                error.printStackTrace();
             }
 
             @Override
@@ -127,9 +99,4 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    @Override
-    protected void onDestroy() {
-        ProgressInterceptor.INSTANCE.unregisterAll();
-        super.onDestroy();
-    }
 }
