@@ -12,6 +12,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
 import okhttp3.OkHttpClient;
+import okhttp3.Request;
 import retrofit2.Retrofit;
 
 /**
@@ -28,12 +29,12 @@ public class OKApplication extends Application {
                 .callFactory(new OkHttpClient.Builder()
                         .addInterceptor(new ProgressInterceptor(new ProgressListener() {
                             @Override
-                            public void onUpload(String tag, long progress, long contentLength, boolean done) {
+                            public void onUpload(Request tag, long progress, long contentLength, boolean done) {
                                 Log.e("print","onUpload:"+tag+"===progress:"+progress);
                             }
 
                             @Override
-                            public void onDownload(String tag, long progress, long contentLength, boolean done) {
+                            public void onDownload(Request tag, long progress, long contentLength, boolean done) {
                                 Log.e("print","onDownload:"+tag+"===progress:"+progress);
                             }
                         }))
