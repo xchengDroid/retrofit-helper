@@ -1,5 +1,7 @@
 package com.xcheng.retrofit.progress;
 
+import com.xcheng.retrofit.Utils;
+
 import java.io.IOException;
 
 import okhttp3.Interceptor;
@@ -21,6 +23,7 @@ public class ProgressInterceptor implements Interceptor {
     private final ProgressListener mProgressListener;
 
     public ProgressInterceptor(ProgressListener progressListener) {
+        Utils.checkNotNull(progressListener, "progressListener==null");
         this.mProgressListener = progressListener;
     }
 
