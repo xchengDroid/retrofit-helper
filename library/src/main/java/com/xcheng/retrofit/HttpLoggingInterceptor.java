@@ -22,6 +22,8 @@ import org.json.JSONObject;
 import java.io.EOFException;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.Connection;
@@ -50,7 +52,16 @@ import static okhttp3.internal.platform.Platform.INFO;
  */
 public final class HttpLoggingInterceptor implements Interceptor {
     private static final Charset UTF8 = Charset.forName("UTF-8");
-    public final static String LOG_LEVEL = "LogLevel";
+    public static final String LOG_LEVEL = "LogLevel";
+    private static final Map<String, Level> LOG_LEVELS = new LinkedHashMap<>();
+
+    static {
+        //防止代码混淆导致对应关系错误
+        LOG_LEVELS.put("NONE", Level.NONE);
+        LOG_LEVELS.put("BASIC", Level.BASIC);
+        LOG_LEVELS.put("HEADERS", Level.HEADERS);
+        LOG_LEVELS.put("BODY", Level.BODY);
+    }
 
     public enum Level {
         /**
@@ -152,7 +163,7 @@ public final class HttpLoggingInterceptor implements Interceptor {
         //可以单独为某个请求设置日志的级别，避免全局设置的局限性
         String logLevel = request.header(LOG_LEVEL);
         if (logLevel != null) {
-            level = Level.valueOf(logLevel);
+            level = LOG_LEVELS.get(logLevel);
         }
         if (level == Level.NONE) {
             return chain.proceed(request);
