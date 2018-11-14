@@ -150,9 +150,9 @@ public final class HttpLoggingInterceptor implements Interceptor {
         Level level = this.level;
         Request request = chain.request();
         //可以单独为某个请求设置日志的级别，避免全局设置的局限性
-        String logLevelName = request.header(LOG_LEVEL);
-        if (logLevelName != null) {
-            level = Level.valueOf(logLevelName);
+        String logLevel = request.header(LOG_LEVEL);
+        if (logLevel != null) {
+            level = Level.valueOf(logLevel);
         }
         if (level == Level.NONE) {
             return chain.proceed(request);

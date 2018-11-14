@@ -15,6 +15,7 @@ import android.widget.Toast;
 import com.xcheng.retrofit.Call2;
 import com.xcheng.retrofit.Callback2;
 import com.xcheng.retrofit.HttpError;
+import com.xcheng.retrofit.HttpLoggingInterceptor;
 import com.xcheng.retrofit.Result;
 import com.xcheng.retrofit.RetrofitManager;
 
@@ -76,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void bitmap(final View view) {
-
+        HttpLoggingInterceptor.Level level = HttpLoggingInterceptor.Level.valueOf("NONE");
         Call2<ResponseBody> call2 = RetrofitManager
                 .create(Service.class)
                 .getBitmap();
