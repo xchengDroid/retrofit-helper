@@ -50,6 +50,7 @@ import static okhttp3.internal.platform.Platform.INFO;
  */
 public final class HttpLoggingInterceptor implements Interceptor {
     private static final Charset UTF8 = Charset.forName("UTF-8");
+    public final static String LOG_LEVEL = "LogLevel";
 
     public enum Level {
         /**
@@ -147,12 +148,15 @@ public final class HttpLoggingInterceptor implements Interceptor {
     @Override
     public Response intercept(Chain chain) throws IOException {
         Level level = this.level;
-
         Request request = chain.request();
+        //可以单独为某个请求设置日志的级别，避免全局设置的局限性
+        String logLevelName = request.header(LOG_LEVEL);
+        if (logLevelName != null) {
+            level = Level.valueOf(logLevelName);
+        }
         if (level == Level.NONE) {
             return chain.proceed(request);
         }
-
         boolean logBody = level == Level.BODY;
         boolean logHeaders = logBody || level == Level.HEADERS;
 
