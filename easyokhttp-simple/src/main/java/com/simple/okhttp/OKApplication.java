@@ -1,18 +1,21 @@
 package com.simple.okhttp;
 
 import android.app.Application;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.orhanobut.logger.AndroidLogAdapter;
+import com.orhanobut.logger.LogStrategy;
+import com.orhanobut.logger.Logger;
+import com.orhanobut.logger.PrettyFormatStrategy;
+import com.simple.converter.GsonConverterFactory;
 import com.xcheng.retrofit.ExecutorCallAdapterFactory;
+import com.xcheng.retrofit.HttpLoggingInterceptor;
 import com.xcheng.retrofit.RetrofitManager;
-import com.xcheng.retrofit.progress.ProgressInterceptor;
-import com.xcheng.retrofit.progress.ProgressListener;
-
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
+import com.xcheng.view.EasyView;
 
 import okhttp3.OkHttpClient;
-import okhttp3.Request;
 import retrofit2.Retrofit;
 
 /**
@@ -24,53 +27,55 @@ public class OKApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://www.weather.com.cn/")
-                .callFactory(new OkHttpClient.Builder()
-                        .addInterceptor(new ProgressInterceptor(new ProgressListener() {
-                            @Override
-                            public void onUpload(Request tag, long progress, long contentLength, boolean done) {
-                                Log.e("print","onUpload:"+tag+"===progress:"+progress);
-                            }
+        EasyView.init(this);
+        Logger.addLogAdapter(new AndroidLogAdapter(PrettyFormatStrategy
+                .newBuilder()
+                .logStrategy(new LogCatStrategy())
+                .tag("OKHTTP_LOG")
+                .methodCount(1).showThreadInfo(false).build()) {
+            @Override
+            public boolean isLoggable(int priority, String tag) {
+                return BuildConfig.DEBUG;
+            }
+        });
 
-                            @Override
-                            public void onDownload(Request tag, long progress, long contentLength, boolean done) {
-                                Log.e("print","onDownload:"+tag+"===progress:"+progress);
-                            }
-                        }))
+
+        HttpLoggingInterceptor httpLoggingInterceptor = new HttpLoggingInterceptor(new HttpLoggingInterceptor.Logger() {
+            @Override
+            public void log(String message) {
+                Logger.d(message);
+            }
+        });
+        httpLoggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+        
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("http://wanandroid.com/")
+                .callFactory(new OkHttpClient.Builder()
+                        .addNetworkInterceptor(httpLoggingInterceptor)
                         .build())
                 .addCallAdapterFactory(ExecutorCallAdapterFactory.INSTANCE)
+                .addConverterFactory(GsonConverterFactory.create())
                 .build();
         RetrofitManager.init(retrofit);
 
-//        Picasso.setSingletonInstance(new Picasso.Builder(this)
-//                // .indicatorsEnabled(true)
-//                .loggingEnabled(true)
-//                .memoryCache(Cache.NONE)
-//                .build());
-//        if (Log.isLoggable("", Log.VERBOSE)) {
-//            logWithTimeAndKey("Decoded from source", startTime);
-//        }
-        try {
-            Class<?> clazz = Class.forName("com.squareup.picasso.Dispatcher");
-            Field nameField = clazz.getDeclaredField("BATCH_DELAY");
+    }
 
-            Field modifiersField = Field.class.getDeclaredField("modifiers"); //①
-            modifiersField.setAccessible(true);
-            modifiersField.setInt(nameField, nameField.getModifiers() & ~Modifier.FINAL); //②
+    public static class LogCatStrategy implements LogStrategy {
 
-            nameField.setAccessible(true); //这个同样不能少，除非上面把 private 也拿掉了，可能还得 public
-            nameField.set(null, 0);
-            Field nameField2 = clazz.getDeclaredField("BATCH_DELAY");
+        @Override
+        public void log(int priority, @Nullable String tag, @NonNull String message) {
+            Log.println(priority, randomKey() + tag, message);
+        }
 
-            //System.out.println(nameField2.get(null).); //输出 Shenzhen
+        private int last;
 
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (NoSuchFieldException e) {
-            e.printStackTrace();
+        private String randomKey() {
+            int random = (int) (10 * Math.random());
+            if (random == last) {
+                random = (random + 1) % 10;
+            }
+            last = random;
+            return String.valueOf(random);
         }
     }
 }

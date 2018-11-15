@@ -10,40 +10,41 @@
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:onClick="json"
-        android:text="easyOKHttp获取json!"
+        android:onClick="login"
+        android:text="登录玩Android!"
         android:textAllCaps="false" />
 
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="wxarticle"
+        android:text="获取公众号列表!"
+        android:textAllCaps="false" />
 
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:onClick="string"
-        android:text="easyOKHttp获取string!"
+        android:onClick="article0"
+        android:text="首页文章列表!"
         android:textAllCaps="false" />
 
     <Button
-        android:id="@+id/btn_progress"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:onClick="bitmap"
-        android:text="easyOKHttp获取Bitmap!"
+        android:onClick="download"
+        android:text="下载抖音apk文件"
         android:textAllCaps="false" />
 
-    <TextView
-        android:id="@+id/tv_easyokhttp"
+    <com.xcheng.view.widget.ProgressView
+        android:id="@+id/progress"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textAllCaps="false" />
+        android:layout_height="30dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="20dp"
+        app:ev_background_color="@color/ev_text_hint"
+        app:ev_max_value="100"
+        app:ev_progress_color="@color/ev_holo_orange_light"
+        app:ev_type="rect" />
 
-    <WebView
-        android:id="@+id/web_easyokhttp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
-    <ImageView
-        android:id="@+id/iv_easyokhttp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAllCaps="false" />
 </LinearLayout>
