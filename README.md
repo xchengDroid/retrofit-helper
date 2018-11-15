@@ -18,7 +18,7 @@
 
 * #### Android Studio
 
-   `compile 'com.xcheng:easyokhttp:1.4.1'`
+   `compile 'com.xcheng:easyokhttp:2.5.0'`
 
 
 ## 配置EasyOkHttp
