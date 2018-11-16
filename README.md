@@ -22,19 +22,19 @@ Retrofit相信很多android开发者都在使用！很多时候我们根据需�
 
 ```
 /**
-* 创建时间：2018/4/8
-* 编写人： chengxin
-* 功能描述：添加重载方法{@link Call2#enqueue(Object, Callback2)}方法
-*/
+ * 创建时间：2018/4/8
+ * 编写人： chengxin
+ * 功能描述：添加重载方法{@link Call2#enqueue(Object, Callback2)}方法
+ */
 public interface Call2<T> extends retrofit2.Call<T> {
-/**
-* @param tag       请求的tag,用于取消请求使用
-* @param callback2 请求的回调
-*/
-void enqueue(@Nullable Object tag, Callback2<T> callback2);
+    /**
+     * @param tag       请求的tag,用于取消请求使用
+     * @param callback2 请求的回调
+     */
+    void enqueue(@Nullable Object tag, Callback2<T> callback2);
 
-@Override
-Call2<T> clone();
+    @Override
+    Call2<T> clone();
 }
 ```
 
@@ -65,92 +65,92 @@ import java.util.concurrent.ConcurrentHashMap;
 import retrofit2.Retrofit;
 
 /**
-* 创建时间：2018/4/3
-* 编写人： chengxin
-* 功能描述：管理全局的Retrofit实例
-*/
+ * 创建时间：2018/4/3
+ * 编写人： chengxin
+ * 功能描述：管理全局的Retrofit实例
+ */
 public final class RetrofitManager {
 
-private static final String TAG = RetrofitManager.class.getSimpleName();
+    private static final String TAG = RetrofitManager.class.getSimpleName();
 
-private static final String LOG_INIT_RETROFIT = "Initialize RetrofitManager with retrofit success";
-private static final String WARNING_RE_INIT_RETROFIT = "Try to initialize RetrofitManager which had already been initialized before";
-private static final String ERROR_NOT_INIT = "RetrofitManager must be init with retrofit before using";
-/**
-* 全局的retrofit对象
-*/
-private static volatile Retrofit sRetrofit;
-/**
-* 缓存不同配置的retrofit集合，如url ,converter等
-*/
-private static final Map<String, Retrofit> sRetrofitsCache = new ConcurrentHashMap<>(2);
+    private static final String LOG_INIT_RETROFIT = "Initialize RetrofitManager with retrofit success";
+    private static final String WARNING_RE_INIT_RETROFIT = "Try to initialize RetrofitManager which had already been initialized before";
+    private static final String ERROR_NOT_INIT = "RetrofitManager must be init with retrofit before using";
+    /**
+     * 全局的retrofit对象
+     */
+    private static volatile Retrofit sRetrofit;
+    /**
+     * 缓存不同配置的retrofit集合，如url ,converter等
+     */
+    private static final Map<String, Retrofit> sRetrofitsCache = new ConcurrentHashMap<>(2);
 
-private RetrofitManager() {
-}
+    private RetrofitManager() {
+    }
 
-/**
-* 初始化全局的Retrofit对象,like Charset#bugLevel,HttpLoggingInterceptor#level,
-* AsyncTask#mStatus,facebook->stetho->LogRedirector#sLogger
-*
-* @param retrofit 全局的Retrofit对象
-*/
-public static void init(Retrofit retrofit) {
-Utils.checkNotNull(retrofit, "retrofit==null");
-if (sRetrofit == null) {
-Log.d(TAG, LOG_INIT_RETROFIT);
-sRetrofit = retrofit;
-} else {
-Log.e(TAG, WARNING_RE_INIT_RETROFIT);
-}
-}
+    /**
+     * 初始化全局的Retrofit对象,like Charset#bugLevel,HttpLoggingInterceptor#level,
+     * AsyncTask#mStatus,facebook->stetho->LogRedirector#sLogger
+     *
+     * @param retrofit 全局的Retrofit对象
+     */
+    public static void init(Retrofit retrofit) {
+        Utils.checkNotNull(retrofit, "retrofit==null");
+        if (sRetrofit == null) {
+            Log.d(TAG, LOG_INIT_RETROFIT);
+            sRetrofit = retrofit;
+        } else {
+            Log.e(TAG, WARNING_RE_INIT_RETROFIT);
+        }
+    }
 
-/**
-* like {@link retrofit2.OkHttpCall#cancel()}
-*
-* @return true if has init
-*/
-public static boolean isInited() {
-//synchronized获得锁时会清空工作内存，从主内存重新获取最新数据
-//同步判断Retrofit是否已经初始化，防止此时正在同步块初始化
-return sRetrofit != null;
-}
+    /**
+     * like {@link retrofit2.OkHttpCall#cancel()}
+     *
+     * @return true if has init
+     */
+    public static boolean isInited() {
+        //synchronized获得锁时会清空工作内存，从主内存重新获取最新数据
+        //同步判断Retrofit是否已经初始化，防止此时正在同步块初始化
+        return sRetrofit != null;
+    }
 
-public static void destroy(boolean isAll) {
-sRetrofit = null;
-if (isAll) {
-sRetrofitsCache.clear();
-}
-}
+    public static void destroy(boolean isAll) {
+        sRetrofit = null;
+        if (isAll) {
+            sRetrofitsCache.clear();
+        }
+    }
 
-public static <T> T create(Class<T> service) {
-return retrofit().create(service);
-}
+    public static <T> T create(Class<T> service) {
+        return retrofit().create(service);
+    }
 
-public static Retrofit retrofit() {
-final Retrofit retrofit = sRetrofit;
-if (retrofit == null) {
-throw new IllegalStateException(ERROR_NOT_INIT);
-}
-return retrofit;
-}
+    public static Retrofit retrofit() {
+        final Retrofit retrofit = sRetrofit;
+        if (retrofit == null) {
+            throw new IllegalStateException(ERROR_NOT_INIT);
+        }
+        return retrofit;
+    }
 
-/**
-* 全局保存不同配置的Retrofit,如不同的baseUrl等
-*
-* @param tag      标记key
-* @param retrofit 对应的retrofit对象
-*/
-public static void put(String tag, Retrofit retrofit) {
-sRetrofitsCache.put(tag, retrofit);
-}
+    /**
+     * 全局保存不同配置的Retrofit,如不同的baseUrl等
+     *
+     * @param tag      标记key
+     * @param retrofit 对应的retrofit对象
+     */
+    public static void put(String tag, Retrofit retrofit) {
+        sRetrofitsCache.put(tag, retrofit);
+    }
 
-public static Retrofit get(String tag) {
-return sRetrofitsCache.get(tag);
-}
+    public static Retrofit get(String tag) {
+        return sRetrofitsCache.get(tag);
+    }
 
-public static void remove(String tag) {
-sRetrofitsCache.remove(tag);
-}
+    public static void remove(String tag) {
+        sRetrofitsCache.remove(tag);
+    }
 }
 ```
 
@@ -174,39 +174,39 @@ import okhttp3.Response;
 import okhttp3.ResponseBody;
 
 /**
-* 创建时间：2018/8/2
-* 编写人： chengxin
-* 功能描述：上传或下载进度监听拦截器
-*/
+ * 创建时间：2018/8/2
+ * 编写人： chengxin
+ * 功能描述：上传或下载进度监听拦截器
+ */
 public class ProgressInterceptor implements Interceptor {
 
-private final ProgressListener mProgressListener;
+    private final ProgressListener mProgressListener;
 
-public ProgressInterceptor(ProgressListener progressListener) {
-Utils.checkNotNull(progressListener, "progressListener==null");
-this.mProgressListener = progressListener;
-}
+    public ProgressInterceptor(ProgressListener progressListener) {
+        Utils.checkNotNull(progressListener, "progressListener==null");
+        this.mProgressListener = progressListener;
+    }
 
-@Override
-public Response intercept(Chain chain) throws IOException {
-Request request = chain.request();
-RequestBody requestBody = request.body();
-//判断是否有上传需求
-if (requestBody != null && requestBody.contentLength() > 0) {
-Request.Builder builder = request.newBuilder();
-RequestBody newRequestBody = new ProgressRequestBody(requestBody, mProgressListener, request);
-request = builder.method(request.method(), newRequestBody).build();
-}
+    @Override
+    public Response intercept(Chain chain) throws IOException {
+        Request request = chain.request();
+        RequestBody requestBody = request.body();
+        //判断是否有上传需求
+        if (requestBody != null && requestBody.contentLength() > 0) {
+            Request.Builder builder = request.newBuilder();
+            RequestBody newRequestBody = new ProgressRequestBody(requestBody, mProgressListener, request);
+            request = builder.method(request.method(), newRequestBody).build();
+        }
 
-Response response = chain.proceed(request);
-ResponseBody responseBody = response.body();
-if (responseBody != null && responseBody.contentLength() > 0) {
-Response.Builder builder = response.newBuilder();
-ResponseBody newResponseBody = new ProgressResponseBody(responseBody, mProgressListener, request);
-response = builder.body(newResponseBody).build();
-}
-return response;
-}
+        Response response = chain.proceed(request);
+        ResponseBody responseBody = response.body();
+        if (responseBody != null && responseBody.contentLength() > 0) {
+            Response.Builder builder = response.newBuilder();
+            ResponseBody newResponseBody = new ProgressResponseBody(responseBody, mProgressListener, request);
+            response = builder.body(newResponseBody).build();
+        }
+        return response;
+    }
 }
 ```
 
@@ -233,88 +233,88 @@ import retrofit2.Call;
 import retrofit2.Response;
 
 /**
-* if {@link Call#cancel()}called {@link #onStart(Call2)}、 {@link #onSuccess(Call2, Object)}、
-* {@link #onError(Call2, HttpError)}、 {@link #onCompleted(Call2)} will not be called
-*
-* @param <T> Successful response body type.
-*/
+ * if {@link Call#cancel()}called {@link #onStart(Call2)}、 {@link #onSuccess(Call2, Object)}、
+ * {@link #onError(Call2, HttpError)}、 {@link #onCompleted(Call2)} will not be called
+ *
+ * @param <T> Successful response body type.
+ */
 @UiThread
 public abstract class Callback2<T> {
 
-@NonNull
-public Result<T> parseResponse(Call2<T> call2, Response<T> response) {
-T body = response.body();
-if (response.isSuccessful()) {
-if (body != null) {
-return Result.success(body);
-} else {
-return Result.error(new HttpError("暂无数据", response));
-}
-}
+    @NonNull
+    public Result<T> parseResponse(Call2<T> call2, Response<T> response) {
+        T body = response.body();
+        if (response.isSuccessful()) {
+            if (body != null) {
+                return Result.success(body);
+            } else {
+                return Result.error(new HttpError("暂无数据", response));
+            }
+        }
 
-final String msg;
-switch (response.code()) {
-case 400:
-msg = "参数错误";
-break;
-case 401:
-msg = "身份未授权";
-break;
-case 403:
-msg = "禁止访问";
-break;
-case 404:
-msg = "地址未找到";
-break;
-default:
-msg = "服务异常";
-}
-return Result.error(new HttpError(msg, response));
-}
+        final String msg;
+        switch (response.code()) {
+            case 400:
+                msg = "参数错误";
+                break;
+            case 401:
+                msg = "身份未授权";
+                break;
+            case 403:
+                msg = "禁止访问";
+                break;
+            case 404:
+                msg = "地址未找到";
+                break;
+            default:
+                msg = "服务异常";
+        }
+        return Result.error(new HttpError(msg, response));
+    }
 
-/**
-* 统一解析Throwable对象转换为HttpError对象。如果为HttpError，
-* 则为{@link retrofit2.Converter#convert(Object)}内抛出的异常
-*
-* @param call2 call
-* @param t     Throwable
-* @return HttpError result
-*/
-@NonNull
-public HttpError parseThrowable(Call2<T> call2, Throwable t) {
-if (t instanceof HttpError) {
-//用于convert函数直接抛出异常接收
-return (HttpError) t;
-} else if (t instanceof UnknownHostException) {
-return new HttpError("网络异常", t);
-} else if (t instanceof ConnectException) {
-return new HttpError("网络异常", t);
-} else if (t instanceof SocketException) {
-return new HttpError("服务异常", t);
-} else if (t instanceof SocketTimeoutException) {
-return new HttpError("响应超时", t);
-} else {
-return new HttpError("请求失败", t);
-}
-}
+    /**
+     * 统一解析Throwable对象转换为HttpError对象。如果为HttpError，
+     * 则为{@link retrofit2.Converter#convert(Object)}内抛出的异常
+     *
+     * @param call2 call
+     * @param t     Throwable
+     * @return HttpError result
+     */
+    @NonNull
+    public HttpError parseThrowable(Call2<T> call2, Throwable t) {
+        if (t instanceof HttpError) {
+            //用于convert函数直接抛出异常接收
+            return (HttpError) t;
+        } else if (t instanceof UnknownHostException) {
+            return new HttpError("网络异常", t);
+        } else if (t instanceof ConnectException) {
+            return new HttpError("网络异常", t);
+        } else if (t instanceof SocketException) {
+            return new HttpError("服务异常", t);
+        } else if (t instanceof SocketTimeoutException) {
+            return new HttpError("响应超时", t);
+        } else {
+            return new HttpError("请求失败", t);
+        }
+    }
 
-public void onStart(Call2<T> call2) {
-}
+    public void onStart(Call2<T> call2) {
+    }
 
-public void onCancel(Call2<T> call2) {
-}
+    public void onCancel(Call2<T> call2) {
+    }
 
-public abstract void onError(Call2<T> call2, HttpError error);
+    public abstract void onError(Call2<T> call2, HttpError error);
 
-public abstract void onSuccess(Call2<T> call2, T response);
+    public abstract void onSuccess(Call2<T> call2, T response);
 
-/**
-* 请求回调全部完成时执行
-*
-* @param call2 Call
-*/
-public void onCompleted(Call2<T> call2) {
-}
+    /**
+     * 请求回调全部完成时执行
+     *
+     * @param call2 Call
+     */
+    public void onCompleted(Call2<T> call2) {
+    }
 }
 ```
 
@@ -324,13 +324,13 @@ public void onCompleted(Call2<T> call2) {
 @NonNull
 @Override
 public HttpError parseThrowable(Call2<T> call2, Throwable t) {
-HttpError filterError;
-if (t instanceof JsonSyntaxException) {
-filterError = new HttpError("解析异常", t);
-} else {
-filterError = super.parseThrowable(call2, t);
-}
-return filterError;
+    HttpError filterError;
+    if (t instanceof JsonSyntaxException) {
+        filterError = new HttpError("解析异常", t);
+    } else {
+        filterError = super.parseThrowable(call2, t);
+    }
+    return filterError;
 }
 ```
 
@@ -340,29 +340,29 @@ return filterError;
 
 ```
 /**
-* 普通的结果提示 ，code=0代表成功
-* Created by chengxin on 2017/9/26.
-*/
+ * 普通的结果提示 ，code=0代表成功
+ * Created by chengxin on 2017/9/26.
+ */
 public class BaseResult<T> {
-private int code = -1;
-private String msg;
-private T data;
+    private int code = -1;
+    private String msg;
+    private T data;
 
-public T getData() {
-return data;
-}
+    public T getData() {
+        return data;
+    }
 
-public int getCode() {
-return code;
-}
+    public int getCode() {
+        return code;
+    }
 
-public String getMsg() {
-return msg;
-}
+    public String getMsg() {
+        return msg;
+    }
 
-public boolean isSuccess() {
-return code == 0;
-}
+    public boolean isSuccess() {
+        return code == 0;
+    }
 }
 ```
 
@@ -390,62 +390,62 @@ import okhttp3.ResponseBody;
 import retrofit2.Converter;
 
 /**
-* 创建时间：2018/4/3
-* 编写人： chengxin
-* 功能描述：json解析相关
-*/
+ * 创建时间：2018/4/3
+ * 编写人： chengxin
+ * 功能描述：json解析相关
+ */
 final class GsonResponseBodyConverter<T> implements Converter<ResponseBody, T> {
-private final Gson gson;
-private final Type type;
+    private final Gson gson;
+    private final Type type;
 
-GsonResponseBodyConverter(Gson gson, Type type) {
-this.type = type;
-this.gson = gson;
-}
+    GsonResponseBodyConverter(Gson gson, Type type) {
+        this.type = type;
+        this.gson = gson;
+    }
 
-@SuppressWarnings("unchecked")
-@Override
-public T convert(@NonNull ResponseBody value) throws IOException {
-String cacheStr = value.string();
-try {
-JSONObject jsonObject = new JSONObject(cacheStr);
-final int code = jsonObject.getInt("errorCode");
-final String msg = jsonObject.getString("errorMsg");
-Tip tip = new Tip(code, msg);
-if (code != 0) {
-throw new HttpError(msg, tip);
-}
-Class<?> rawType = $Gson$Types.getRawType(type);
-if (Tip.class == rawType) {
-return (T) tip;
-}
-Object data = jsonObject.get("data");
-if (data == JSONObject.NULL) {
-//in case
-throw new HttpError("暂无数据", tip);
-}
-//如果是String 直接返回
-if (String.class == rawType) {
-return (T) data.toString();
-}
-//data 为Boolean 如{"msg": "手机号格式错误","code": 0,"data": false}
-if (Boolean.class == rawType && data instanceof Boolean) {
-return (T) data;
-}
-//data 为Integer  如{"msg": "手机号格式错误","code": 0,"data": 12}
-if (Integer.class == rawType && data instanceof Integer) {
-return (T) data;
-}
-T t = gson.fromJson(data.toString(), type);
-if (t != null) {
-//防止线上接口修改导致反序列化失败奔溃
-return t;
-}
-throw new HttpError("数据异常", tip);
-} catch (JSONException e) {
-throw new HttpError("解析异常", cacheStr);
-}
-}
+    @SuppressWarnings("unchecked")
+    @Override
+    public T convert(@NonNull ResponseBody value) throws IOException {
+        String cacheStr = value.string();
+        try {
+            JSONObject jsonObject = new JSONObject(cacheStr);
+            final int code = jsonObject.getInt("errorCode");
+            final String msg = jsonObject.getString("errorMsg");
+            Tip tip = new Tip(code, msg);
+            if (code != 0) {
+                throw new HttpError(msg, tip);
+            }
+            Class<?> rawType = $Gson$Types.getRawType(type);
+            if (Tip.class == rawType) {
+                return (T) tip;
+            }
+            Object data = jsonObject.get("data");
+            if (data == JSONObject.NULL) {
+                //in case
+                throw new HttpError("暂无数据", tip);
+            }
+            //如果是String 直接返回
+            if (String.class == rawType) {
+                return (T) data.toString();
+            }
+            //data 为Boolean 如{"msg": "手机号格式错误","code": 0,"data": false}
+            if (Boolean.class == rawType && data instanceof Boolean) {
+                return (T) data;
+            }
+            //data 为Integer  如{"msg": "手机号格式错误","code": 0,"data": 12}
+            if (Integer.class == rawType && data instanceof Integer) {
+                return (T) data;
+            }
+            T t = gson.fromJson(data.toString(), type);
+            if (t != null) {
+                //防止线上接口修改导致反序列化失败奔溃
+                return t;
+            }
+            throw new HttpError("数据异常", tip);
+        } catch (JSONException e) {
+            throw new HttpError("解析异常", cacheStr);
+        }
+    }
 }
 ```
 
@@ -457,58 +457,58 @@ package com.xcheng.retrofit;
 import android.support.annotation.Nullable;
 
 /**
-* 通用的错误信息，一般请求是失败只需要弹出一些错误信息即可,like{@link retrofit2.HttpException}
-* Created by chengxin on 2017/6/22.
-*/
+ * 通用的错误信息，一般请求是失败只需要弹出一些错误信息即可,like{@link retrofit2.HttpException}
+ * Created by chengxin on 2017/6/22.
+ */
 public final class HttpError extends RuntimeException {
-private static final long serialVersionUID = -134024482758434333L;
-/**
-* 展示在前端的错误描述信息
-*/
-public String msg;
+    private static final long serialVersionUID = -134024482758434333L;
+    /**
+     * 展示在前端的错误描述信息
+     */
+    public String msg;
 
-/**
-* <p>
-* 请求失败保存失败信息,for example:
-* <li>BusiModel: {code:xxx,msg:xxx} 业务错误信息</li>
-* <li>original json:  原始的json</li>
-* <li>{@link retrofit2.Response}:错误响应体->Response<?></li>
-* <li>Throwable: 抛出的异常信息</li>
-* </p>
-*/
-@Nullable
-public final transient Object body;
+    /**
+     * <p>
+     * 请求失败保存失败信息,for example:
+     * <li>BusiModel: {code:xxx,msg:xxx} 业务错误信息</li>
+     * <li>original json:  原始的json</li>
+     * <li>{@link retrofit2.Response}:错误响应体->Response<?></li>
+     * <li>Throwable: 抛出的异常信息</li>
+     * </p>
+     */
+    @Nullable
+    public final transient Object body;
 
-public HttpError(String msg) {
-this(msg, null);
-}
+    public HttpError(String msg) {
+        this(msg, null);
+    }
 
-public HttpError(String msg, @Nullable Object body) {
-super(msg);
-if (body instanceof Throwable) {
-initCause((Throwable) body);
-}
-//FastPrintWriter#print(String str)
-this.msg = msg != null ? msg : "null";
-this.body = body;
-}
+    public HttpError(String msg, @Nullable Object body) {
+        super(msg);
+        if (body instanceof Throwable) {
+            initCause((Throwable) body);
+        }
+        //FastPrintWriter#print(String str)
+        this.msg = msg != null ? msg : "null";
+        this.body = body;
+    }
 
-/**
-* 保证和msg一致
-*/
-@Override
-public String getMessage() {
-return msg;
-}
+    /**
+     * 保证和msg一致
+     */
+    @Override
+    public String getMessage() {
+        return msg;
+    }
 
-@Override
-public String toString() {
-return "HttpError {msg="
-+ msg
-+ ", body="
-+ body
-+ '}';
-}
+    @Override
+    public String toString() {
+        return "HttpError {msg="
+                + msg
+                + ", body="
+                + body
+                + '}';
+    }
 }
 ```
 
