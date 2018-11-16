@@ -5,7 +5,7 @@ package com.simple.entity;
  * Created by chengxin on 2017/9/26.
  */
 public class BaseResult<T> {
-    private int code = -1;
+    private int code;
     private String msg;
     private T data;
 

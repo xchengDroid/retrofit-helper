@@ -32,6 +32,7 @@ public interface ApiService {
     @GET("article/list/0/json")
     Call2<List<Article>> getArticle0();
 
+    //下载文件
     @GET("http://shouji.360tpcdn.com/181115/4dc46bd86bef036da927bc59680f514f/com.ss.android.ugc.aweme_330.apk")
     Call2<File> loadDouYinApk();
 }
