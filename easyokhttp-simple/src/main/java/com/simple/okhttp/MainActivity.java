@@ -116,11 +116,12 @@ public class MainActivity extends EasyActivity {
                 });
     }
 
+    static final String TAG_LOAD_APK = "loadApk";
 
     public void download(View view) {
         final Button button = (Button) view;
         if (button.getText().equals("取消下载")) {
-            CallManager.getInstance().cancel("loadApk");
+            CallManager.getInstance().cancel(TAG_LOAD_APK);
             return;
         }
 
@@ -138,7 +139,7 @@ public class MainActivity extends EasyActivity {
 
         retrofit.create(ApiService.class)
                 .loadDouYinApk()
-                .enqueue("loadApk", new Callback2<File>() {
+                .enqueue(TAG_LOAD_APK, new Callback2<File>() {
                     @Override
                     public void onStart(Call2<File> call2) {
                         super.onStart(call2);
@@ -197,6 +198,6 @@ public class MainActivity extends EasyActivity {
         // enqueue(tag, callback2) 传入的是对应的hashCode() 即可
         CallManager.getInstance().cancel(hashCode());
         //取消下载文件
-        CallManager.getInstance().cancel("loadApk");
+        CallManager.getInstance().cancel(TAG_LOAD_APK);
     }
 }
