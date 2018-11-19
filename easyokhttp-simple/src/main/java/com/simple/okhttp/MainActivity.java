@@ -53,63 +53,67 @@ public class MainActivity extends EasyActivity {
 
     public void login(View view) {
         RetrofitManager.create(ApiService.class)
-                .getLogin("singleman", "123456").enqueue(hashCode(), new AnimCallback<LoginInfo>(this) {
-            @Override
-            public void onError(Call2<LoginInfo> call2, HttpError error) {
-                Toast.makeText(MainActivity.this, error.msg, Toast.LENGTH_SHORT).show();
-            }
+                .getLogin("singleman", "123456")
+                .enqueue(hashCode(), new AnimCallback<LoginInfo>(this) {
+                    @Override
+                    public void onError(Call2<LoginInfo> call2, HttpError error) {
+                        Toast.makeText(MainActivity.this, error.msg, Toast.LENGTH_SHORT).show();
+                    }
 
-            @Override
-            public void onSuccess(Call2<LoginInfo> call2, LoginInfo response) {
-                Toast.makeText(MainActivity.this, "登录成功", Toast.LENGTH_SHORT).show();
-            }
-        });
+                    @Override
+                    public void onSuccess(Call2<LoginInfo> call2, LoginInfo response) {
+                        Toast.makeText(MainActivity.this, "登录成功", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     public void wxarticle(View view) {
         RetrofitManager.create(ApiService.class)
-                .getWXarticle().enqueue(hashCode(), new AnimCallback<List<WXArticle>>(this) {
-            @Override
-            public void onError(Call2<List<WXArticle>> call2, HttpError error) {
-                Toast.makeText(MainActivity.this, error.msg, Toast.LENGTH_SHORT).show();
-            }
+                .getWXarticle()
+                .enqueue(hashCode(), new AnimCallback<List<WXArticle>>(this) {
+                    @Override
+                    public void onError(Call2<List<WXArticle>> call2, HttpError error) {
+                        Toast.makeText(MainActivity.this, error.msg, Toast.LENGTH_SHORT).show();
+                    }
 
-            @Override
-            public void onSuccess(Call2<List<WXArticle>> call2, List<WXArticle> response) {
-                Toast.makeText(MainActivity.this, "获取公众号列表成功", Toast.LENGTH_SHORT).show();
+                    @Override
+                    public void onSuccess(Call2<List<WXArticle>> call2, List<WXArticle> response) {
+                        Toast.makeText(MainActivity.this, "获取公众号列表成功", Toast.LENGTH_SHORT).show();
 
-            }
-        });
+                    }
+                });
     }
 
     public void article0(View view) {
         RetrofitManager.create(ApiService.class)
-                .getArticle0().enqueue(hashCode(), new AnimCallback<List<Article>>(this) {
-            @Override
-            public void onError(Call2<List<Article>> call2, HttpError error) {
-                Toast.makeText(MainActivity.this, error.msg, Toast.LENGTH_SHORT).show();
-            }
+                .getArticle0()
+                .enqueue(hashCode(), new AnimCallback<List<Article>>(this) {
+                    @Override
+                    public void onError(Call2<List<Article>> call2, HttpError error) {
+                        Toast.makeText(MainActivity.this, error.msg, Toast.LENGTH_SHORT).show();
+                    }
 
-            @Override
-            public void onSuccess(Call2<List<Article>> call2, List<Article> response) {
-                Toast.makeText(MainActivity.this, "获取首页列表成功", Toast.LENGTH_SHORT).show();
-            }
-        });
+                    @Override
+                    public void onSuccess(Call2<List<Article>> call2, List<Article> response) {
+                        Toast.makeText(MainActivity.this, "获取首页列表成功", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     public void progress(View view) {
         RetrofitManager.create(ApiService.class)
-                .getArticle0().enqueue(hashCode(), new AnimCallback<List<Article>>(this) {
-            @Override
-            public void onError(Call2<List<Article>> call2, HttpError error) {
-                Toast.makeText(MainActivity.this, error.msg, Toast.LENGTH_SHORT).show();
-            }
+                .getArticle0()
+                .enqueue(hashCode(), new AnimCallback<List<Article>>(this) {
+                    @Override
+                    public void onError(Call2<List<Article>> call2, HttpError error) {
+                        Toast.makeText(MainActivity.this, error.msg, Toast.LENGTH_SHORT).show();
+                    }
 
-            @Override
-            public void onSuccess(Call2<List<Article>> call2, List<Article> response) {
-                Toast.makeText(MainActivity.this, "获取首页列表成功", Toast.LENGTH_SHORT).show();
-            }
-        });
+                    @Override
+                    public void onSuccess(Call2<List<Article>> call2, List<Article> response) {
+                        Toast.makeText(MainActivity.this, "获取首页列表成功", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
 
@@ -133,37 +137,38 @@ public class MainActivity extends EasyActivity {
                 .build();
 
         retrofit.create(ApiService.class)
-                .loadDouYinApk().enqueue("loadApk", new Callback2<File>() {
-            @Override
-            public void onStart(Call2<File> call2) {
-                super.onStart(call2);
-                button.setText("取消下载");
-            }
+                .loadDouYinApk()
+                .enqueue("loadApk", new Callback2<File>() {
+                    @Override
+                    public void onStart(Call2<File> call2) {
+                        super.onStart(call2);
+                        button.setText("取消下载");
+                    }
 
-            @Override
-            public void onError(Call2<File> call2, HttpError error) {
-                progressView.setProgress(0);
-                Toast.makeText(MainActivity.this, error.msg, Toast.LENGTH_SHORT).show();
-            }
+                    @Override
+                    public void onError(Call2<File> call2, HttpError error) {
+                        progressView.setProgress(0);
+                        Toast.makeText(MainActivity.this, error.msg, Toast.LENGTH_SHORT).show();
+                    }
 
-            @Override
-            public void onSuccess(Call2<File> call2, File response) {
+                    @Override
+                    public void onSuccess(Call2<File> call2, File response) {
 
-            }
+                    }
 
-            @Override
-            public void onCancel(Call2<File> call2) {
-                super.onCancel(call2);
-                progressView.setProgress(0);
-                button.setText("下载抖音apk文件");
-            }
+                    @Override
+                    public void onCancel(Call2<File> call2) {
+                        super.onCancel(call2);
+                        progressView.setProgress(0);
+                        button.setText("下载抖音apk文件");
+                    }
 
-            @Override
-            public void onCompleted(Call2<File> call2) {
-                super.onCompleted(call2);
-                button.setText("下载完成");
-            }
-        });
+                    @Override
+                    public void onCompleted(Call2<File> call2) {
+                        super.onCompleted(call2);
+                        button.setText("下载完成");
+                    }
+                });
     }
 
     private ProgressInterceptor getProgressInterceptor() {
@@ -188,6 +193,10 @@ public class MainActivity extends EasyActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        //hashCode() 能保证唯一性，取消当前页面所发起的所有请求，只要
+        // enqueue(tag, callback2) 传入的是对应的hashCode() 即可
         CallManager.getInstance().cancel(hashCode());
+        //取消下载文件
+        CallManager.getInstance().cancel("loadApk");
     }
 }
