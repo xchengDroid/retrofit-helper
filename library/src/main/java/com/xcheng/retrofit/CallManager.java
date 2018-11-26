@@ -57,7 +57,8 @@ public final class CallManager implements ActionManager<Call<?>> {
     }
 
     /**
-     * 取消并移除对应tag的call，确保Call被取消后不再被引用
+     * 取消并移除对应tag的call，确保Call被取消后不再被引用，
+     * 结合{@link #remove(Call)}方法双保险
      *
      * @param tag call对应的tag
      */
