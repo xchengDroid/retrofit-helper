@@ -65,9 +65,12 @@ public final class CallManager implements ActionManager<Call<?>> {
     public synchronized void cancel(final @Nullable Object tag) {
         if (callTags.isEmpty())
             return;
-        for (CallTag callTag : callTags) {
+        for (int index = 0; index < callTags.size(); index++) {
+            CallTag callTag = callTags.get(index);
             if (tag == null || callTag.tag.equals(tag)) {
                 callTag.call.cancel();
+                callTags.remove(index);
+                index--;
             }
         }
     }
