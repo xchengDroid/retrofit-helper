@@ -57,7 +57,7 @@ public final class CallManager implements ActionManager<Call<?>> {
     }
 
     /**
-     * 取消并移除对应tag的call
+     * 取消并移除对应tag的call，确保Call被取消后不再被引用
      *
      * @param tag call对应的tag
      */
@@ -65,13 +65,20 @@ public final class CallManager implements ActionManager<Call<?>> {
     public synchronized void cancel(final @Nullable Object tag) {
         if (callTags.isEmpty())
             return;
-        for (int index = 0; index < callTags.size(); index++) {
-            CallTag callTag = callTags.get(index);
-            if (tag == null || callTag.tag.equals(tag)) {
-                callTag.call.cancel();
-                callTags.remove(index);
-                index--;
+        if (tag != null) {
+            for (int index = 0; index < callTags.size(); index++) {
+                CallTag callTag = callTags.get(index);
+                if (callTag.tag.equals(tag)) {
+                    callTag.call.cancel();
+                    callTags.remove(index);
+                    index--;
+                }
             }
+        } else {
+            for (CallTag callTag : callTags) {
+                callTag.call.cancel();
+            }
+            callTags.clear();
         }
     }
 
