@@ -1,5 +1,7 @@
 package com.xcheng.retrofit;
 
+import android.app.Activity;
+import android.app.Fragment;
 import android.support.annotation.Nullable;
 
 /**
@@ -20,7 +22,8 @@ public interface ActionManager<Action> {
     void remove(Action action);
 
     /**
-     * if tag!=null 取消tag一致的Action, else 取消所有请求
+     * if tag!=null 取消tag一致的Action, else 取消所有请求，
+     * 一般在{@link Activity#onDestroy()} 或者{@link Fragment#onDestroy()}方法中执行
      */
     void cancel(@Nullable Object tag);
 
