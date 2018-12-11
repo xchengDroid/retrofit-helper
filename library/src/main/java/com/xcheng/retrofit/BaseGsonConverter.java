@@ -40,16 +40,18 @@ public abstract class BaseGsonConverter<T> implements Converter<ResponseBody, T>
      * String|Boolean|Integer|Long|Short|Double|Float|Byte
      * <p>
      * if data==null return null
+     * <p>
+     * 重新定义泛型V ，不限制其必须为T，更灵活。
      */
     @Nullable
     @SuppressWarnings("unchecked")
-    protected T convertBaseType(@Nullable Object data) {
+    protected <V> V convertBaseType(@Nullable Object data) {
         //如果是String 直接返回
         if (String.class == rawType && data != null) {
-            return (T) String.valueOf(data);
+            return (V) String.valueOf(data);
         }
         if (Boolean.class == rawType && data instanceof Boolean) {
-            return (T) data;
+            return (V) data;
         }
         if (!(data instanceof Number)) {
             return null;
@@ -76,6 +78,6 @@ public abstract class BaseGsonConverter<T> implements Converter<ResponseBody, T>
         if (Byte.class == rawType) {
             value = number.byteValue();
         }
-        return (T) value;
+        return (V) value;
     }
 }
