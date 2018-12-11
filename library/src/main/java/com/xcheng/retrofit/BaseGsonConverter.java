@@ -54,6 +54,7 @@ public abstract class BaseGsonConverter<T> implements Converter<ResponseBody, T>
         if (!(data instanceof Number)) {
             return null;
         }
+        //防止JSON不是引用我们想要的类型
         Number number = (Number) data;
         if (Integer.class == rawType) {
             return (T) Integer.valueOf(number.intValue());
