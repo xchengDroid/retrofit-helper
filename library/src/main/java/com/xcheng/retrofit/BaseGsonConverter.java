@@ -23,10 +23,6 @@ public abstract class BaseGsonConverter<T> implements Converter<ResponseBody, T>
         this.rawType = rawType;
     }
 
-    protected BaseGsonConverter(Type type) {
-        this(type, ExecutorCallAdapterFactory.getRawType(type));
-    }
-
     /**
      * 是否为空的jsonObject对象
      **/
@@ -45,14 +41,15 @@ public abstract class BaseGsonConverter<T> implements Converter<ResponseBody, T>
      */
     @Nullable
     @SuppressWarnings("unchecked")
-    protected <V> V convertBaseType(@Nullable Object data) {
+    protected static <V> V convertBaseType(@Nullable Object data, Class<?> baseType) {
         //如果是String 直接返回
-        if (String.class == rawType && data != null) {
+        if (String.class == baseType && data != null) {
             return (V) String.valueOf(data);
         }
-        if (Boolean.class == rawType && data instanceof Boolean) {
+        if (Boolean.class == baseType && data instanceof Boolean) {
             return (V) data;
         }
+        //检测是否为装箱类型
         if (!(data instanceof Number)) {
             return null;
         }
@@ -60,22 +57,17 @@ public abstract class BaseGsonConverter<T> implements Converter<ResponseBody, T>
         Number number = (Number) data;
         //赋值时自动装箱
         Number value = null;
-        if (Integer.class == rawType) {
+        if (Integer.class == baseType) {
             value = number.intValue();
-        }
-        if (Long.class == rawType) {
+        } else if (Long.class == baseType) {
             value = number.longValue();
-        }
-        if (Short.class == rawType) {
+        } else if (Short.class == baseType) {
             value = number.shortValue();
-        }
-        if (Double.class == rawType) {
+        } else if (Double.class == baseType) {
             value = number.doubleValue();
-        }
-        if (Float.class == rawType) {
+        } else if (Float.class == baseType) {
             value = number.floatValue();
-        }
-        if (Byte.class == rawType) {
+        } else if (Byte.class == baseType) {
             value = number.byteValue();
         }
         return (V) value;
