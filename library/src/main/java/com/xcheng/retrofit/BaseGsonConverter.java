@@ -24,10 +24,17 @@ public abstract class BaseGsonConverter<T> implements Converter<ResponseBody, T>
     }
 
     /**
-     * 是否为空的jsonObject对象
+     * 是否为空的jsonObject对象 {}
      **/
     protected static boolean isEmptyJSON(Object data) {
         return data instanceof JSONObject && ((JSONObject) data).length() == 0;
+    }
+
+    /**
+     * 是否为空的{@link JSONObject#NULL}对象
+     **/
+    protected static boolean isNullJSON(Object data) {
+        return data == JSONObject.NULL;
     }
 
     /**
