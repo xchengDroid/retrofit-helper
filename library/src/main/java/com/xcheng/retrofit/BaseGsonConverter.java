@@ -10,7 +10,7 @@ import okhttp3.ResponseBody;
 import retrofit2.Converter;
 
 /**
- * 创建时间：2018/4/3
+ * 创建时间：2018/12/11
  * 编写人： chengxin
  * 功能描述：基础json解析相关
  */
