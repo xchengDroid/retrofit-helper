@@ -25,6 +25,14 @@ public final class ExecutorCallAdapterFactory extends CallAdapter.Factory {
     private ExecutorCallAdapterFactory() {
     }
 
+    /**
+     * Extract the raw class type from {@code type}. For example, the type representing
+     * {@code List<? extends Runnable>} returns {@code List.class}.
+     */
+    public static Class<?> getRawType(Type type) {
+        return CallAdapter.Factory.getRawType(type);
+    }
+
     @Override
     public CallAdapter<?, ?> get(Type returnType, Annotation[] annotations, Retrofit retrofit) {
         if (getRawType(returnType) != Call2.class) {
