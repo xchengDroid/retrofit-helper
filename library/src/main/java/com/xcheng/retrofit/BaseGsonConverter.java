@@ -43,7 +43,7 @@ public abstract class BaseGsonConverter<T> implements Converter<ResponseBody, T>
     @SuppressWarnings("unchecked")
     protected static <V> V convertBaseType(@Nullable Object data, Class<?> baseType) {
         //如果是String 直接返回
-        if (String.class == baseType && data != null) {
+        if (String.class == baseType) {
             return (V) String.valueOf(data);
         }
         if (Boolean.class == baseType && data instanceof Boolean) {
