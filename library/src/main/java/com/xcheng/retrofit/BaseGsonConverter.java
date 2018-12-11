@@ -56,24 +56,26 @@ public abstract class BaseGsonConverter<T> implements Converter<ResponseBody, T>
         }
         //防止JSON不是引用我们想要的类型
         Number number = (Number) data;
+        //赋值时自动装箱
+        Number value = null;
         if (Integer.class == rawType) {
-            return (T) Integer.valueOf(number.intValue());
+            value = number.intValue();
         }
         if (Long.class == rawType) {
-            return (T) Long.valueOf(number.longValue());
+            value = number.longValue();
         }
         if (Short.class == rawType) {
-            return (T) Short.valueOf(number.shortValue());
+            value = number.shortValue();
         }
         if (Double.class == rawType) {
-            return (T) Double.valueOf(number.doubleValue());
+            value = number.doubleValue();
         }
         if (Float.class == rawType) {
-            return (T) Float.valueOf(number.floatValue());
+            value = number.floatValue();
         }
         if (Byte.class == rawType) {
-            return (T) Byte.valueOf(number.byteValue());
+            value = number.byteValue();
         }
-        return null;
+        return (T) value;
     }
 }
