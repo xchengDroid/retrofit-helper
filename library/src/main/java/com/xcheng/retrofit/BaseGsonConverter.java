@@ -84,15 +84,17 @@ public abstract class BaseGsonConverter<T> implements Converter<ResponseBody, T>
      * <p>
      * 子类可重载扩展
      * <p>
-     * if (data == null || baseType == null) return null;
+     * if (data == null) return null;
      * <p>
      * 重新定义泛型V ，不限制其必须为T，更灵活。
      */
     @Nullable
     @SuppressWarnings("unchecked")
-    protected static <V> V convertBaseType(@Nullable Object data, @Nullable Class<?> baseType) {
-        if (data == null || baseType == null)
+    protected static <V> V convertBaseType(@Nullable Object data, Class<?> baseType) {
+        Utils.checkNotNull(baseType == null, "baseType==null");
+        if (data == null) {
             return null;
+        }
         //如果是String 直接返回
         if (String.class == baseType) {
             return (V) String.valueOf(data);
