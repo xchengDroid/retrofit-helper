@@ -37,7 +37,7 @@ public abstract class BaseGsonConverter<T> implements Converter<ResponseBody, T>
     /**
      * data 如{"msg": "xxx","code": xxx,"data": xxx}
      * 解析基础装箱类型的参数,子类可重载扩展
-     * String|Boolean|Integer|Long|Short|Double|Float
+     * String|Boolean|Integer|Long|Short|Double|Float|Byte
      * <p>
      * if data==null return null
      */
@@ -45,7 +45,7 @@ public abstract class BaseGsonConverter<T> implements Converter<ResponseBody, T>
     @SuppressWarnings("unchecked")
     protected T convertBaseType(@Nullable Object data) {
         //如果是String 直接返回
-        if (data != null && String.class == rawType) {
+        if (String.class == rawType && data != null) {
             return (T) String.valueOf(data);
         }
         if (Boolean.class == rawType && data instanceof Boolean) {
