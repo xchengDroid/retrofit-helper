@@ -13,6 +13,46 @@ import retrofit2.Converter;
  * 创建时间：2018/12/11
  * 编写人： chengxin
  * 功能描述：基础json解析相关
+ * <p>解析流程如下
+ * <li>1、构造JSONObject jsonObject = new JSONObject(value.string());</li>
+ * <li>2、获取code msg</li>
+ * <li>3、判断code是否为成功码
+ * <pre><code>
+ *      Tip tip = new Tip(code, msg, cacheStr);
+ *      if (code != 0) {
+ *          throw new HttpError(msg, tip);
+ *      }
+ *      if (Tip.class == rawType) {
+ *          return (T) tip;
+ *      }
+ * </code></pre>
+ * <li>4、判断data是否为NULL
+ * <pre><code>
+ *      Object data = jsonObject.get("data");
+ *      if (data == JSONObject.NULL) {
+ *          throw new HttpError("暂无数据", tip);
+ *      }
+ * </code></pre>
+ * <li>5、判断是否为空JSONObject
+ * <pre><code>
+ *   if (isEmptyJSON(data)) {
+ *       throw new HttpError(msg, tip);
+ *   }
+ * </code></pre>
+ * <li>6、检测是否为基础类型数据
+ * <pre><code>
+ *    T t = convertBaseType(data, rawType);
+ *          if (t != null) {
+ *          return t;
+ *    }
+ * </code></pre>
+ * <li>6、解析框架反序列化json
+ * <pre><code>
+ *   t = gson.fromJson(data.toString(), type);
+ *   if (t != null) {
+ *      return t;
+ *   }
+ * </code></pre>
  */
 public abstract class BaseGsonConverter<T> implements Converter<ResponseBody, T> {
     protected final Type type;
