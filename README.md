@@ -14,7 +14,7 @@ Retrofit相信很多android开发者都在使用！很多时候我们根据需�
 
 针对以上问题 ，故做了二次封装。[github EasyOkHttp](https://github.com/xchengDroid/EasyOkHttp) 基于Retrofit的二次封装。解决以上问题
 
-*最新的依赖为 `implementation 'com.xcheng:easyokhttp:2.5.0'`*
+*最新的依赖为 `implementation 'com.xcheng:easyokhttp:2.5.5'`*
 
 **1、发起请求**
 
