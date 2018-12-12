@@ -30,13 +30,13 @@ import retrofit2.Converter;
  * <pre><code>
  *      Object data = jsonObject.get("data");
  *      if (data == JSONObject.NULL) {
- *          throw new HttpError("暂无数据", tip);
+ *          throw new HttpError("数据为空", tip);
  *      }
  * </code></pre>
  * <li>5、判断是否为空JSONObject
  * <pre><code>
  *      if (isEmptyJSON(data)) {
- *         throw new HttpError(msg, tip);
+ *         throw new HttpError("暂无数据", tip);
  *      }
  * </code></pre>
  * <li>6、检测是否为基础类型数据
