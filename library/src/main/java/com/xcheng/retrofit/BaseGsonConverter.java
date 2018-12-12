@@ -35,23 +35,23 @@ import retrofit2.Converter;
  * </code></pre>
  * <li>5、判断是否为空JSONObject
  * <pre><code>
- *   if (isEmptyJSON(data)) {
- *       throw new HttpError(msg, tip);
- *   }
+ *      if (isEmptyJSON(data)) {
+ *         throw new HttpError(msg, tip);
+ *      }
  * </code></pre>
  * <li>6、检测是否为基础类型数据
  * <pre><code>
- *    T t = convertBaseType(data, rawType);
- *    if (t != null) {
- *       return t;
- *    }
+ *      T t = convertBaseType(data, rawType);
+ *      if (t != null) {
+ *         return t;
+ *      }
  * </code></pre>
- * <li>6、解析框架反序列化json
+ * <li>7、解析框架反序列化json
  * <pre><code>
- *   t = gson.fromJson(data.toString(), type);
- *   if (t != null) {
- *      return t;
- *   }
+ *      t = gson.fromJson(data.toString(), type);
+ *      if (t != null) {
+ *         return t;
+ *      }
  * </code></pre>
  */
 public abstract class BaseGsonConverter<T> implements Converter<ResponseBody, T> {
