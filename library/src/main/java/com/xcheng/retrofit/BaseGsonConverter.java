@@ -42,8 +42,8 @@ import retrofit2.Converter;
  * <li>6、检测是否为基础类型数据
  * <pre><code>
  *    T t = convertBaseType(data, rawType);
- *          if (t != null) {
- *          return t;
+ *    if (t != null) {
+ *       return t;
  *    }
  * </code></pre>
  * <li>6、解析框架反序列化json
