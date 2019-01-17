@@ -28,13 +28,16 @@ import retrofit2.Converter;
  * </code></pre>
  * <li>4、判断data是否为NULL
  * <pre><code>
- *      Object data = jsonObject.get("data");
- *      if (data == JSONObject.NULL) {
+ *      //这样判断能防止服务端忽略data字段导致jsonObject.get("data")方法奔溃
+ *      //且能判断为null或JSONObject#NULL的情况
+ *      if (jsonObject.isNull("data")) {
  *          throw new HttpError("数据为空", tip);
  *      }
  * </code></pre>
  * <li>5、判断是否为空JSONObject
  * <pre><code>
+ *
+ *      Object data = jsonObject.get("data");
  *      if (isEmptyJSON(data)) {
  *         throw new HttpError("暂无数据", tip);
  *      }
@@ -68,13 +71,6 @@ public abstract class BaseGsonConverter<T> implements Converter<ResponseBody, T>
      **/
     protected static boolean isEmptyJSON(@Nullable Object data) {
         return data instanceof JSONObject && ((JSONObject) data).length() == 0;
-    }
-
-    /**
-     * 是否为空的{@link JSONObject#NULL} or null对象
-     **/
-    protected static boolean isNullJSON(@Nullable Object data) {
-        return data == null || data == JSONObject.NULL;
     }
 
     /**

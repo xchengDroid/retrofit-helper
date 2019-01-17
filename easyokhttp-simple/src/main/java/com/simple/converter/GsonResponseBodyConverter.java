@@ -44,10 +44,13 @@ final class GsonResponseBodyConverter<T> extends BaseGsonConverter<T> {
             if (Tip.class == rawType) {
                 return (T) tip;
             }
-            Object data = jsonObject.get("data");
-            if (isNullJSON(data)) {
+            //这样判断能防止服务端忽略data字段导致jsonObject.get("data")方法奔溃
+            //且能判断为null或JSONObject#NULL的情况
+            if (jsonObject.isNull("data")) {
                 throw new HttpError("数据为空", tip);
-            } else if (isEmptyJSON(data)) {
+            }
+            Object data = jsonObject.get("data");
+            if (isEmptyJSON(data)) {
                 throw new HttpError("暂无数据", tip);
             }
             //data 基础类型 如{"msg": "xxx","code": xxx,"data": xxx}
