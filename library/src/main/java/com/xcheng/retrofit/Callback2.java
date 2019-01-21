@@ -80,18 +80,19 @@ public abstract class Callback2<T> {
     public void onStart(Call2<T> call2) {
     }
 
-    public void onCancel(Call2<T> call2) {
-    }
-
     public abstract void onError(Call2<T> call2, HttpError error);
 
     public abstract void onSuccess(Call2<T> call2, T response);
 
     /**
-     * 请求回调全部完成时执行
+     * 请求回调全部完成时执行，如果请求被取消了不会调用此函数
      *
      * @param call2 Call
      */
     public void onCompleted(Call2<T> call2) {
     }
+
+    public void onCancel(Call2<T> call2) {
+    }
+
 }
