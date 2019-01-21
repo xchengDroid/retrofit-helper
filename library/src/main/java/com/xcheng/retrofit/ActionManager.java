@@ -27,4 +27,10 @@ public interface ActionManager<Action> {
      */
     void cancel(@Nullable Object tag);
 
+    /**
+     * @param action 是否包含某个Action
+     * @return true 为包含
+     */
+    boolean contains(Action action);
+
 }

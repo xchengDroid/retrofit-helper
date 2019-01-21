@@ -2,6 +2,7 @@ package com.xcheng.retrofit;
 
 import android.support.annotation.GuardedBy;
 import android.support.annotation.Nullable;
+import android.support.annotation.RestrictTo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,6 +43,7 @@ public final class CallManager implements ActionManager<Call<?>> {
      *
      * @param call Retrofit Call
      */
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     @Override
     public synchronized void remove(Call<?> call) {
         if (callTags.isEmpty())
@@ -81,6 +83,16 @@ public final class CallManager implements ActionManager<Call<?>> {
             }
             callTags.clear();
         }
+    }
+
+    @Override
+    public synchronized boolean contains(Call<?> call) {
+        for (CallTag callTag : callTags) {
+            if (call == callTag.call) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

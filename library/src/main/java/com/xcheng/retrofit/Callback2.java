@@ -92,7 +92,10 @@ public abstract class Callback2<T> {
     public void onCompleted(Call2<T> call2) {
     }
 
-    public void onCancel(Call2<T> call2) {
+    /**
+     * @param fromFrame 是否为框架内部调用cancel()方法
+     */
+    public void onCancel(Call2<T> call2, boolean fromFrame) {
     }
 
 }

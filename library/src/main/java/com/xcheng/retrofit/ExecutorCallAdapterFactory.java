@@ -122,7 +122,7 @@ public final class ExecutorCallAdapterFactory extends CallAdapter.Factory {
             try {
                 Utils.checkNotNull(result, "result==null");
                 if (isCanceled()) {
-                    callback2.onCancel(this);
+                    callback2.onCancel(this, CallManager.getInstance().contains(this));
                 } else {
                     if (result.isSuccess()) {
                         callback2.onSuccess(this, result.body());
