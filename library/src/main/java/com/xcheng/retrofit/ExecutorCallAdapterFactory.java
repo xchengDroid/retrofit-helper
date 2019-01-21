@@ -63,6 +63,8 @@ public final class ExecutorCallAdapterFactory extends CallAdapter.Factory {
     static final class ExecutorCallbackCall2<T> implements Call2<T> {
         private final Executor callbackExecutor;
         private final Call<T> delegate;
+        //从OkHttp框架内部取消请求
+        private boolean fromFrame = true;
 
         /**
          * The executor used for {@link Callback} methods on a {@link Call}. This may be {@code null},
@@ -122,7 +124,7 @@ public final class ExecutorCallAdapterFactory extends CallAdapter.Factory {
             try {
                 Utils.checkNotNull(result, "result==null");
                 if (isCanceled()) {
-                    callback2.onCancel(this, CallManager.getInstance().contains(this));
+                    callback2.onCancel(this, fromFrame);
                 } else {
                     if (result.isSuccess()) {
                         callback2.onSuccess(this, result.body());
@@ -149,6 +151,7 @@ public final class ExecutorCallAdapterFactory extends CallAdapter.Factory {
 
         @Override
         public void cancel() {
+            fromFrame = false;
             delegate.cancel();
         }
 
