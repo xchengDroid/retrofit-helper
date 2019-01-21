@@ -81,9 +81,7 @@ public final class ExecutorCallAdapterFactory extends CallAdapter.Factory {
         @Override
         public void enqueue(@Nullable Object tag, final Callback2<T> callback2) {
             Utils.checkNotNull(callback2, "callback2==null");
-            if (tag != null) {
-                CallManager.getInstance().add(this, tag);
-            }
+            CallManager.getInstance().add(this, tag != null ? tag : "NO_TAG");
             callbackExecutor.execute(new Runnable() {
                 @Override
                 public void run() {
