@@ -91,7 +91,7 @@ public final class ExecutorCallAdapterFactory extends CallAdapter.Factory {
                         try {
                             callback2.onStart(ExecutorCallbackCall2.this);
                         } catch (Throwable t) {
-                            callback2.onThrowable(t);
+                            callback2.onThrowable(ExecutorCallbackCall2.this, t);
                         }
                     }
                 }
@@ -143,7 +143,7 @@ public final class ExecutorCallAdapterFactory extends CallAdapter.Factory {
                     callback2.onCompleted(this);
                 }
             } catch (Throwable t) {
-                callback2.onThrowable(t);
+                callback2.onThrowable(this, t);
             } finally {
                 CallManager.getInstance().remove(this);
             }

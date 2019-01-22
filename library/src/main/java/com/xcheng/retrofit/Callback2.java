@@ -103,7 +103,7 @@ public abstract class Callback2<T> {
      *
      * @param t 异常详情
      */
-    public void onThrowable(Throwable t) {
+    public void onThrowable(Call2<T> call2, Throwable t) {
         t.printStackTrace();
     }
 }
