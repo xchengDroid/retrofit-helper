@@ -123,6 +123,10 @@ public final class ExecutorCallAdapterFactory extends CallAdapter.Factory {
         private void callResult(Callback2<T> callback2, Result<T> result) {
             try {
                 Utils.checkNotNull(result, "result==null");
+                // 取消请求可能是外部在Activity#onDestroy() 被调用导致,
+                // 或者为Retrofit、OkHttp内部调用了cancel()方法，
+                // 如果是内部取消了请求，可能需要在onCancel回调方法中做UI的处理，
+                // 具体逻辑交给开发者自行解决
                 if (isCanceled()) {
                     callback2.onCancel(this, fromFrame);
                 } else {

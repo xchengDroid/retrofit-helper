@@ -48,8 +48,6 @@ public final class RetrofitManager {
     }
 
     /**
-     * like {@link retrofit2.OkHttpCall#cancel()}
-     *
      * @return true if has init
      */
     public static boolean isInited() {
