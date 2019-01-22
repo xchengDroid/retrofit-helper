@@ -98,4 +98,13 @@ public abstract class Callback2<T> {
     public void onCancel(Call2<T> call2, boolean fromFrame) {
     }
 
+
+    /**
+     * 捕获回调函数抛出的异常
+     *
+     * @param t 异常详情
+     * @return true 代表处理 false 代表未处理
+     */
+    public abstract boolean onThrowable(Throwable t);
+
 }
