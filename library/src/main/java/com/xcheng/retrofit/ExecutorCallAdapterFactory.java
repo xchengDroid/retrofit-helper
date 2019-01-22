@@ -88,7 +88,11 @@ public final class ExecutorCallAdapterFactory extends CallAdapter.Factory {
                 @Override
                 public void run() {
                     if (!isCanceled()) {
-                        callback2.onStart(ExecutorCallbackCall2.this);
+                        try {
+                            callback2.onStart(ExecutorCallbackCall2.this);
+                        } catch (Throwable t) {
+                            callback2.onThrowable(t);
+                        }
                     }
                 }
             });
@@ -121,8 +125,8 @@ public final class ExecutorCallAdapterFactory extends CallAdapter.Factory {
         }
 
         private void callResult(Callback2<T> callback2, Result<T> result) {
+            Utils.checkNotNull(result, "result==null");
             try {
-                Utils.checkNotNull(result, "result==null");
                 // 取消请求可能是外部在Activity#onDestroy() 被调用导致,
                 // 或者为Retrofit、OkHttp内部调用了cancel()方法，
                 // 如果是内部取消了请求，可能需要在onCancel回调方法中做UI的处理，
@@ -138,6 +142,8 @@ public final class ExecutorCallAdapterFactory extends CallAdapter.Factory {
                     //like AsyncTask if canceled ,not call
                     callback2.onCompleted(this);
                 }
+            } catch (Throwable t) {
+                callback2.onThrowable(t);
             } finally {
                 CallManager.getInstance().remove(this);
             }
