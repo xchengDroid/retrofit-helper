@@ -64,7 +64,7 @@ public final class ExecutorCallAdapterFactory extends CallAdapter.Factory {
         private final Executor callbackExecutor;
         private final Call<T> delegate;
         //从OkHttp框架内部取消请求
-        private boolean fromFrame = true;
+        private volatile boolean fromFrame = true;
 
         /**
          * The executor used for {@link Callback} methods on a {@link Call}. This may be {@code null},
