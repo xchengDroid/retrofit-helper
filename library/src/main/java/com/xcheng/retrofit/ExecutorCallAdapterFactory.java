@@ -65,6 +65,9 @@ public final class ExecutorCallAdapterFactory extends CallAdapter.Factory {
         private final Call<T> delegate;
         //从OkHttp框架内部取消请求
         private volatile boolean fromFrame = true;
+        //捕获Callback2回调抛出的异常信息
+        private @Nullable
+        Throwable creationFailure;
 
         /**
          * The executor used for {@link Callback} methods on a {@link Call}. This may be {@code null},
@@ -91,7 +94,7 @@ public final class ExecutorCallAdapterFactory extends CallAdapter.Factory {
                         try {
                             callback2.onStart(ExecutorCallbackCall2.this);
                         } catch (Throwable t) {
-                            callback2.onThrowable(ExecutorCallbackCall2.this, t);
+                            creationFailure = t;
                         }
                     }
                 }
@@ -103,8 +106,14 @@ public final class ExecutorCallAdapterFactory extends CallAdapter.Factory {
                     callbackExecutor.execute(new Runnable() {
                         @Override
                         public void run() {
-                            //放在此处由主线程处理的目的是防止parseResponse异常被捕获无法抛出
-                            Result<T> result = callback2.parseResponse(ExecutorCallbackCall2.this, response);
+                            Result<T> result = null;
+                            if (creationFailure == null) {
+                                try {
+                                    result = callback2.parseResponse(ExecutorCallbackCall2.this, response);
+                                } catch (Throwable t) {
+                                    creationFailure = t;
+                                }
+                            }
                             callResult(callback2, result);
                         }
                     });
@@ -115,8 +124,15 @@ public final class ExecutorCallAdapterFactory extends CallAdapter.Factory {
                     callbackExecutor.execute(new Runnable() {
                         @Override
                         public void run() {
-                            HttpError error = callback2.parseThrowable(ExecutorCallbackCall2.this, t);
-                            Result<T> result = Result.error(error);
+                            Result<T> result = null;
+                            if (creationFailure == null) {
+                                try {
+                                    HttpError error = callback2.parseThrowable(ExecutorCallbackCall2.this, t);
+                                    result = Result.error(error);
+                                } catch (Throwable t) {
+                                    creationFailure = t;
+                                }
+                            }
                             callResult(callback2, result);
                         }
                     });
@@ -124,27 +140,28 @@ public final class ExecutorCallAdapterFactory extends CallAdapter.Factory {
             });
         }
 
-        private void callResult(Callback2<T> callback2, Result<T> result) {
-            Utils.checkNotNull(result, "result==null");
+        private void callResult(Callback2<T> callback2, @Nullable Result<T> result) {
             try {
-                // 取消请求可能是外部在Activity#onDestroy() 被调用导致,
-                // 或者为Retrofit、OkHttp内部调用了cancel()方法，
-                // 如果是内部取消了请求，可能需要在onCancel回调方法中做UI的处理，
-                // 具体逻辑交给开发者自行解决
-                if (isCanceled()) {
-                    callback2.onCancel(this, fromFrame);
-                } else {
-                    if (result.isSuccess()) {
-                        callback2.onSuccess(this, result.body());
+                if (creationFailure == null) {
+                    if (isCanceled()) {
+                        callback2.onCancel(this, fromFrame);
                     } else {
-                        callback2.onError(this, result.error());
+                        Utils.checkNotNull(result, "result==null");
+                        if (result.isSuccess()) {
+                            callback2.onSuccess(this, result.body());
+                        } else {
+                            callback2.onError(this, result.error());
+                        }
+                        //like AsyncTask if canceled ,not call
+                        callback2.onCompleted(this);
                     }
-                    //like AsyncTask if canceled ,not call
-                    callback2.onCompleted(this);
                 }
             } catch (Throwable t) {
-                callback2.onThrowable(this, t);
+                creationFailure = t;
             } finally {
+                if (creationFailure != null) {
+                    callback2.onThrowable(this, creationFailure);
+                }
                 CallManager.getInstance().remove(this);
             }
         }
@@ -161,6 +178,10 @@ public final class ExecutorCallAdapterFactory extends CallAdapter.Factory {
 
         @Override
         public void cancel() {
+            // 取消请求可能是外部在Activity#onDestroy() 被调用导致,
+            // 或者为Retrofit、OkHttp内部调用了cancel()方法，
+            // 如果是内部取消了请求，可能需要在onCancel回调方法中做UI的处理，
+            // 具体逻辑交给开发者自行解决
             fromFrame = false;
             delegate.cancel();
         }
