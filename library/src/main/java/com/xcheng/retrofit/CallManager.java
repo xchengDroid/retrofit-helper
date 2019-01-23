@@ -34,6 +34,7 @@ public final class CallManager implements ActionManager<Call<?>> {
 
     @Override
     public synchronized void add(Call<?> call, Object tag) {
+        Utils.checkState(!contains(call), "Call<?>  " + call + " is already added.");
         callTags.add(new CallTag(call, tag));
     }
 
