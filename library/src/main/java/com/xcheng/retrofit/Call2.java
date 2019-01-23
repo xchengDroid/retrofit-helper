@@ -16,4 +16,9 @@ public interface Call2<T> extends retrofit2.Call<T> {
 
     @Override
     Call2<T> clone();
+
+    /**
+     * @return true代表不是调用Call2#cancel()方法被取消的
+     */
+    boolean cancelledFromFrame();
 }
