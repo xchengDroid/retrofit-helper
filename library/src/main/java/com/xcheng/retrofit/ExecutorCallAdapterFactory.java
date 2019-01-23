@@ -143,10 +143,10 @@ public final class ExecutorCallAdapterFactory extends CallAdapter.Factory {
         private void callResult(Callback2<T> callback2, @Nullable Result<T> result) {
             try {
                 if (creationFailure == null) {
+                    Utils.checkNotNull(result, "result==null");
                     if (isCanceled()) {
                         callback2.onCancel(this, fromFrame);
                     } else {
-                        Utils.checkNotNull(result, "result==null");
                         if (result.isSuccess()) {
                             callback2.onSuccess(this, result.body());
                         } else {
