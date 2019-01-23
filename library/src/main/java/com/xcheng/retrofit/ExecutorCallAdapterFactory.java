@@ -89,7 +89,7 @@ public final class ExecutorCallAdapterFactory extends CallAdapter.Factory {
                 public void run() {
                     if (!isCanceled()) {
                         try {
-                        callback2.onStart(ExecutorCallbackCall2.this);
+                            callback2.onStart(ExecutorCallbackCall2.this);
                         } catch (Throwable t) {
                             callback2.onThrowable(ExecutorCallbackCall2.this, t);
                         }
@@ -183,7 +183,7 @@ public final class ExecutorCallAdapterFactory extends CallAdapter.Factory {
 
         @Override
         public boolean cancelledFromFrame() {
-            return isCanceled() && fromFrame;
+            return fromFrame && isCanceled();
         }
     }
 }
