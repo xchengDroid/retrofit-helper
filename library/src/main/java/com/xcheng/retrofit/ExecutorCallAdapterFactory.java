@@ -107,9 +107,7 @@ public final class ExecutorCallAdapterFactory extends CallAdapter.Factory {
                     callbackExecutor.execute(new Runnable() {
                         @Override
                         public void run() {
-                            Result<T> result = callback2.parseResponse(ExecutorCallbackCall2.this, response);
-                            Utils.checkNotNull(result, "result==null");
-                            callResult(callback2, result);
+                            callResult(callback2, response, null);
                         }
                     });
                 }
@@ -119,9 +117,7 @@ public final class ExecutorCallAdapterFactory extends CallAdapter.Factory {
                     callbackExecutor.execute(new Runnable() {
                         @Override
                         public void run() {
-                            HttpError error = callback2.parseThrowable(ExecutorCallbackCall2.this, t);
-                            Result<T> result = Result.error(error);
-                            callResult(callback2, result);
+                            callResult(callback2, null, t);
                         }
                     });
                 }
@@ -129,13 +125,22 @@ public final class ExecutorCallAdapterFactory extends CallAdapter.Factory {
         }
 
         @MainThread
-        private void callResult(Callback2<T> callback2, Result<T> result) {
+        private void callResult(Callback2<T> callback2, @Nullable Response<T> response, @Nullable Throwable failureThrowable) {
             try {
                 if (creationFailure != null)
                     return;
                 if (isCanceled()) {
-                    callback2.onCancel(this, result, fromFrame);
+                    callback2.onCancel(this, failureThrowable, fromFrame);
                     return;
+                }
+                final Result<T> result;
+                if (response != null) {
+                    result = callback2.parseResponse(ExecutorCallbackCall2.this, response);
+                    Utils.checkNotNull(result, "result==null");
+                } else {
+                    Utils.checkNotNull(failureThrowable, "failureThrowable==null");
+                    HttpError error = callback2.parseThrowable(ExecutorCallbackCall2.this, failureThrowable);
+                    result = Result.error(error);
                 }
                 if (result.isSuccess()) {
                     callback2.onSuccess(this, result.body());
@@ -188,11 +193,6 @@ public final class ExecutorCallAdapterFactory extends CallAdapter.Factory {
         @Override
         public Request request() {
             return delegate.request();
-        }
-
-        @Override
-        public boolean cancelledFromFrame() {
-            return fromFrame && isCanceled();
         }
     }
 }

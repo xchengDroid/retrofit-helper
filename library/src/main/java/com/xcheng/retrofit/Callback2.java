@@ -1,6 +1,7 @@
 package com.xcheng.retrofit;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
 
 import java.net.ConnectException;
@@ -102,9 +103,13 @@ public abstract class Callback2<T> {
     /**
      * called when {@link ExecutorCallAdapterFactory.ExecutorCallbackCall2#isCanceled()} is true
      *
-     * @param fromFrame 是否为框架内部调用cancel()方法
+     * @param failureThrowable 取消请求时可能抛出的异常
+     * @param fromFrame        是否为框架内部调用cancel()方法
      */
-    public void onCancel(Call2<T> call2, Result<T> result, boolean fromFrame) {
+    public void onCancel(Call2<T> call2, @Nullable Throwable failureThrowable, boolean fromFrame) {
+        if (failureThrowable != null) {
+            failureThrowable.printStackTrace();
+        }
     }
 
     /**
