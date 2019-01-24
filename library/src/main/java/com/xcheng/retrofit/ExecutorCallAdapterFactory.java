@@ -1,5 +1,6 @@
 package com.xcheng.retrofit;
 
+import android.support.annotation.MainThread;
 import android.support.annotation.Nullable;
 
 import java.io.IOException;
@@ -106,14 +107,8 @@ public final class ExecutorCallAdapterFactory extends CallAdapter.Factory {
                     callbackExecutor.execute(new Runnable() {
                         @Override
                         public void run() {
-                            Result<T> result = null;
-                            if (creationFailure == null) {
-                                try {
-                                    result = callback2.parseResponse(ExecutorCallbackCall2.this, response);
-                                } catch (Throwable t) {
-                                    creationFailure = t;
-                                }
-                            }
+                            Result<T> result = callback2.parseResponse(ExecutorCallbackCall2.this, response);
+                            Utils.checkNotNull(result, "result==null");
                             callResult(callback2, result);
                         }
                     });
@@ -124,15 +119,8 @@ public final class ExecutorCallAdapterFactory extends CallAdapter.Factory {
                     callbackExecutor.execute(new Runnable() {
                         @Override
                         public void run() {
-                            Result<T> result = null;
-                            if (creationFailure == null) {
-                                try {
-                                    HttpError error = callback2.parseThrowable(ExecutorCallbackCall2.this, t);
-                                    result = Result.error(error);
-                                } catch (Throwable t) {
-                                    creationFailure = t;
-                                }
-                            }
+                            HttpError error = callback2.parseThrowable(ExecutorCallbackCall2.this, t);
+                            Result<T> result = Result.error(error);
                             callResult(callback2, result);
                         }
                     });
@@ -140,22 +128,22 @@ public final class ExecutorCallAdapterFactory extends CallAdapter.Factory {
             });
         }
 
-        private void callResult(Callback2<T> callback2, @Nullable Result<T> result) {
+        @MainThread
+        private void callResult(Callback2<T> callback2, Result<T> result) {
             try {
-                if (creationFailure == null) {
-                    Utils.checkNotNull(result, "result==null");
-                    if (isCanceled()) {
-                        callback2.onCancel(this, fromFrame);
-                    } else {
-                        if (result.isSuccess()) {
-                            callback2.onSuccess(this, result.body());
-                        } else {
-                            callback2.onError(this, result.error());
-                        }
-                        //like AsyncTask if canceled ,not call
-                        callback2.onCompleted(this);
-                    }
+                if (creationFailure != null)
+                    return;
+                if (isCanceled()) {
+                    callback2.onCancel(this, result, fromFrame);
+                    return;
                 }
+                if (result.isSuccess()) {
+                    callback2.onSuccess(this, result.body());
+                } else {
+                    callback2.onError(this, result.error());
+                }
+                //like AsyncTask if canceled ,not call
+                callback2.onCompleted(this);
             } catch (Throwable t) {
                 creationFailure = t;
             } finally {
