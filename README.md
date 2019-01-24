@@ -114,7 +114,7 @@ Retrofit retrofit = RetrofitManager.retrofit()
 
 实现效果如下
 
-![image-20181115174409086](/Users/chengxin/Library/Application Support/typora-user-images/image-20181115174409086.png)
+![image-20181115174409086](https://github.com/xchengDroid/EasyOkHttp/blob/master/screenshots/download.png)
 
 
 
