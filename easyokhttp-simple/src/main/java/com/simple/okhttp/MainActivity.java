@@ -158,8 +158,8 @@ public class MainActivity extends EasyActivity {
                     }
 
                     @Override
-                    public void onCancel(Call2<File> call2, boolean fromFrame) {
-                        super.onCancel(call2, fromFrame);
+                    public void onCancel(Call2<File> call2, @Nullable Throwable failureThrowable, boolean fromFrame) {
+                        super.onCancel(call2, failureThrowable, fromFrame);
                         progressView.setProgress(0);
                         button.setText("下载抖音apk文件");
                     }

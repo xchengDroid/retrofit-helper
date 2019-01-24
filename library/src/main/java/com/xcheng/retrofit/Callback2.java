@@ -13,14 +13,14 @@ import retrofit2.Call;
 import retrofit2.Response;
 
 /**
- * if {@link Call#cancel()}called {@link #onStart(Call2)}、 {@link #onSuccess(Call2, Object)}、
+ * if {@link Call#cancel()}called, {@link #onStart(Call2)}、{@link #parseResponse(Call2, Response)}、
+ * {@link #parseThrowable(Call2, Throwable)}、{@link #onSuccess(Call2, Object)}、
  * {@link #onError(Call2, HttpError)}、 {@link #onCompleted(Call2)} will not be called
  *
  * @param <T> Successful response body type.
  */
 @UiThread
 public abstract class Callback2<T> {
-
     @NonNull
     public Result<T> parseResponse(Call2<T> call2, Response<T> response) {
         T body = response.body();
@@ -78,31 +78,17 @@ public abstract class Callback2<T> {
         }
     }
 
-    /**
-     * called when {@link ExecutorCallAdapterFactory.ExecutorCallbackCall2#isCanceled()} is false
-     */
     public void onStart(Call2<T> call2) {
     }
 
-    /**
-     * called when {@link ExecutorCallAdapterFactory.ExecutorCallbackCall2#isCanceled()} is false
-     */
     public abstract void onError(Call2<T> call2, HttpError error);
 
-    /**
-     * called when {@link ExecutorCallAdapterFactory.ExecutorCallbackCall2#isCanceled()} is false
-     */
     public abstract void onSuccess(Call2<T> call2, T response);
 
-    /**
-     * called when {@link ExecutorCallAdapterFactory.ExecutorCallbackCall2#isCanceled()} is false
-     */
     public void onCompleted(Call2<T> call2) {
     }
 
     /**
-     * called when {@link ExecutorCallAdapterFactory.ExecutorCallbackCall2#isCanceled()} is true
-     *
      * @param failureThrowable 取消请求时可能抛出的异常
      * @param fromFrame        是否为框架内部调用cancel()方法
      */
