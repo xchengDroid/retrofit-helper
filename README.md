@@ -53,8 +53,8 @@ Call2<LoginInfo> getLogin(@Field("username") String username, @Field("password")
 
 ```
 RetrofitManager.create(ApiService.class)
-        .getLogin("xxxxx", "123456")
-        .enqueue(hashCode(), new AnimCallback<LoginInfo>(this) {
+        .getLogin("xxxxxx", "123456")
+        .enqueue(yourTag, new AnimCallback<LoginInfo>(this) {
             @Override
             public void onError(Call2<LoginInfo> call2, HttpError error) {
                 Toast.makeText(MainActivity.this, error.msg, Toast.LENGTH_SHORT).show();
@@ -146,8 +146,15 @@ public abstract class Callback2<T> {
 }
 ```
 
+
+
+> 监听请求开始 ，可以显示loading等正在加载的页面
+
+```
+public void onStart(Call2<T> call2) {}
+```
+
 > 将Retrofit onResponse方法传入的response解析成你想要的结果包装成Result<T>对象，返回的 Result类中可存放 body 和error
->
 
 ```
 public Result<T> parseResponse(Call2<T> call2, Response<T> response) {
@@ -162,13 +169,6 @@ public Result<T> parseResponse(Call2<T> call2, Response<T> response) {
 public HttpError parseThrowable(Call2<T> call2, Throwable t) {
         return xxx;
 }
-```
-
-> 监听请求开始 ，可以显示loading等正在加载的页面
->
-
-```
-public void onStart(Call2<T> call2) {}
 ```
 
 > 成功时返回你想要的结果
@@ -209,12 +209,10 @@ public void onThrowable(Call2<T> call2, Throwable t) {}
 在Activity#onDestroy函数或者其他任意地方传入调用 Call2#enqueue(@Nullable Object tag, Callback2<T> callback2) 时的tag即可
 
 ```
-CallManager.getInstance().cancel(youTag);
+CallManager.getInstance().cancel(yourTag);
 ```
 
 欢迎突出疑问和建议！
-
-> [GitHub]: https://github.com/xchengDroid/EasyOkHttp
 
 
 
