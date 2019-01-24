@@ -133,19 +133,19 @@ public final class ExecutorCallAdapterFactory extends CallAdapter.Factory {
                     callback2.onCancel(this, failureThrowable, fromFrame);
                     return;
                 }
-                final Result<T> result;
                 if (response != null) {
-                    result = callback2.parseResponse(ExecutorCallbackCall2.this, response);
+                    Result<T> result = callback2.parseResponse(ExecutorCallbackCall2.this, response);
                     Utils.checkNotNull(result, "result==null");
+                    if (result.isSuccess()) {
+                        callback2.onSuccess(this, result.body());
+                    } else {
+                        callback2.onError(this, result.error());
+                    }
                 } else {
                     Utils.checkNotNull(failureThrowable, "failureThrowable==null");
                     HttpError error = callback2.parseThrowable(ExecutorCallbackCall2.this, failureThrowable);
-                    result = Result.error(error);
-                }
-                if (result.isSuccess()) {
-                    callback2.onSuccess(this, result.body());
-                } else {
-                    callback2.onError(this, result.error());
+                    Utils.checkNotNull(error, "error==null");
+                    callback2.onError(this, error);
                 }
                 //like AsyncTask if canceled ,not call
                 callback2.onCompleted(this);
