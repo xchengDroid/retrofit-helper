@@ -133,6 +133,8 @@ public final class ExecutorCallAdapterFactory extends CallAdapter.Factory {
                     callback2.onCancel(this, failureThrowable, fromFrame);
                     return;
                 }
+
+                //1、获取解析结果
                 Result<T> result;
                 if (response != null) {
                     result = callback2.parseResponse(ExecutorCallbackCall2.this, response);
@@ -142,8 +144,12 @@ public final class ExecutorCallAdapterFactory extends CallAdapter.Factory {
                     HttpError error = callback2.parseThrowable(ExecutorCallbackCall2.this, failureThrowable);
                     result = Result.error(error);
                 }
+
+                //2、转换过滤结果
                 result = callback2.onTransform(result);
                 Utils.checkNotNull(result, "result==null");
+                
+                //3、回调成功失败
                 if (result.isSuccess()) {
                     callback2.onSuccess(this, result.body());
                 } else {
