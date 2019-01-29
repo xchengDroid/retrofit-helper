@@ -146,9 +146,9 @@ public final class ExecutorCallAdapterFactory extends CallAdapter.Factory {
                 }
 
                 //2、转换过滤结果
-                result = callback2.onTransform(result);
+                result = callback2.onTransform(this, result);
                 Utils.checkNotNull(result, "result==null");
-                
+
                 //3、回调成功失败
                 if (result.isSuccess()) {
                     callback2.onSuccess(this, result.body());
