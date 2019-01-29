@@ -21,6 +21,10 @@ import retrofit2.Response;
  */
 @UiThread
 public abstract class Callback2<T> {
+
+    public void onStart(Call2<T> call2) {
+    }
+
     @NonNull
     public Result<T> parseResponse(Call2<T> call2, Response<T> response) {
         T body = response.body();
@@ -78,7 +82,12 @@ public abstract class Callback2<T> {
         }
     }
 
-    public void onStart(Call2<T> call2) {
+    /**
+     * 改变过滤解析结果
+     */
+    @NonNull
+    public Result<T> onTransform(Result<T> result) {
+        return result;
     }
 
     public abstract void onError(Call2<T> call2, HttpError error);
@@ -106,4 +115,6 @@ public abstract class Callback2<T> {
     public void onThrowable(Call2<T> call2, Throwable t) {
         t.printStackTrace();
     }
+
+
 }
