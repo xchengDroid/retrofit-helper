@@ -115,6 +115,4 @@ public abstract class Callback2<T> {
     public void onThrowable(Call2<T> call2, Throwable t) {
         t.printStackTrace();
     }
-
-
 }
