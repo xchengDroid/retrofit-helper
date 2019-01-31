@@ -68,7 +68,7 @@ public final class RetrofitManager {
     }
 
     public static Retrofit retrofit() {
-        //确保多线程的情况下retrofit不为空
+        //确保多线程的情况下retrofit不为空 Charset#atBugLevel(String bl)
         Retrofit retrofit = sRetrofit;
         if (retrofit == null) {
             throw new IllegalStateException(ERROR_NOT_INIT);
