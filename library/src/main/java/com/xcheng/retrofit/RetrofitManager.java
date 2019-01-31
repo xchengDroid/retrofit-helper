@@ -68,7 +68,8 @@ public final class RetrofitManager {
     }
 
     public static Retrofit retrofit() {
-        final Retrofit retrofit = sRetrofit;
+        //确保多线程的情况下retrofit不为空
+        Retrofit retrofit = sRetrofit;
         if (retrofit == null) {
             throw new IllegalStateException(ERROR_NOT_INIT);
         }
