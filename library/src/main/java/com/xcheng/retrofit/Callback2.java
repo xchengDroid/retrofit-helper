@@ -15,7 +15,7 @@ import retrofit2.Response;
 /**
  * if {@link Call#cancel()}called, {@link #onStart(Call2)}、{@link #parseResponse(Call2, Response)}
  * 、{@link #parseThrowable(Call2, Throwable)}、{@link #onSuccess(Call2, Object)}、
- * {@link #onError(Call2, HttpError)}、 {@link #onCompleted(Call2)} will not be called
+ * {@link #onError(Call2, HttpError)}will not be called
  *
  * @param <T> Successful response body type.
  */
