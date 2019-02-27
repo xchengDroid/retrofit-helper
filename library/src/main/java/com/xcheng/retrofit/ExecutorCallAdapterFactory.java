@@ -144,12 +144,7 @@ public final class ExecutorCallAdapterFactory extends CallAdapter.Factory {
                     HttpError error = callback2.parseThrowable(ExecutorCallbackCall2.this, failureThrowable);
                     result = Result.error(error);
                 }
-
-                //2、转换过滤结果
-                result = callback2.onTransform(this, result);
-                Utils.checkNotNull(result, "result==null");
-
-                //3、回调成功失败
+                //2、回调成功失败
                 if (result.isSuccess()) {
                     callback2.onSuccess(this, result.body());
                 } else {

@@ -14,7 +14,7 @@ import retrofit2.Response;
 
 /**
  * if {@link Call#cancel()}called, {@link #onStart(Call2)}、{@link #parseResponse(Call2, Response)}
- * 、{@link #onTransform(Call2, Result)}、{@link #parseThrowable(Call2, Throwable)}、{@link #onSuccess(Call2, Object)}、
+ * 、{@link #parseThrowable(Call2, Throwable)}、{@link #onSuccess(Call2, Object)}、
  * {@link #onError(Call2, HttpError)}、 {@link #onCompleted(Call2)} will not be called
  *
  * @param <T> Successful response body type.
@@ -80,14 +80,6 @@ public abstract class Callback2<T> {
         } else {
             return new HttpError("请求失败", t);
         }
-    }
-
-    /**
-     * 改变过滤解析结果
-     */
-    @NonNull
-    public Result<T> onTransform(Call2<T> call2, Result<T> result) {
-        return result;
     }
 
     public abstract void onError(Call2<T> call2, HttpError error);
