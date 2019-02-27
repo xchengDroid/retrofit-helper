@@ -130,7 +130,7 @@ public final class ExecutorCallAdapterFactory extends CallAdapter.Factory {
                 if (creationFailure != null)
                     return;
                 if (isCanceled()) {
-                    callback2.onCancel(this, failureThrowable, fromFrame);
+                    callback2.onCompleted(this, new Cancel(fromFrame, failureThrowable));
                     return;
                 }
 
@@ -150,8 +150,7 @@ public final class ExecutorCallAdapterFactory extends CallAdapter.Factory {
                 } else {
                     callback2.onError(this, result.error());
                 }
-                //like AsyncTask if canceled ,not call
-                callback2.onCompleted(this);
+                callback2.onCompleted(this, null);
             } catch (Throwable t) {
                 creationFailure = t;
             } finally {

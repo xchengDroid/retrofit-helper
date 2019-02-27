@@ -158,16 +158,14 @@ public class MainActivity extends EasyActivity {
                     }
 
                     @Override
-                    public void onCancel(Call2<File> call2, @Nullable Throwable failureThrowable, boolean fromFrame) {
-                        super.onCancel(call2, failureThrowable, fromFrame);
-                        progressView.setProgress(0);
-                        button.setText("下载抖音apk文件");
-                    }
-
-                    @Override
-                    public void onCompleted(Call2<File> call2) {
-                        super.onCompleted(call2);
-                        button.setText("下载完成");
+                    public void onCompleted(Call2<File> call2, @Nullable Call2.Cancel cancelBean) {
+                        super.onCompleted(call2, cancelBean);
+                        if (cancelBean != null) {
+                            progressView.setProgress(0);
+                            button.setText("下载抖音apk文件");
+                        } else {
+                            button.setText("下载完成");
+                        }
                     }
                 });
     }

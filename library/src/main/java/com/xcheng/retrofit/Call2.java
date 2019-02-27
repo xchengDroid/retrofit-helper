@@ -16,4 +16,21 @@ public interface Call2<T> extends retrofit2.Call<T> {
 
     @Override
     Call2<T> clone();
+
+    /**
+     * 创建时间：2019/2/27
+     * 编写人： chengxin
+     * 功能描述：请求被取消保存取消的信息
+     */
+    final class Cancel {
+        //是否为okhttp框架内部调用cancel()方法
+        public final boolean fromFrame;
+        public final @Nullable
+        Throwable creationFailure;
+
+        public Cancel(boolean fromFrame, @Nullable Throwable creationFailure) {
+            this.fromFrame = fromFrame;
+            this.creationFailure = creationFailure;
+        }
+    }
 }

@@ -86,17 +86,7 @@ public abstract class Callback2<T> {
 
     public abstract void onSuccess(Call2<T> call2, T response);
 
-    public void onCompleted(Call2<T> call2) {
-    }
-
-    /**
-     * @param failureThrowable 取消请求时可能抛出的异常
-     * @param fromFrame        是否为框架内部调用cancel()方法
-     */
-    public void onCancel(Call2<T> call2, @Nullable Throwable failureThrowable, boolean fromFrame) {
-        if (failureThrowable != null) {
-            failureThrowable.printStackTrace();
-        }
+    public void onCompleted(Call2<T> call2, @Nullable Call2.Cancel cancel) {
     }
 
     /**
