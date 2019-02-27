@@ -21,14 +21,12 @@ public abstract class AnimCallback<T> extends Callback2<T> {
 
     @Override
     public void onStart(Call2<T> call2) {
-        super.onStart(call2);
         if (mLoadingView != null)
             mLoadingView.showLoading();
     }
 
     @Override
     public void onCompleted(Call2<T> call2, @Nullable Call2.Cancel cancel) {
-        super.onCompleted(call2, cancel);
         if (mLoadingView != null)
             mLoadingView.hideLoading();
     }

@@ -142,7 +142,6 @@ public class MainActivity extends EasyActivity {
                 .enqueue(TAG_LOAD_APK, new Callback2<File>() {
                     @Override
                     public void onStart(Call2<File> call2) {
-                        super.onStart(call2);
                         button.setText("取消下载");
                     }
 
@@ -159,7 +158,6 @@ public class MainActivity extends EasyActivity {
 
                     @Override
                     public void onCompleted(Call2<File> call2, @Nullable Call2.Cancel cancelBean) {
-                        super.onCompleted(call2, cancelBean);
                         if (cancelBean != null) {
                             progressView.setProgress(0);
                             button.setText("下载抖音apk文件");

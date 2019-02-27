@@ -22,8 +22,7 @@ import retrofit2.Response;
 @UiThread
 public abstract class Callback2<T> {
 
-    public void onStart(Call2<T> call2) {
-    }
+    public abstract void onStart(Call2<T> call2);
 
     @NonNull
     public Result<T> parseResponse(Call2<T> call2, Response<T> response) {
@@ -86,8 +85,7 @@ public abstract class Callback2<T> {
 
     public abstract void onSuccess(Call2<T> call2, T response);
 
-    public void onCompleted(Call2<T> call2, @Nullable Call2.Cancel cancel) {
-    }
+    public abstract void onCompleted(Call2<T> call2, @Nullable Call2.Cancel cancel);
 
     /**
      * 捕获回调函数抛出的异常
