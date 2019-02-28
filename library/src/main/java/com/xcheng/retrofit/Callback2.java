@@ -85,6 +85,9 @@ public abstract class Callback2<T> {
 
     public abstract void onSuccess(Call2<T> call2, T response);
 
+    /**
+     * @param cancel 如果不为null ,则表示请求被取消了
+     */
     public abstract void onCompleted(Call2<T> call2, @Nullable Call2.Cancel cancel);
 
     /**
