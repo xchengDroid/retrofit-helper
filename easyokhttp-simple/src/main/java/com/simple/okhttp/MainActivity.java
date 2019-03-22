@@ -15,7 +15,7 @@ import com.xcheng.retrofit.Call2;
 import com.xcheng.retrofit.CallManager;
 import com.xcheng.retrofit.Callback2;
 import com.xcheng.retrofit.HttpError;
-import com.xcheng.retrofit.RetrofitManager;
+import com.xcheng.retrofit.RetrofitFactory;
 import com.xcheng.retrofit.progress.ProgressInterceptor;
 import com.xcheng.retrofit.progress.ProgressListener;
 import com.xcheng.view.EasyView;
@@ -52,7 +52,7 @@ public class MainActivity extends EasyActivity {
     }
 
     public void login(View view) {
-        RetrofitManager.create(ApiService.class)
+        RetrofitFactory.create(ApiService.class)
                 .getLogin("singleman", "123456")
                 .enqueue(hashCode(), new AnimCallback<LoginInfo>(this) {
                     @Override
@@ -68,7 +68,7 @@ public class MainActivity extends EasyActivity {
     }
 
     public void wxarticle(View view) {
-        RetrofitManager.create(ApiService.class)
+        RetrofitFactory.create(ApiService.class)
                 .getWXarticle()
                 .enqueue(hashCode(), new AnimCallback<List<WXArticle>>(this) {
                     @Override
@@ -85,7 +85,7 @@ public class MainActivity extends EasyActivity {
     }
 
     public void article0(View view) {
-        RetrofitManager.create(ApiService.class)
+        RetrofitFactory.create(ApiService.class)
                 .getArticle0()
                 .enqueue(hashCode(), new AnimCallback<List<Article>>(this) {
                     @Override
@@ -101,7 +101,7 @@ public class MainActivity extends EasyActivity {
     }
 
     public void progress(View view) {
-        RetrofitManager.create(ApiService.class)
+        RetrofitFactory.create(ApiService.class)
                 .getArticle0()
                 .enqueue(hashCode(), new AnimCallback<List<Article>>(this) {
                     @Override
@@ -131,12 +131,11 @@ public class MainActivity extends EasyActivity {
                 .addNetworkInterceptor(getProgressInterceptor()).build();
 
         //构建可以下载文件的client
-        Retrofit retrofit = RetrofitManager.retrofit()
+        Retrofit retrofit = RetrofitFactory.DEFAULT
                 .newBuilder()
                 .callFactory(client)
                 .addConverterFactory(new FileConverterFactory(filePath))
                 .build();
-
         retrofit.create(ApiService.class)
                 .loadDouYinApk()
                 .enqueue(TAG_LOAD_APK, new Callback2<File>() {

@@ -12,6 +12,7 @@ import retrofit2.Retrofit;
  * 编写人： chengxin
  * 功能描述：管理全局的Retrofit实例
  */
+@Deprecated// use RetrofitFactory
 public final class RetrofitManager {
 
     private static final String TAG = RetrofitManager.class.getSimpleName();

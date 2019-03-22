@@ -12,7 +12,7 @@ import com.orhanobut.logger.PrettyFormatStrategy;
 import com.simple.converter.GsonConverterFactory;
 import com.xcheng.retrofit.ExecutorCallAdapterFactory;
 import com.xcheng.retrofit.HttpLoggingInterceptor;
-import com.xcheng.retrofit.RetrofitManager;
+import com.xcheng.retrofit.RetrofitFactory;
 import com.xcheng.view.EasyView;
 
 import okhttp3.OkHttpClient;
@@ -47,17 +47,17 @@ public class OKApplication extends Application {
             }
         });
         httpLoggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-        
+
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://wanandroid.com/")
+                .baseUrl("https://wanandroid.com/")
                 .callFactory(new OkHttpClient.Builder()
                         .addNetworkInterceptor(httpLoggingInterceptor)
                         .build())
                 .addCallAdapterFactory(ExecutorCallAdapterFactory.INSTANCE)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
-        RetrofitManager.init(retrofit);
-
+        //RetrofitManager.init(retrofit);
+        RetrofitFactory.DEFAULT = retrofit;
     }
 
     public static class LogCatStrategy implements LogStrategy {
