@@ -41,7 +41,7 @@ public final class RetrofitFactory {
         Utils.checkNotNull(name, "name == null");
         Retrofit retrofit = OTHERS.get(name);
         if (retrofit == null) {
-            throw new IllegalStateException(String.format("retrofit named with \'%s\' was not found , have you put it in OTHERS", name));
+            throw new IllegalStateException(String.format("retrofit named with \'%s\' was not found , have you put it in OTHERS ?", name));
         }
         return retrofit.create(service);
     }
