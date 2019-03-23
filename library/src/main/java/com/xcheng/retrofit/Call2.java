@@ -28,7 +28,7 @@ public interface Call2<T> extends retrofit2.Call<T> {
         public final @Nullable
         Throwable creationFailure;
 
-        public Cancel(boolean fromFrame, @Nullable Throwable creationFailure) {
+        Cancel(boolean fromFrame, @Nullable Throwable creationFailure) {
             this.fromFrame = fromFrame;
             this.creationFailure = creationFailure;
         }
