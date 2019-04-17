@@ -21,7 +21,7 @@ Retrofit相信很多android开发者都在使用！很多时候我们根据需�
 
 ##### Download
 
-> 最新版本依赖  implementation 'com.xcheng:easyokhttp:2.6.2'
+> 最新版本依赖  implementation 'com.xcheng:easyokhttp:2.6.8'
 
 **1、发起请求**
 
@@ -38,7 +38,7 @@ Retrofit相信很多android开发者都在使用！很多时候我们根据需�
                 //添加自定义json解析器 
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
-  RetrofitManager.init(retrofit);
+  RetrofitFactory.DEFAULT = retrofit;
 ```
 
 定义Service接口
@@ -76,14 +76,10 @@ RetrofitManager.create(ApiService.class)
 在EasyOkhttp中实现的方式比较简单和稳定
 
 ```java
- //先销毁之前的实例
- RetrofitManager.destroy(true);
- //重新设置全局的retrofit实例
- RetrofitManager.init(youRetrofit);
+ RetrofitFactory.DEFAULT = changedRetrofit;
  
  //添加其他的retrofit
- RetrofitManager.put("otherTag",otherRetrofit);
- Retrofit otherRetrofit=RetrofitManager.get("otherTag");
+ RetrofitFactory.OTHERS.put("otherTag",otherRetrofit);
  
 ```
 
@@ -137,10 +133,9 @@ public abstract class Callback2<T> {
 
     public abstract void onSuccess(Call2<T> call2, T response);
 
-    public void onCompleted(Call2<T> call2) {
+    public void onCompleted(Call2<T> call2, @Nullable Call2.Cancel cancel) {
     }
-    public void onCancel(Call2<T> call2, @Nullable Throwable failureThrowable, boolean fromFrame) {}
-    
+ 
     public void onThrowable(Call2<T> call2, Throwable t) {
     }
 }
@@ -184,16 +179,10 @@ public abstract void onSuccess(Call2<T> call2, T response);
 public abstract void onError(Call2<T> call2, HttpError error);
 ```
 
-> 监听正常请求结束 ，可以结束loading等
+> 监听正常请求结束 ，可以结束loading等，如果 cancel！=null 代表请求被取消了
 
 ```java
-public void onCompleted(Call2<T> call2) {}
-```
-
-> 请求被取消时回调
-
-```java
- public void onCancel(Call2<T> call2, @Nullable Throwable failureThrowable, boolean fromFrame) {}
+public void onCompleted(Call2<T> call2, @Nullable Call2.Cancel cancel) {}
 ```
 
 > 以上任意回调函数发生奔溃抛出Throwable，将会调用此函数，避免线上奔溃异常退出
