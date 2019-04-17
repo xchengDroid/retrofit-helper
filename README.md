@@ -52,7 +52,7 @@ Call2<LoginInfo> getLogin(@Field("username") String username, @Field("password")
 发起请求
 
 ```java
-RetrofitManager.create(ApiService.class)
+RetrofitFactory.create(ApiService.class)
         .getLogin("xxxxxx", "123456")
         .enqueue(yourTag, new AnimCallback<LoginInfo>(this) {
             @Override
@@ -101,7 +101,7 @@ OkHttpClient client = new OkHttpClient().newBuilder()
         })).build();
 
 //构建可以下载文件的client
-Retrofit retrofit = RetrofitManager.retrofit()
+Retrofit retrofit = RetrofitManager.DEFAULT
         .newBuilder()
         .callFactory(client)
         .addConverterFactory(new FileConverterFactory(filePath))
