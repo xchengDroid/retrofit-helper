@@ -27,7 +27,7 @@ Retrofit相信很多android开发者都在使用！很多时候我们根据需�
 
 全局初始化
 
-```
+```java
  Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("http://wanandroid.com/")
                 .callFactory(new OkHttpClient.Builder()
@@ -43,7 +43,7 @@ Retrofit相信很多android开发者都在使用！很多时候我们根据需�
 
 定义Service接口
 
-```
+```java
 @FormUrlEncoded
 @POST("user/login")
 Call2<LoginInfo> getLogin(@Field("username") String username, @Field("password") String password);
@@ -51,7 +51,7 @@ Call2<LoginInfo> getLogin(@Field("username") String username, @Field("password")
 
 发起请求
 
-```
+```java
 RetrofitManager.create(ApiService.class)
         .getLogin("xxxxxx", "123456")
         .enqueue(yourTag, new AnimCallback<LoginInfo>(this) {
@@ -75,7 +75,7 @@ RetrofitManager.create(ApiService.class)
 
 在EasyOkhttp中实现的方式比较简单和稳定
 
-```
+```java
  //先销毁之前的实例
  RetrofitManager.destroy(true);
  //重新设置全局的retrofit实例
@@ -91,7 +91,7 @@ RetrofitManager.create(ApiService.class)
 
 通过添加ProgressInterceptor 实现
 
-```
+```java
 //构建可以监听进度的client
 OkHttpClient client = new OkHttpClient().newBuilder()
         .addNetworkInterceptor(new ProgressInterceptor(new ProgressListener() {
@@ -120,7 +120,7 @@ Retrofit retrofit = RetrofitManager.retrofit()
 
 **4、简洁高效的回调接口**
 
-```
+```java
 @UiThread
 public abstract class Callback2<T> {
     @NonNull
@@ -150,13 +150,13 @@ public abstract class Callback2<T> {
 
 > 监听请求开始 ，可以显示loading等正在加载的页面
 
-```
+```java
 public void onStart(Call2<T> call2) {}
 ```
 
 > 将Retrofit onResponse方法传入的response解析成你想要的结果包装成Result<T>对象，返回的 Result类中可存放 body 和error
 
-```
+```java
 public Result<T> parseResponse(Call2<T> call2, Response<T> response) {
         return xxx;
     }
@@ -165,7 +165,7 @@ public Result<T> parseResponse(Call2<T> call2, Response<T> response) {
 > 将Retrofit onFailure方法传入的Throwable 异常包装成你想要的HttpError对象，返回的HttpError类中可存放 msg 和body [你想要传到前端解析详细信息，如session过期啊 未登录等]
 >
 
-```
+```java
 public HttpError parseThrowable(Call2<T> call2, Throwable t) {
         return xxx;
 }
@@ -174,31 +174,31 @@ public HttpError parseThrowable(Call2<T> call2, Throwable t) {
 > 成功时返回你想要的结果
 >
 
-```
+```java
 public abstract void onSuccess(Call2<T> call2, T response);
 ```
 
 > 失败时返回你想要的错误信息
 
-```
+```java
 public abstract void onError(Call2<T> call2, HttpError error);
 ```
 
 > 监听正常请求结束 ，可以结束loading等
 
-```
+```java
 public void onCompleted(Call2<T> call2) {}
 ```
 
 > 请求被取消时回调
 
-```
+```java
  public void onCancel(Call2<T> call2, @Nullable Throwable failureThrowable, boolean fromFrame) {}
 ```
 
 > 以上任意回调函数发生奔溃抛出Throwable，将会调用此函数，避免线上奔溃异常退出
 
-```
+```java
 public void onThrowable(Call2<T> call2, Throwable t) {}
 ```
 
@@ -208,7 +208,7 @@ public void onThrowable(Call2<T> call2, Throwable t) {}
 
 在Activity#onDestroy函数或者其他任意地方传入调用 Call2#enqueue(@Nullable Object tag, Callback2<T> callback2) 时的tag即可
 
-```
+```java
 CallManager.getInstance().cancel(yourTag);
 ```
 
