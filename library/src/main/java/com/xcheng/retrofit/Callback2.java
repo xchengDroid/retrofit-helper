@@ -89,13 +89,4 @@ public abstract class Callback2<T> {
      * @param cancel 如果不为null ,则表示请求被取消了
      */
     public abstract void onCompleted(Call2<T> call2, @Nullable Call2.Cancel cancel);
-
-    /**
-     * 捕获回调函数抛出的异常
-     *
-     * @param t 异常详情
-     */
-    public void onThrowable(Call2<T> call2, Throwable t) {
-        t.printStackTrace();
-    }
 }

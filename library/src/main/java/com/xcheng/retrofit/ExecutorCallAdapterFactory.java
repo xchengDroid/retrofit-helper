@@ -64,11 +64,7 @@ public final class ExecutorCallAdapterFactory extends CallAdapter.Factory {
     static final class ExecutorCallbackCall2<T> implements Call2<T> {
         private final Executor callbackExecutor;
         private final Call<T> delegate;
-        //从OkHttp框架内部取消请求
-        private volatile boolean fromFrame = true;
-        //捕获Callback2回调抛出的异常信息
-        private @Nullable
-        Throwable creationFailure;
+        private volatile boolean byCall2;
 
         /**
          * The executor used for {@link Callback} methods on a {@link Call}. This may be {@code null},
@@ -92,11 +88,7 @@ public final class ExecutorCallAdapterFactory extends CallAdapter.Factory {
                 @Override
                 public void run() {
                     if (!isCanceled()) {
-                        try {
-                            callback2.onStart(ExecutorCallbackCall2.this);
-                        } catch (Throwable t) {
-                            creationFailure = t;
-                        }
+                        callback2.onStart(ExecutorCallbackCall2.this);
                     }
                 }
             });
@@ -127,10 +119,8 @@ public final class ExecutorCallAdapterFactory extends CallAdapter.Factory {
         @MainThread
         private void callResult(Callback2<T> callback2, @Nullable Response<T> response, @Nullable Throwable failureThrowable) {
             try {
-                if (creationFailure != null)
-                    return;
                 if (isCanceled()) {
-                    callback2.onCompleted(this, new Cancel(fromFrame, failureThrowable));
+                    callback2.onCompleted(this, new Cancel(byCall2, failureThrowable));
                     return;
                 }
 
@@ -151,12 +141,7 @@ public final class ExecutorCallAdapterFactory extends CallAdapter.Factory {
                     callback2.onError(this, result.error());
                 }
                 callback2.onCompleted(this, null);
-            } catch (Throwable t) {
-                creationFailure = t;
             } finally {
-                if (creationFailure != null) {
-                    callback2.onThrowable(this, creationFailure);
-                }
                 CallManager.getInstance().remove(this);
             }
         }
@@ -177,7 +162,7 @@ public final class ExecutorCallAdapterFactory extends CallAdapter.Factory {
             // 或者为Retrofit、OkHttp内部调用了cancel()方法，
             // 如果是内部取消了请求，可能需要在onCancel回调方法中做UI的处理，
             // 具体逻辑交给开发者自行解决
-            fromFrame = false;
+            byCall2 = true;
             delegate.cancel();
         }
 
