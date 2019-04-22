@@ -26,8 +26,8 @@ public abstract class AnimCallback<T> extends Callback2<T> {
     }
 
     @Override
-    public void onCompleted(Call2<T> call2, @Nullable Call2.Cancel cancel) {
-        if (cancel != null && cancel.byCall2)
+    public void onCompleted(Call2<T> call2, boolean canceled) {
+        if (canceled)
             return;
         if (mLoadingView != null)
             mLoadingView.hideLoading();
