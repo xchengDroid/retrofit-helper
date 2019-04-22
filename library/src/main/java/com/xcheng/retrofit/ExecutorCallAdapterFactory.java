@@ -64,7 +64,6 @@ public final class ExecutorCallAdapterFactory extends CallAdapter.Factory {
     static final class ExecutorCallbackCall2<T> implements Call2<T> {
         private final Executor callbackExecutor;
         private final Call<T> delegate;
-        private volatile boolean byCall2;
 
         /**
          * The executor used for {@link Callback} methods on a {@link Call}. This may be {@code null},
@@ -119,28 +118,25 @@ public final class ExecutorCallAdapterFactory extends CallAdapter.Factory {
         @MainThread
         private void callResult(Callback2<T> callback2, @Nullable Response<T> response, @Nullable Throwable failureThrowable) {
             try {
-                if (isCanceled()) {
-                    callback2.onCompleted(this, new Cancel(byCall2, failureThrowable));
-                    return;
+                if (!isCanceled()) {
+                    //1、获取解析结果
+                    Result<T> result;
+                    if (response != null) {
+                        result = callback2.parseResponse(this, response);
+                        Utils.checkNotNull(result, "result==null");
+                    } else {
+                        Utils.checkNotNull(failureThrowable, "failureThrowable==null");
+                        HttpError error = callback2.parseThrowable(this, failureThrowable);
+                        result = Result.error(error);
+                    }
+                    //2、回调成功失败
+                    if (result.isSuccess()) {
+                        callback2.onSuccess(this, result.body());
+                    } else {
+                        callback2.onError(this, result.error());
+                    }
                 }
-
-                //1、获取解析结果
-                Result<T> result;
-                if (response != null) {
-                    result = callback2.parseResponse(ExecutorCallbackCall2.this, response);
-                    Utils.checkNotNull(result, "result==null");
-                } else {
-                    Utils.checkNotNull(failureThrowable, "failureThrowable==null");
-                    HttpError error = callback2.parseThrowable(ExecutorCallbackCall2.this, failureThrowable);
-                    result = Result.error(error);
-                }
-                //2、回调成功失败
-                if (result.isSuccess()) {
-                    callback2.onSuccess(this, result.body());
-                } else {
-                    callback2.onError(this, result.error());
-                }
-                callback2.onCompleted(this, null);
+                callback2.onCompleted(this, isCanceled());
             } finally {
                 CallManager.getInstance().remove(this);
             }
@@ -158,11 +154,6 @@ public final class ExecutorCallAdapterFactory extends CallAdapter.Factory {
 
         @Override
         public void cancel() {
-            // 取消请求可能是外部在Activity#onDestroy() 被调用导致,
-            // 或者为Retrofit、OkHttp内部调用了cancel()方法，
-            // 如果是内部取消了请求，可能需要在onCancel回调方法中做UI的处理，
-            // 具体逻辑交给开发者自行解决
-            byCall2 = true;
             delegate.cancel();
         }
 
