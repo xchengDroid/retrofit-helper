@@ -1,6 +1,7 @@
 package com.xcheng.retrofit;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
 
 import java.net.ConnectException;
@@ -86,7 +87,8 @@ public abstract class Callback2<T> {
 
 
     /**
+     * @param t        请求失败的错误信息
      * @param canceled 请求是否被取消了
      */
-    public abstract void onCompleted(Call2<T> call2, boolean canceled);
+    public abstract void onCompleted(Call2<T> call2, @Nullable Throwable t, boolean canceled);
 }

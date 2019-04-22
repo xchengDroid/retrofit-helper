@@ -136,7 +136,7 @@ public final class ExecutorCallAdapterFactory extends CallAdapter.Factory {
                         callback2.onError(this, result.error());
                     }
                 }
-                callback2.onCompleted(this, isCanceled());
+                callback2.onCompleted(this, failureThrowable, isCanceled());
             } finally {
                 CallManager.getInstance().remove(this);
             }

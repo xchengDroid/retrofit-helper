@@ -156,7 +156,7 @@ public class MainActivity extends EasyActivity {
                     }
 
                     @Override
-                    public void onCompleted(Call2<File> call2, boolean canceled) {
+                    public void onCompleted(Call2<File> call2, @Nullable Throwable t, boolean canceled) {
                         if (canceled) {
                             progressView.setProgress(0);
                             button.setText("下载抖音apk文件");
