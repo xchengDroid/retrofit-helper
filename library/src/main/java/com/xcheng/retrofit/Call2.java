@@ -25,12 +25,13 @@ public interface Call2<T> extends retrofit2.Call<T> {
     final class Cancel {
         //是否为okhttp框架内部调用cancel()方法
         public final boolean fromFrame;
-        public final @Nullable
-        Throwable creationFailure;
+        //请求被取消的时候 可能抛出的异常
+        @Nullable
+        public final Throwable failure;
 
-        Cancel(boolean fromFrame, @Nullable Throwable creationFailure) {
+        Cancel(boolean fromFrame, @Nullable Throwable failure) {
             this.fromFrame = fromFrame;
-            this.creationFailure = creationFailure;
+            this.failure = failure;
         }
     }
 }
