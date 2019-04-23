@@ -1,7 +1,7 @@
 package com.xcheng.retrofit;
 
-import android.support.annotation.MainThread;
 import android.support.annotation.Nullable;
+import android.support.annotation.UiThread;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
@@ -115,7 +115,7 @@ public final class ExecutorCallAdapterFactory extends CallAdapter.Factory {
             });
         }
 
-        @MainThread
+        @UiThread
         private void callResult(Callback2<T> callback2, @Nullable Response<T> response, @Nullable Throwable failureThrowable) {
             try {
                 if (!isCanceled()) {
