@@ -1,1 +1,1 @@
-include ':easyokhttp-simple', ':library'
+include ':sample', ':library'
