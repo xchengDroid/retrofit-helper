@@ -27,6 +27,7 @@ final class GsonResponseBodyConverter<T> extends BaseGsonConverter<T> {
     GsonResponseBodyConverter(Gson gson, Type type) {
         super(type, $Gson$Types.getRawType(type));
         this.gson = gson;
+
     }
 
     @SuppressWarnings("unchecked")
