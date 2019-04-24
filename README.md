@@ -24,7 +24,7 @@
 
 ##### 1. RetrofitFactory 全局管理多个retrofit实例
 
-```
+```java
 public final class RetrofitFactory {
     /**
      * 缓存不同配置的retrofit集合，如不同的url ,converter等
@@ -68,7 +68,7 @@ public final class RetrofitFactory {
 
 ##### 2. Call2接口重载enquene方法，传入tag用以标记当前请求
 
-```
+```java
 /**
  * 创建时间：2018/4/8
  * 编写人： chengxin
@@ -90,7 +90,7 @@ public interface Call2<T> extends retrofit2.Call<T> {
 
 ##### 3. 添加Callback2回调接口，监听请求开始和结束，并二次处理htttp返回的数据，返回给前端需要的数据
 
-```
+```java
 /**
  * if {@link Call#cancel()}called, {@link #onStart(Call2)}、{@link #parseResponse(Call2, Response)}
  * 、{@link #parseThrowable(Call2, Throwable)}、{@link #onSuccess(Call2, Object)}、
@@ -338,7 +338,7 @@ public final class ExecutorCallAdapterFactory extends CallAdapter.Factory {
 
 ##### 5. CallManager 全局管理Call对象
 
-```
+```java
 /**
  * 创建时间：2018/5/31
  * 编写人： chengxin
@@ -649,9 +649,7 @@ Retrofit retrofit = RetrofitManager.DEFAULT
         .build();
 ```
 
-
-
-[retrofit-helper]: https://github.com/xchengDroid/retrofit-helper	"retrofit-helper"
+GitHub地址：[retrofit-helper](https://github.com/xchengDroid/retrofit-helper )
 
 
 
