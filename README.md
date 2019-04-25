@@ -702,14 +702,8 @@
 
   ```
   dependencies {
-      implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation 'com.android.support:appcompat-v7:27.1.1'
-      implementation project(':retrofit-helper')
-      implementation 'com.google.code.gson:gson:2.8.2'
-      implementation "com.xcheng:easyview:2.5.8"
-      implementation "com.orhanobut:logger:2.2.0"
       implementation 'com.xcheng:retrofit-helper:1.0.0'
-  }
+}
   ```
   
   
