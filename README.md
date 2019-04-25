@@ -22,7 +22,7 @@
 
      DEFAULT 静态变量管理默认常用的的retrofit对象，OTHERS 管理其他多个不同配置的retrofit
 
-    ```
+    ```java
     **
      * 创建时间：2018/4/3
      * 编写人： chengxin
@@ -65,7 +65,7 @@
 
     ​	 `enqueue(@Nullable Object tag, Callback2<T> callback2)` 方法传入请求的tag标记此请求，tag标签就是取消请求所需要的
 
-    ```
+    ```java
     /**
      * 创建时间：2018/4/8
      * 编写人： chengxin
@@ -91,7 +91,7 @@
 
     重写`parseThrowable`方法处理各种Throwable
 
-    ```
+    ```java
     @UiThread
     public abstract class Callback2<T> {
     
@@ -175,7 +175,7 @@
 
     ​       HttpError类中有两个成员属性msg 被body，msg是保存错误的描述信息等，body可以保存异常的具体信息或者原始的json等，`onError(Call2<T> call2, HttpError error)`回调方法可以根据body的具体信息做二次处理。
 
-    ```
+    ```java
     /**
      * 通用的错误信息，一般请求是失败只需要弹出一些错误信息即可,like{@link retrofit2.HttpException}
      * Created by chengxin on 2017/6/22.
@@ -238,7 +238,7 @@
 
     处理请求接口方法返回为Call2的请求适配器工厂类
 
-    ```
+    ```java
     public final class ExecutorCallAdapterFactory extends CallAdapter.Factory {
     
         public static final CallAdapter.Factory INSTANCE = new ExecutorCallAdapterFactory();
@@ -287,7 +287,7 @@
 
      装饰者模式代理`OkHttpCall`的所有方法，线程调度处理 `Callback2` 的回调方法在主线程执行
 
-    ```
+    ```java
     final class ExecutorCallbackCall2<T> implements Call2<T> {
         private final Executor callbackExecutor;
         private final Call<T> delegate;
@@ -408,7 +408,7 @@
 
     全局保存所有的请求，添加 、删除请求，取消某个某些匹配tag的请求。可以在Activity 或Fragment的销毁方法中调用`CallManager.getInstance().cancel( yourTag )` 
 
-    ```
+    ```java
     /**
      * 创建时间：2018/5/31
      * 编写人： chengxin
@@ -518,7 +518,7 @@
 
      继承`okhttp3.Interceptor`  ，构造方法中传入`ProgressListener`监听进度
 
-    ```
+    ```java
     /**
      * 创建时间：2018/8/2
      * 编写人： chengxin
@@ -562,7 +562,7 @@
 
     @Headers("LogLevel:NONE") 或 @Headers("LogLevel:BASIC") 或 @Headers("LogLevel:HEADERS") 或@Headers("LogLevel:BODY")
 
-    ```
+    ```java
     @FormUrlEncoded
     @Headers("LogLevel:HEADERS")
     @POST("user/login")
@@ -573,7 +573,7 @@
 
   - 3.1 初始化全局Retrofit对象
 
-    ```
+    ```java
     Retrofit retrofit = new Retrofit.Builder()
                     .baseUrl("http://wanandroid.com/")
                     .callFactory(new OkHttpClient.Builder()
@@ -595,7 +595,7 @@
 
     下面为登录的 post请求
 
-    ```
+    ```java
     @FormUrlEncoded
     @POST("user/login")
     Call2<LoginInfo> getLogin(@Field("username") String username, @Field("password") String password);
@@ -605,7 +605,7 @@
 
     Activity 或者Fragment 可以继承  ILoadingView接口实现开始和结束动画
 
-    ```
+    ```java
     public interface ILoadingView {
         /**
          * 显示加载
@@ -626,7 +626,7 @@
 
     这里重写`parseThrowable`处理一些`Callback2`中为未处理的异常
 
-    ```
+    ```java
     public abstract class AnimCallback<T> extends Callback2<T> {
         private ILoadingView mLoadingView;
     
@@ -664,7 +664,7 @@
 
   - 3.5 发起请求
 
-    ```
+    ```java
     RetrofitFactory.create(ApiService.class)
             .getLogin("xxxxx", "123456")
             .enqueue(hashCode(), new AnimCallback<LoginInfo>(this) {
