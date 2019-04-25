@@ -23,7 +23,7 @@
      DEFAULT 静态变量管理默认常用的的retrofit对象，OTHERS 管理其他多个不同配置的retrofit
 
     ```java
-    **
+    /**
      * 创建时间：2018/4/3
      * 编写人： chengxin
      * 功能描述：管理全局的Retrofit实例
