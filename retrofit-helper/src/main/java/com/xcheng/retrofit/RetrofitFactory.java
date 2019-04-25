@@ -25,12 +25,9 @@ public final class RetrofitFactory {
     }
 
     public static <T> T create(Class<T> service) {
-        //确保多线程的情况下retrofit不为空或者被改变了 Charset#atBugLevel(String bl)
+        //确保多线程的情况下retrofit不为空或者被修改了
         Retrofit retrofit = DEFAULT;
-        //此时由于多线程导致值被修改了不管
-        if (retrofit == null) {
-            throw new IllegalStateException("DEFAULT == null");
-        }
+        Utils.checkState(retrofit != null, "DEFAULT == null");
         return retrofit.create(service);
     }
 
@@ -40,9 +37,8 @@ public final class RetrofitFactory {
     public static <T> T create(String name, Class<T> service) {
         Utils.checkNotNull(name, "name == null");
         Retrofit retrofit = OTHERS.get(name);
-        if (retrofit == null) {
-            throw new IllegalStateException(String.format("retrofit named with \'%s\' was not found , have you put it in OTHERS ?", name));
-        }
+        Utils.checkState(retrofit != null,
+                String.format("retrofit named with '%s' was not found , have you put it in OTHERS ?", name));
         return retrofit.create(service);
     }
 }
