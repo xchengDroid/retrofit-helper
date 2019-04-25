@@ -701,9 +701,11 @@
 - #### 5.下载
 
   ```
-  implementation "com.xcheng:retrofit-helper:1.0.0"
+  dependencies {
+      implementation 'com.xcheng:retrofit-helper:1.0.0'
+}
   ```
-
+  
   GitHub地址：[retrofit-helper](https://github.com/xchengDroid/retrofit-helper)
 
 
