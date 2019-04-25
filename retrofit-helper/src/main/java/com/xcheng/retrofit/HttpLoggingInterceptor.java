@@ -22,8 +22,6 @@ import org.json.JSONObject;
 import java.io.EOFException;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.Connection;
@@ -53,21 +51,12 @@ import static okhttp3.internal.platform.Platform.INFO;
 public final class HttpLoggingInterceptor implements Interceptor {
     private static final Charset UTF8 = Charset.forName("UTF-8");
     public static final String LOG_LEVEL = "LogLevel";
-    private static final Map<String, Level> LOG_LEVELS = new LinkedHashMap<>();
-
-    static {
-        //防止代码混淆导致对应关系错误
-        LOG_LEVELS.put("NONE", Level.NONE);
-        LOG_LEVELS.put("BASIC", Level.BASIC);
-        LOG_LEVELS.put("HEADERS", Level.HEADERS);
-        LOG_LEVELS.put("BODY", Level.BODY);
-    }
 
     public enum Level {
         /**
          * No logs.
          */
-        NONE,
+        NONE("none"),
         /**
          * Logs request and response lines.
          * <p>
@@ -78,7 +67,7 @@ public final class HttpLoggingInterceptor implements Interceptor {
          * <-- 200 OK (22ms, 6-byte body)
          * }</pre>
          */
-        BASIC,
+        BASIC("basic"),
         /**
          * Logs request and response lines and their respective headers.
          * <p>
@@ -96,7 +85,7 @@ public final class HttpLoggingInterceptor implements Interceptor {
          * <-- END HTTP
          * }</pre>
          */
-        HEADERS,
+        HEADERS("headers"),
         /**
          * Logs request and response lines and their respective headers and bodies (if present).
          * <p>
@@ -118,7 +107,13 @@ public final class HttpLoggingInterceptor implements Interceptor {
          * <-- END HTTP
          * }</pre>
          */
-        BODY
+        BODY("body");
+
+        private String text;
+
+        Level(String text) {
+            this.text = text;
+        }
     }
 
     public interface Logger {
@@ -163,7 +158,12 @@ public final class HttpLoggingInterceptor implements Interceptor {
         //可以单独为某个请求设置日志的级别，避免全局设置的局限性
         String logLevel = request.header(LOG_LEVEL);
         if (logLevel != null) {
-            level = LOG_LEVELS.get(logLevel);
+            for (Level l : Level.values()) {
+                if (l.text.equalsIgnoreCase(logLevel)) {
+                    level = l;
+                    break;
+                }
+            }
         }
         if (level == Level.NONE) {
             return chain.proceed(request);
