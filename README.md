@@ -700,14 +700,13 @@
 
 - #### 5.下载
 
-```groovy
-dependencies {
-     implementation 'com.xcheng:retrofit-helper:1.0.0'
-}
-```
+  ```groovy
+  dependencies {
+       implementation 'com.xcheng:retrofit-helper:1.0.0'
+  }
+  ```
 
-
-  github地址: [retrofit-helper](https://github.com/xchengDroid/retrofit-helper)
+​        github地址: [retrofit-helper](https://github.com/xchengDroid/retrofit-helper)
 
   
 
