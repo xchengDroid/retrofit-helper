@@ -701,11 +701,9 @@
 - #### 5.下载
 
   ```
-  dependencies {
-      implementation "com.xcheng:retrofit-helper:1.0.0"
-}
+   implementation 'com.xcheng:retrofit-helper:1.0.0'
   ```
-  
+
   
 
 
