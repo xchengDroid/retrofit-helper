@@ -1,5 +1,6 @@
 package com.xcheng.retrofit;
 
+import android.arch.lifecycle.Lifecycle;
 import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
 
@@ -138,7 +139,12 @@ public final class LifeCallAdapterFactory extends CallAdapter.Factory {
         }
 
         @Override
-        public LifeCall<T> bindLifeCycle() {
+        public LifeCall<T> bindUntilEvent(Lifecycle.Event event) {
+            return null;
+        }
+
+        @Override
+        public LifeCall<T> bindUntilDestroy() {
             return null;
         }
 

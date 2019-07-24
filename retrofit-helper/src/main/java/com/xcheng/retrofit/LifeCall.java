@@ -1,5 +1,7 @@
 package com.xcheng.retrofit;
 
+import android.arch.lifecycle.Lifecycle;
+
 import java.io.IOException;
 
 import okhttp3.Request;
@@ -21,11 +23,14 @@ public interface LifeCall<T> extends Cloneable {
     Response<T> execute() throws IOException;
 
     /**
-     * bind life
+     * bind life {@link android.arch.lifecycle.Lifecycle.Event}
      *
      * @return current instance
      */
-    LifeCall<T> bindLifeCycle();
+    LifeCall<T> bindUntilEvent(Lifecycle.Event event);
+
+
+    LifeCall<T> bindUntilDestroy();
 
     /**
      * Asynchronously send the request and notify {@code callback} of its response or if an error
