@@ -57,12 +57,12 @@ public final class LifeCallAdapterFactory extends CallAdapter.Factory {
 
             @Override
             public LifeCall<Object> adapt(Call<Object> call) {
-                return new LifeCallbackCall2<>(callbackExecutor, call);
+                return new LifeCallbackCall<>(callbackExecutor, call);
             }
         };
     }
 
-    static final class LifeCallbackCall2<T> implements LifeCall<T> {
+    static final class LifeCallbackCall<T> implements LifeCall<T> {
         private final Executor callbackExecutor;
         private final Call<T> delegate;
 
@@ -70,7 +70,7 @@ public final class LifeCallAdapterFactory extends CallAdapter.Factory {
          * The executor used for {@link Callback} methods on a {@link Call}. This may be {@code null},
          * in which case callbacks should be made synchronously on the background thread.
          */
-        LifeCallbackCall2(Executor callbackExecutor, Call<T> delegate) {
+        LifeCallbackCall(Executor callbackExecutor, Call<T> delegate) {
             this.callbackExecutor = callbackExecutor;
             this.delegate = delegate;
         }
@@ -80,7 +80,7 @@ public final class LifeCallAdapterFactory extends CallAdapter.Factory {
             callbackExecutor.execute(new Runnable() {
                 @Override
                 public void run() {
-                    callback.onStart(LifeCallbackCall2.this);
+                    callback.onStart(LifeCallbackCall.this);
                 }
             });
 
@@ -161,7 +161,7 @@ public final class LifeCallAdapterFactory extends CallAdapter.Factory {
         @SuppressWarnings("CloneDoesntCallSuperClone") // Performing deep clone.
         @Override
         public LifeCall<T> clone() {
-            return new LifeCallbackCall2<>(callbackExecutor, delegate.clone());
+            return new LifeCallbackCall<>(callbackExecutor, delegate.clone());
         }
 
         @Override
