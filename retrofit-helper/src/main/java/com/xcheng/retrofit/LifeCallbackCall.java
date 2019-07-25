@@ -14,6 +14,9 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 final class LifeCallbackCall<T> implements LifeCall<T> {
+
+    private  static int a=1;
+
     private final Executor callbackExecutor;
     private final Call<T> delegate;
     @Nullable

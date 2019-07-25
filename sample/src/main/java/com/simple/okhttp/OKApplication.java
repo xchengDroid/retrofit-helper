@@ -53,7 +53,7 @@ public class OKApplication extends Application {
                 .callFactory(new OkHttpClient.Builder()
                         .addNetworkInterceptor(httpLoggingInterceptor)
                         .build())
-                .addCallAdapterFactory(LifeCallAdapterFactory.INSTANCE)
+                .addCallAdapterFactory(LifeCallAdapterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         //RetrofitManager.init(retrofit);

@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -78,5 +79,15 @@ public class Utils {
         tr.printStackTrace(pw);
         pw.flush();
         return sw.toString();
+    }
+
+    public static boolean isAnnotationPresent(Annotation[] annotations,
+                                              Class<? extends Annotation> cls) {
+        for (Annotation annotation : annotations) {
+            if (cls.isInstance(annotation)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
