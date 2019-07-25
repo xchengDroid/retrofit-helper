@@ -13,7 +13,7 @@ import retrofit2.Retrofit;
  * just for android post UI thread
  */
 public final class LifeCallAdapterFactory extends CallAdapter.Factory {
-
+    private static final String RETURN_TYPE = LifeCall.class.getSimpleName();
     public static final CallAdapter.Factory INSTANCE = new LifeCallAdapterFactory();
 
     private LifeCallAdapterFactory() {
@@ -34,7 +34,7 @@ public final class LifeCallAdapterFactory extends CallAdapter.Factory {
         }
         if (!(returnType instanceof ParameterizedType)) {
             throw new IllegalArgumentException(
-                    "Call return type must be parameterized as Call2<Foo> or Call2<? extends Foo>");
+                    String.format("%s return type must be parameterized as %s<Foo> or %s<? extends Foo>", RETURN_TYPE, RETURN_TYPE, RETURN_TYPE));
         }
         final Type responseType = getParameterUpperBound(0, (ParameterizedType) returnType);
 
