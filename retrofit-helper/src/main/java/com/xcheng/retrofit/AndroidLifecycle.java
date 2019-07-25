@@ -31,7 +31,7 @@ public final class AndroidLifecycle implements LifecycleProvider, LifecycleObser
         return new AndroidLifecycle(owner);
     }
 
-    private final List<WeakReference<LifeCall<?>>> weakLifeCalls = new ArrayList<>();
+    private final List<WeakReference<LifecycleEvent>> lifecycleEvents = new ArrayList<>();
 
     private AndroidLifecycle(LifecycleOwner owner) {
         owner.getLifecycle().addObserver(this);
@@ -40,10 +40,10 @@ public final class AndroidLifecycle implements LifecycleProvider, LifecycleObser
     @OnLifecycleEvent(Lifecycle.Event.ON_ANY)
     void onEvent(LifecycleOwner owner, Lifecycle.Event event) {
         lastEvent = event;
-        for (WeakReference<LifeCall<?>> weakCall : weakLifeCalls) {
-            LifeCall<?> lifeCall = weakCall.get();
-            if (lifeCall != null) {
-                lifeCall.onEvent(event);
+        for (WeakReference<LifecycleEvent> weakCall : lifecycleEvents) {
+            LifecycleEvent lifecycleEvent = weakCall.get();
+            if (lifecycleEvent != null) {
+                lifecycleEvent.onEvent(event);
             }
         }
         if (event == Lifecycle.Event.ON_DESTROY) {
@@ -52,16 +52,16 @@ public final class AndroidLifecycle implements LifecycleProvider, LifecycleObser
     }
 
     @Override
-    public void bindLifecycle(LifeCall<?> call) {
+    public void bindToLifecycle(LifecycleEvent lifecycleEvent) {
         if (lastEvent != null) {
-            call.onEvent(lastEvent);
+            lifecycleEvent.onEvent(lastEvent);
         }
-        WeakReference<LifeCall<?>> lifeCall = new WeakReference<LifeCall<?>>(call);
-        weakLifeCalls.add(lifeCall);
+        WeakReference<LifecycleEvent> weakReference = new WeakReference<>(lifecycleEvent);
+        lifecycleEvents.add(weakReference);
 
-        for (WeakReference<LifeCall<?>> weakCall : weakLifeCalls) {
-            LifeCall<?> call1 = weakCall.get();
-            Log.e("print", "debugLog:" + call1);
+        for (WeakReference<LifecycleEvent> le : lifecycleEvents) {
+            LifecycleEvent event = le.get();
+            Log.e("print", "debugLog:" + event);
         }
     }
 }

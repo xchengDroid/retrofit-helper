@@ -122,7 +122,7 @@ final class LifeCallbackCall<T> implements LifeCall<T> {
     @Override
     public LifeCall<T> bindUntilEvent(@NonNull LifecycleProvider provider, @NonNull Lifecycle.Event event) {
         lifeEvent = event;
-        provider.bindLifecycle(this);
+        provider.bindToLifecycle(this);
         return this;
     }
 

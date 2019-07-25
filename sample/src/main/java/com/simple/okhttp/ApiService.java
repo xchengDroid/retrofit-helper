@@ -8,6 +8,7 @@ import com.xcheng.retrofit.LifeCall;
 import java.io.File;
 import java.util.List;
 
+import retrofit2.SkipCallbackExecutor;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
@@ -20,6 +21,7 @@ import retrofit2.http.POST;
  */
 public interface ApiService {
     //登录
+    @SkipCallbackExecutor
     @FormUrlEncoded
     @POST("user/login")
     LifeCall<LoginInfo> getLogin(@Field("username") String username, @Field("password") String password);
