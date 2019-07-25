@@ -12,7 +12,7 @@ import retrofit2.Response;
 /**
  * 创建时间：2018/4/8
  * 编写人： chengxin
- * 功能描述：添加重载方法{@link LifeCall#enqueue(Object, LifeCallback)}方法
+ * 功能描述：支持生命周期绑定的Call
  */
 public interface LifeCall<T> {
 
