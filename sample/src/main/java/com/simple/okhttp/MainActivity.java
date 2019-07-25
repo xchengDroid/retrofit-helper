@@ -11,10 +11,12 @@ import com.simple.converter.FileConverterFactory;
 import com.simple.entity.Article;
 import com.simple.entity.LoginInfo;
 import com.simple.entity.WXArticle;
-import com.xcheng.retrofit.Call2;
+import com.xcheng.retrofit.AndroidLifecycle;
 import com.xcheng.retrofit.CallManager;
-import com.xcheng.retrofit.Callback2;
+import com.xcheng.retrofit.DefaultCallback;
 import com.xcheng.retrofit.HttpError;
+import com.xcheng.retrofit.LifeCall;
+import com.xcheng.retrofit.LifecycleProvider;
 import com.xcheng.retrofit.RetrofitFactory;
 import com.xcheng.retrofit.progress.ProgressInterceptor;
 import com.xcheng.retrofit.progress.ProgressListener;
@@ -31,6 +33,7 @@ import retrofit2.Retrofit;
 
 public class MainActivity extends EasyActivity {
     ProgressView progressView;
+    LifecycleProvider provider = AndroidLifecycle.createLifecycleProvider(this);
 
     @Override
     public int getLayoutId() {
@@ -54,14 +57,15 @@ public class MainActivity extends EasyActivity {
     public void login(View view) {
         RetrofitFactory.create(ApiService.class)
                 .getLogin("singleman", "123456")
-                .enqueue(hashCode(), new AnimCallback<LoginInfo>(this) {
+                .bindUntilDestroy(provider)
+                .enqueue(new AnimCallback<LoginInfo>(this) {
                     @Override
-                    public void onError(Call2<LoginInfo> call2, HttpError error) {
+                    public void onError(LifeCall<LoginInfo> call2, HttpError error) {
                         Toast.makeText(MainActivity.this, error.msg, Toast.LENGTH_SHORT).show();
                     }
 
                     @Override
-                    public void onSuccess(Call2<LoginInfo> call2, LoginInfo response) {
+                    public void onSuccess(LifeCall<LoginInfo> call2, LoginInfo response) {
                         Toast.makeText(MainActivity.this, "登录成功", Toast.LENGTH_SHORT).show();
                     }
                 });
@@ -70,14 +74,14 @@ public class MainActivity extends EasyActivity {
     public void wxarticle(View view) {
         RetrofitFactory.create(ApiService.class)
                 .getWXarticle()
-                .enqueue(hashCode(), new AnimCallback<List<WXArticle>>(this) {
+                .enqueue(new AnimCallback<List<WXArticle>>(this) {
                     @Override
-                    public void onError(Call2<List<WXArticle>> call2, HttpError error) {
+                    public void onError(LifeCall<List<WXArticle>> call2, HttpError error) {
                         Toast.makeText(MainActivity.this, error.msg, Toast.LENGTH_SHORT).show();
                     }
 
                     @Override
-                    public void onSuccess(Call2<List<WXArticle>> call2, List<WXArticle> response) {
+                    public void onSuccess(LifeCall<List<WXArticle>> call2, List<WXArticle> response) {
                         Toast.makeText(MainActivity.this, "获取公众号列表成功", Toast.LENGTH_SHORT).show();
 
                     }
@@ -87,14 +91,14 @@ public class MainActivity extends EasyActivity {
     public void article0(View view) {
         RetrofitFactory.create(ApiService.class)
                 .getArticle0()
-                .enqueue(hashCode(), new AnimCallback<List<Article>>(this) {
+                .enqueue(new AnimCallback<List<Article>>(this) {
                     @Override
-                    public void onError(Call2<List<Article>> call2, HttpError error) {
+                    public void onError(LifeCall<List<Article>> call2, HttpError error) {
                         Toast.makeText(MainActivity.this, error.msg, Toast.LENGTH_SHORT).show();
                     }
 
                     @Override
-                    public void onSuccess(Call2<List<Article>> call2, List<Article> response) {
+                    public void onSuccess(LifeCall<List<Article>> call2, List<Article> response) {
                         Toast.makeText(MainActivity.this, "获取首页列表成功", Toast.LENGTH_SHORT).show();
                     }
                 });
@@ -103,14 +107,14 @@ public class MainActivity extends EasyActivity {
     public void progress(View view) {
         RetrofitFactory.create(ApiService.class)
                 .getArticle0()
-                .enqueue(hashCode(), new AnimCallback<List<Article>>(this) {
+                .enqueue(new AnimCallback<List<Article>>(this) {
                     @Override
-                    public void onError(Call2<List<Article>> call2, HttpError error) {
+                    public void onError(LifeCall<List<Article>> call2, HttpError error) {
                         Toast.makeText(MainActivity.this, error.msg, Toast.LENGTH_SHORT).show();
                     }
 
                     @Override
-                    public void onSuccess(Call2<List<Article>> call2, List<Article> response) {
+                    public void onSuccess(LifeCall<List<Article>> call2, List<Article> response) {
                         Toast.makeText(MainActivity.this, "获取首页列表成功", Toast.LENGTH_SHORT).show();
                     }
                 });
@@ -138,25 +142,25 @@ public class MainActivity extends EasyActivity {
                 .build();
         retrofit.create(ApiService.class)
                 .loadDouYinApk()
-                .enqueue(TAG_LOAD_APK, new Callback2<File>() {
+                .enqueue(new DefaultCallback<File>() {
                     @Override
-                    public void onStart(Call2<File> call2) {
+                    public void onStart(LifeCall<File> call2) {
                         button.setText("取消下载");
                     }
 
                     @Override
-                    public void onError(Call2<File> call2, HttpError error) {
+                    public void onError(LifeCall<File> call2, HttpError error) {
                         progressView.setProgress(0);
                         Toast.makeText(MainActivity.this, error.msg, Toast.LENGTH_SHORT).show();
                     }
 
                     @Override
-                    public void onSuccess(Call2<File> call2, File response) {
+                    public void onSuccess(LifeCall<File> call2, File response) {
 
                     }
 
                     @Override
-                    public void onCompleted(Call2<File> call2, @Nullable Throwable t, boolean canceled) {
+                    public void onCompleted(LifeCall<File> call2, @Nullable Throwable t, boolean canceled) {
                         if (canceled) {
                             progressView.setProgress(0);
                             button.setText("下载抖音apk文件");
@@ -189,10 +193,6 @@ public class MainActivity extends EasyActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        //hashCode() 能保证唯一性，取消当前页面所发起的所有请求，只要
-        // enqueue(tag, callback2) 传入的是对应的hashCode() 即可
-        CallManager.getInstance().cancel(hashCode());
-        //取消下载文件
-        CallManager.getInstance().cancel(TAG_LOAD_APK);
+        download(null);
     }
 }

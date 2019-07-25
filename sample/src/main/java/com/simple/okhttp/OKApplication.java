@@ -10,7 +10,7 @@ import com.orhanobut.logger.LogStrategy;
 import com.orhanobut.logger.Logger;
 import com.orhanobut.logger.PrettyFormatStrategy;
 import com.simple.converter.GsonConverterFactory;
-import com.xcheng.retrofit.ExecutorCallAdapterFactory;
+import com.xcheng.retrofit.LifeCallAdapterFactory;
 import com.xcheng.retrofit.HttpLoggingInterceptor;
 import com.xcheng.retrofit.RetrofitFactory;
 import com.xcheng.view.EasyView;
@@ -53,7 +53,7 @@ public class OKApplication extends Application {
                 .callFactory(new OkHttpClient.Builder()
                         .addNetworkInterceptor(httpLoggingInterceptor)
                         .build())
-                .addCallAdapterFactory(ExecutorCallAdapterFactory.INSTANCE)
+                .addCallAdapterFactory(LifeCallAdapterFactory.INSTANCE)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         //RetrofitManager.init(retrofit);

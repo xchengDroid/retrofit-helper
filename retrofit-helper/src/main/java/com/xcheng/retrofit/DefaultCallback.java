@@ -1,7 +1,6 @@
 package com.xcheng.retrofit;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
 
 import java.net.ConnectException;
@@ -9,23 +8,12 @@ import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 
-import retrofit2.Call;
 import retrofit2.Response;
 
-/**
- * if {@link Call#cancel()}called, {@link #onStart(Call2)}、{@link #parseResponse(Call2, Response)}
- * 、{@link #parseThrowable(Call2, Throwable)}、{@link #onSuccess(Call2, Object)}、
- * {@link #onError(Call2, HttpError)}will not be called
- *
- * @param <T> Successful response body type.
- */
 @UiThread
-public abstract class Callback2<T> {
-
-    public abstract void onStart(Call2<T> call2);
-
+public abstract class DefaultCallback<T> implements LifeCallback<T> {
     @NonNull
-    public Result<T> parseResponse(Call2<T> call2, Response<T> response) {
+    public Result<T> parseResponse(LifeCall<T> call2, Response<T> response) {
         T body = response.body();
         if (response.isSuccessful()) {
             if (body != null) {
@@ -55,16 +43,8 @@ public abstract class Callback2<T> {
         return Result.error(new HttpError(msg, response));
     }
 
-    /**
-     * 统一解析Throwable对象转换为HttpError对象。如果为HttpError，
-     * 则为{@link retrofit2.Converter#convert(Object)}内抛出的异常
-     *
-     * @param call2 call
-     * @param t     Throwable
-     * @return HttpError result
-     */
     @NonNull
-    public HttpError parseThrowable(Call2<T> call2, Throwable t) {
+    public HttpError parseThrowable(LifeCall<T> call2, Throwable t) {
         if (t instanceof HttpError) {
             //用于convert函数直接抛出异常接收
             return (HttpError) t;
@@ -80,15 +60,4 @@ public abstract class Callback2<T> {
             return new HttpError("请求失败", t);
         }
     }
-
-    public abstract void onError(Call2<T> call2, HttpError error);
-
-    public abstract void onSuccess(Call2<T> call2, T response);
-
-
-    /**
-     * @param t        请求失败的错误信息
-     * @param canceled 请求是否被取消了
-     */
-    public abstract void onCompleted(Call2<T> call2, @Nullable Throwable t, boolean canceled);
 }

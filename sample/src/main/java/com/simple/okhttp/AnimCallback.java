@@ -4,15 +4,15 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.google.gson.JsonSyntaxException;
-import com.xcheng.retrofit.Call2;
-import com.xcheng.retrofit.Callback2;
+import com.xcheng.retrofit.DefaultCallback;
 import com.xcheng.retrofit.HttpError;
+import com.xcheng.retrofit.LifeCall;
 import com.xcheng.view.controller.ILoadingView;
 
 /**
  * Created by chengxin on 2017/9/24.
  */
-public abstract class AnimCallback<T> extends Callback2<T> {
+public abstract class AnimCallback<T> extends DefaultCallback<T> {
     private ILoadingView mLoadingView;
 
     public AnimCallback(@Nullable ILoadingView loadingView) {
@@ -20,13 +20,13 @@ public abstract class AnimCallback<T> extends Callback2<T> {
     }
 
     @Override
-    public void onStart(Call2<T> call2) {
+    public void onStart(LifeCall<T> call2) {
         if (mLoadingView != null)
             mLoadingView.showLoading();
     }
 
     @Override
-    public void onCompleted(Call2<T> call2, @Nullable Throwable t, boolean canceled) {
+    public void onCompleted(LifeCall<T> call2, @Nullable Throwable t, boolean canceled) {
         if (canceled)
             return;
         if (mLoadingView != null)
@@ -35,7 +35,7 @@ public abstract class AnimCallback<T> extends Callback2<T> {
 
     @NonNull
     @Override
-    public HttpError parseThrowable(Call2<T> call2, Throwable t) {
+    public HttpError parseThrowable(LifeCall<T> call2, Throwable t) {
         HttpError filterError;
         if (t instanceof JsonSyntaxException) {
             filterError = new HttpError("解析异常", t);
