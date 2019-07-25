@@ -15,8 +15,6 @@ import retrofit2.Response;
 
 final class LifeCallbackCall<T> implements LifeCall<T> {
 
-    private  static int a=1;
-
     private final Executor callbackExecutor;
     private final Call<T> delegate;
     @Nullable
@@ -34,12 +32,12 @@ final class LifeCallbackCall<T> implements LifeCall<T> {
     }
 
     @Override
-    public void enqueue(final LifeCallback<T> callback2) {
+    public void enqueue(final LifeCallback<T> lifeCallback) {
         callbackExecutor.execute(new Runnable() {
             @Override
             public void run() {
                 if (!onLifecycle) {
-                    callback2.onStart(LifeCallbackCall.this);
+                    lifeCallback.onStart(LifeCallbackCall.this);
                 }
             }
         });
@@ -50,7 +48,7 @@ final class LifeCallbackCall<T> implements LifeCall<T> {
                 callbackExecutor.execute(new Runnable() {
                     @Override
                     public void run() {
-                        callResult(callback2, response, null);
+                        callResult(lifeCallback, response, null);
                     }
                 });
             }
@@ -60,7 +58,7 @@ final class LifeCallbackCall<T> implements LifeCall<T> {
                 callbackExecutor.execute(new Runnable() {
                     @Override
                     public void run() {
-                        callResult(callback2, null, t);
+                        callResult(lifeCallback, null, t);
                     }
                 });
             }
@@ -68,26 +66,26 @@ final class LifeCallbackCall<T> implements LifeCall<T> {
     }
 
     @UiThread
-    private void callResult(LifeCallback<T> callback2, @Nullable Response<T> response, @Nullable Throwable failureThrowable) {
+    private void callResult(LifeCallback<T> lifeCallback, @Nullable Response<T> response, @Nullable Throwable failureThrowable) {
         if (onLifecycle)
             return;
         //1、获取解析结果
         Result<T> result;
         if (response != null) {
-            result = callback2.parseResponse(this, response);
+            result = lifeCallback.parseResponse(this, response);
             Utils.checkNotNull(result, "result==null");
         } else {
             Utils.checkNotNull(failureThrowable, "failureThrowable==null");
-            HttpError error = callback2.parseThrowable(this, failureThrowable);
+            HttpError error = lifeCallback.parseThrowable(this, failureThrowable);
             result = Result.error(error);
         }
         //2、回调成功失败
         if (result.isSuccess()) {
-            callback2.onSuccess(this, result.body());
+            lifeCallback.onSuccess(this, result.body());
         } else {
-            callback2.onError(this, result.error());
+            lifeCallback.onError(this, result.error());
         }
-        callback2.onCompleted(this, failureThrowable, isCanceled());
+        lifeCallback.onCompleted(this, failureThrowable, isCanceled());
     }
 
     @Override
