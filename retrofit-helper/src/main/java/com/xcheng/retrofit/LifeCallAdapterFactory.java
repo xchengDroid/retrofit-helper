@@ -32,7 +32,7 @@ public final class LifeCallAdapterFactory extends CallAdapter.Factory {
     }
 
     public static LifeCallAdapterFactory create(Executor executor) {
-        if (executor == null) throw new NullPointerException("executor == null");
+        Utils.checkNotNull(executor, "executor == null");
         return new LifeCallAdapterFactory(executor);
     }
 
