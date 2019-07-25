@@ -64,7 +64,7 @@ public final class LifeCallAdapterFactory extends CallAdapter.Factory {
         if (skipCallbackExecutor) {
             executor = SKIP_EXECUTOR;
         } else {
-            executor = retrofit.callbackExecutor();
+            executor = callbackExecutor != null ? callbackExecutor : retrofit.callbackExecutor();
             if (executor == null) throw new AssertionError();
         }
         return new CallAdapter<Object, LifeCall<?>>() {
