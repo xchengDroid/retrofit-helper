@@ -1,7 +1,7 @@
 package com.xcheng.retrofit;
 
 import android.arch.lifecycle.Lifecycle;
-import android.support.annotation.Nullable;
+import android.support.annotation.NonNull;
 
 public interface LifecycleEvent {
 
@@ -10,5 +10,5 @@ public interface LifecycleEvent {
      *
      * @param event 当前的生命周期
      */
-    void onEvent(@Nullable Lifecycle.Event event);
+    void onEvent(@NonNull Lifecycle.Event event);
 }

@@ -4,6 +4,7 @@ import android.arch.lifecycle.Lifecycle;
 import android.arch.lifecycle.LifecycleObserver;
 import android.arch.lifecycle.LifecycleOwner;
 import android.arch.lifecycle.OnLifecycleEvent;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import java.lang.ref.WeakReference;
@@ -52,7 +53,12 @@ public final class AndroidLifecycle implements LifecycleProvider, LifecycleObser
     }
 
     @Override
-    public void bindToLifecycle(LifecycleEvent lifecycleEvent) {
+    public void unbindFromLifecycle(@NonNull LifecycleEvent lifecycleEvent) {
+
+    }
+
+    @Override
+    public void bindToLifecycle(@NonNull LifecycleEvent lifecycleEvent) {
         if (lastEvent != null) {
             lifecycleEvent.onEvent(lastEvent);
         }

@@ -132,7 +132,7 @@ final class LifeCallbackCall<T> implements LifeCall<T> {
     }
 
     @Override
-    public void onEvent(@Nullable Lifecycle.Event event) {
+    public void onEvent(@NonNull Lifecycle.Event event) {
         if (!onLifecycle && lifeEvent == event) {
             onLifecycle = true;
             cancel();
