@@ -1,5 +1,7 @@
 package com.xcheng.retrofit;
 
+import android.arch.lifecycle.Lifecycle;
+import android.arch.lifecycle.OnLifecycleEvent;
 import android.support.annotation.Nullable;
 
 import java.lang.annotation.Annotation;
@@ -56,8 +58,12 @@ public final class LifeCallAdapterFactory extends CallAdapter.Factory {
         }
         final Type responseType = getParameterUpperBound(0, (ParameterizedType) returnType);
 
+        OnLifecycleEvent annotation = Utils.findAnnotation(annotations, OnLifecycleEvent.class);
+        final Lifecycle.Event event = annotation != null ? annotation.value() : Lifecycle.Event.ON_DESTROY;
+
         final Executor executor = callbackExecutor != null ? callbackExecutor : retrofit.callbackExecutor();
         if (executor == null) throw new AssertionError();
+
         return new CallAdapter<Object, LifeCall<?>>() {
             @Override
             public Type responseType() {
@@ -66,7 +72,7 @@ public final class LifeCallAdapterFactory extends CallAdapter.Factory {
 
             @Override
             public LifeCall<Object> adapt(Call<Object> call) {
-                return new LifeCallbackCall<>(executor, call);
+                return new RealLifeCall<>(executor, call, event);
             }
         };
     }

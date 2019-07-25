@@ -80,14 +80,18 @@ public class Utils {
         pw.flush();
         return sw.toString();
     }
-
-    public static boolean isAnnotationPresent(Annotation[] annotations,
-                                              Class<? extends Annotation> cls) {
+    
+    @Nullable
+    public static <T extends Annotation> T findAnnotation(Annotation[] annotations, Class<T> cls) {
+        //just in case
+        if (annotations == null)
+            return null;
         for (Annotation annotation : annotations) {
             if (cls.isInstance(annotation)) {
-                return true;
+                //noinspection unchecked
+                return (T) annotation;
             }
         }
-        return false;
+        return null;
     }
 }

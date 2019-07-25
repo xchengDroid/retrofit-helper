@@ -52,12 +52,14 @@ public class MainActivity extends EasyActivity {
                 return String.valueOf(value) + "%";
             }
         });
+
+
     }
 
     public void login(View view) {
         RetrofitFactory.create(ApiService.class)
                 .getLogin("singleman", "123456")
-                .bindUntilDestroy(provider)
+                .bindToLifecycle(provider)
                 .enqueue(new AnimCallback<LoginInfo>(this) {
                     @Override
                     public void onError(LifeCall<LoginInfo> call2, HttpError error) {
@@ -133,7 +135,6 @@ public class MainActivity extends EasyActivity {
         //构建可以监听进度的client
         OkHttpClient client = new OkHttpClient().newBuilder()
                 .addNetworkInterceptor(getProgressInterceptor()).build();
-
         //构建可以下载文件的client
         Retrofit retrofit = RetrofitFactory.DEFAULT
                 .newBuilder()

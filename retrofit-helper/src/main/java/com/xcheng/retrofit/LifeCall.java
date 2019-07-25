@@ -1,6 +1,5 @@
 package com.xcheng.retrofit;
 
-import android.arch.lifecycle.Lifecycle;
 import android.support.annotation.NonNull;
 
 import java.io.IOException;
@@ -29,7 +28,5 @@ public interface LifeCall<T> extends LifecycleEvent {
 
     Request request();
 
-    LifeCall<T> bindUntilEvent(@NonNull LifecycleProvider provider, @NonNull Lifecycle.Event event);
-
-    LifeCall<T> bindUntilDestroy(@NonNull LifecycleProvider provider);
+    LifeCall<T> bindToLifecycle(@NonNull LifecycleProvider provider);
 }

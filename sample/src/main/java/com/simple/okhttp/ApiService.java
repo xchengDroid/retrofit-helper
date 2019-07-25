@@ -1,5 +1,8 @@
 package com.simple.okhttp;
 
+import android.arch.lifecycle.Lifecycle;
+import android.arch.lifecycle.OnLifecycleEvent;
+
 import com.simple.entity.Article;
 import com.simple.entity.LoginInfo;
 import com.simple.entity.WXArticle;
@@ -8,7 +11,6 @@ import com.xcheng.retrofit.LifeCall;
 import java.io.File;
 import java.util.List;
 
-import retrofit2.SkipCallbackExecutor;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
@@ -21,7 +23,7 @@ import retrofit2.http.POST;
  */
 public interface ApiService {
     //登录
-    @SkipCallbackExecutor
+    @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
     @FormUrlEncoded
     @POST("user/login")
     LifeCall<LoginInfo> getLogin(@Field("username") String username, @Field("password") String password);

@@ -13,22 +13,24 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-final class LifeCallbackCall<T> implements LifeCall<T> {
+final class RealLifeCall<T> implements LifeCall<T> {
 
     private final Executor callbackExecutor;
     private final Call<T> delegate;
-    @Nullable
-    private volatile Lifecycle.Event lifeEvent;
+    private final Lifecycle.Event lifeEvent;
     //是否回收了
-    private volatile boolean onLifecycle;
+    private boolean onLifecycle;
+    @Nullable
+    private LifecycleProvider lifecycleProvider;
 
     /**
      * The executor used for {@link Callback} methods on a {@link Call}. This may be {@code null},
      * in which case callbacks should be made synchronously on the background thread.
      */
-    LifeCallbackCall(Executor callbackExecutor, Call<T> delegate) {
+    RealLifeCall(Executor callbackExecutor, Call<T> delegate, Lifecycle.Event event) {
         this.callbackExecutor = callbackExecutor;
         this.delegate = delegate;
+        this.lifeEvent = event;
     }
 
     @Override
@@ -37,7 +39,7 @@ final class LifeCallbackCall<T> implements LifeCall<T> {
             @Override
             public void run() {
                 if (!onLifecycle) {
-                    lifeCallback.onStart(LifeCallbackCall.this);
+                    lifeCallback.onStart(RealLifeCall.this);
                 }
             }
         });
@@ -67,6 +69,10 @@ final class LifeCallbackCall<T> implements LifeCall<T> {
 
     @UiThread
     private void callResult(LifeCallback<T> lifeCallback, @Nullable Response<T> response, @Nullable Throwable failureThrowable) {
+        if (lifecycleProvider != null) {
+            lifecycleProvider.unbindFromLifecycle(this);
+        }
+
         if (onLifecycle)
             return;
         //1、获取解析结果
@@ -111,7 +117,7 @@ final class LifeCallbackCall<T> implements LifeCall<T> {
     @SuppressWarnings("CloneDoesntCallSuperClone") // Performing deep clone.
     @Override
     public LifeCall<T> clone() {
-        return new LifeCallbackCall<>(callbackExecutor, delegate.clone());
+        return new RealLifeCall<>(callbackExecutor, delegate.clone(), lifeEvent);
     }
 
     @Override
@@ -120,15 +126,10 @@ final class LifeCallbackCall<T> implements LifeCall<T> {
     }
 
     @Override
-    public LifeCall<T> bindUntilEvent(@NonNull LifecycleProvider provider, @NonNull Lifecycle.Event event) {
-        lifeEvent = event;
+    public LifeCall<T> bindToLifecycle(@NonNull LifecycleProvider provider) {
+        this.lifecycleProvider = provider;
         provider.bindToLifecycle(this);
         return this;
-    }
-
-    @Override
-    public LifeCall<T> bindUntilDestroy(@NonNull LifecycleProvider provider) {
-        return bindUntilEvent(provider, Lifecycle.Event.ON_DESTROY);
     }
 
     @Override
