@@ -17,8 +17,6 @@ import retrofit2.Retrofit;
  * just for android post UI thread
  */
 public final class LifeCallAdapterFactory extends CallAdapter.Factory {
-    private static final String RETURN_TYPE = LifeCall.class.getSimpleName();
-
     @Nullable
     private final Executor callbackExecutor;
 
@@ -54,7 +52,7 @@ public final class LifeCallAdapterFactory extends CallAdapter.Factory {
         }
         if (!(returnType instanceof ParameterizedType)) {
             throw new IllegalArgumentException(
-                    String.format("%s return type must be parameterized as %s<Foo> or %s<? extends Foo>", RETURN_TYPE, RETURN_TYPE, RETURN_TYPE));
+                    String.format("%s return type must be parameterized as %s<Foo> or %s<? extends Foo>", LifeCall.NAME, LifeCall.NAME, LifeCall.NAME));
         }
         final Type responseType = getParameterUpperBound(0, (ParameterizedType) returnType);
 

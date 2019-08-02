@@ -14,8 +14,8 @@ import retrofit2.Response;
  * 功能描述：支持生命周期绑定的Call{@link retrofit2.Call}
  */
 public interface LifeCall<T> extends Observer<Lifecycle.Event> {
-    
-    String TAG = Lifecycle.class.getSimpleName();
+
+    String NAME = Lifecycle.class.getSimpleName();
 
     Response<T> execute() throws IOException;
 
