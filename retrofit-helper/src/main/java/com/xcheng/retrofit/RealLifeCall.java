@@ -1,7 +1,6 @@
 package com.xcheng.retrofit;
 
 import android.arch.lifecycle.Lifecycle;
-import android.support.annotation.MainThread;
 import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
 import android.util.Log;
@@ -25,7 +24,6 @@ final class RealLifeCall<T> implements LifeCall<T> {
     //是否回收了
     private boolean onLifecycle;
 
-
     /**
      * The executor used for {@link Callback} methods on a {@link Call}. This may be {@code null},
      * in which case callbacks should be made synchronously on the background thread.
@@ -36,7 +34,11 @@ final class RealLifeCall<T> implements LifeCall<T> {
         this.event = event;
         this.provider = delegate.request().tag(LifecycleProvider.class);
         if (provider == null) {
-            Log.w(LifeCall.TAG, "Can not find LifecycleProvider in request.tag(), lifecycle will not provide");
+            if (RetrofitFactory.ERROR_WHEN_NO_PROVIDER) {
+                throw new IllegalStateException("Missing (@Tag LifecycleProvider provider) parameter in method");
+            } else {
+                Log.w(LifeCall.TAG, "Can not find LifecycleProvider in request.tag(), lifecycle will not provide");
+            }
         }
     }
 
@@ -138,7 +140,10 @@ final class RealLifeCall<T> implements LifeCall<T> {
         }
     }
 
-    @MainThread
+
+    /**
+     * ensure observe on MainThread
+     */
     private void addToProvider() {
         if (provider != null) {
             callbackExecutor.execute(new Runnable() {
