@@ -18,8 +18,6 @@ package com.xcheng.retrofit;
 
 import android.support.annotation.NonNull;
 
-import java.util.concurrent.ExecutorService;
-
 /**
  * A task executor that can divide tasks into logical groups.
  * <p>
@@ -33,9 +31,6 @@ public abstract class TaskExecutor {
      * @param runnable The runnable to run in the disk IO thread pool.
      */
     public abstract void executeOnDiskIO(@NonNull Runnable runnable);
-
-    @NonNull
-    public abstract ExecutorService getExecutorService();
 
     /**
      * Posts the given task to the main thread.

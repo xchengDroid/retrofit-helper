@@ -44,18 +44,35 @@ public final class NetTaskExecutor extends TaskExecutor {
             return t;
         }
     });
-    
+
     private final Handler mMainHandler = new Handler(Looper.getMainLooper());
+
+    private static volatile NetTaskExecutor sInstance;
+
+    private NetTaskExecutor() {
+
+    }
+
+    /**
+     * Returns an instance of the task executor.
+     *
+     * @return The singleton ArchTaskExecutor.
+     */
+    @NonNull
+    public static NetTaskExecutor getInstance() {
+        if (sInstance == null) {
+            synchronized (NetTaskExecutor.class) {
+                if (sInstance == null) {
+                    sInstance = new NetTaskExecutor();
+                }
+            }
+        }
+        return sInstance;
+    }
 
     @Override
     public void executeOnDiskIO(@NonNull Runnable runnable) {
         mDiskIO.execute(runnable);
-    }
-
-    @NonNull
-    @Override
-    public ExecutorService getExecutorService() {
-        return mDiskIO;
     }
 
     @Override

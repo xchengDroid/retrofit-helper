@@ -6,7 +6,6 @@ import android.support.annotation.UiThread;
 import android.util.Log;
 
 import java.io.IOException;
-import java.util.concurrent.Executor;
 
 import okhttp3.Request;
 import retrofit2.Call;
@@ -15,7 +14,6 @@ import retrofit2.Response;
 
 final class RealLifeCall<T> implements LifeCall<T> {
 
-    private final Executor callbackExecutor;
     private final Call<T> delegate;
     private final Lifecycle.Event event;
     @Nullable
@@ -28,8 +26,7 @@ final class RealLifeCall<T> implements LifeCall<T> {
      * The executor used for {@link Callback} methods on a {@link Call}. This may be {@code null},
      * in which case callbacks should be made synchronously on the background thread.
      */
-    RealLifeCall(Executor callbackExecutor, Call<T> delegate, Lifecycle.Event event) {
-        this.callbackExecutor = callbackExecutor;
+    RealLifeCall(Call<T> delegate, Lifecycle.Event event) {
         this.delegate = delegate;
         this.event = event;
         this.provider = delegate.request().tag(LifecycleProvider.class);
@@ -45,7 +42,7 @@ final class RealLifeCall<T> implements LifeCall<T> {
     @Override
     public void enqueue(final LifeCallback<T> lifeCallback) {
         addToProvider();
-        callbackExecutor.execute(new Runnable() {
+        NetTaskExecutor.getInstance().postToMainThread(new Runnable() {
             @Override
             public void run() {
                 if (!onLifecycle) {
@@ -57,7 +54,7 @@ final class RealLifeCall<T> implements LifeCall<T> {
         delegate.enqueue(new Callback<T>() {
             @Override
             public void onResponse(Call<T> call, final Response<T> response) {
-                callbackExecutor.execute(new Runnable() {
+                NetTaskExecutor.getInstance().postToMainThread(new Runnable() {
                     @Override
                     public void run() {
                         callResult(lifeCallback, response, null);
@@ -67,7 +64,7 @@ final class RealLifeCall<T> implements LifeCall<T> {
 
             @Override
             public void onFailure(Call<T> call, final Throwable t) {
-                callbackExecutor.execute(new Runnable() {
+                NetTaskExecutor.getInstance().postToMainThread(new Runnable() {
                     @Override
                     public void run() {
                         callResult(lifeCallback, null, t);
@@ -79,6 +76,7 @@ final class RealLifeCall<T> implements LifeCall<T> {
 
     @UiThread
     private void callResult(LifeCallback<T> lifeCallback, @Nullable Response<T> response, @Nullable Throwable failureThrowable) {
+        removeFromProvider();
         if (onLifecycle)
             return;
         //1、获取解析结果
@@ -124,7 +122,7 @@ final class RealLifeCall<T> implements LifeCall<T> {
     @SuppressWarnings("CloneDoesntCallSuperClone") // Performing deep clone.
     @Override
     public LifeCall<T> clone() {
-        return new RealLifeCall<>(callbackExecutor, delegate.clone(), event);
+        return new RealLifeCall<>(delegate.clone(), event);
     }
 
     @Override
@@ -146,10 +144,21 @@ final class RealLifeCall<T> implements LifeCall<T> {
      */
     private void addToProvider() {
         if (provider != null) {
-            callbackExecutor.execute(new Runnable() {
+            NetTaskExecutor.getInstance().executeOnMainThread(new Runnable() {
                 @Override
                 public void run() {
                     provider.observe(RealLifeCall.this);
+                }
+            });
+        }
+    }
+
+    private void removeFromProvider() {
+        if (provider != null) {
+            NetTaskExecutor.getInstance().executeOnMainThread(new Runnable() {
+                @Override
+                public void run() {
+                    provider.removeObserver(RealLifeCall.this);
                 }
             });
         }
