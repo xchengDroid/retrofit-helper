@@ -36,7 +36,7 @@ final class RealLifeCall<T> implements LifeCall<T> {
         this.event = event;
         this.provider = delegate.request().tag(LifecycleProvider.class);
         if (provider == null) {
-            Log.w(LifeCall.NAME, "Can not find LifecycleProvider in request.tag(), lifecycle will not provide");
+            Log.w(LifeCall.TAG, "Can not find LifecycleProvider in request.tag(), lifecycle will not provide");
         }
     }
 

@@ -15,7 +15,7 @@ import retrofit2.Response;
  */
 public interface LifeCall<T> extends Observer<Lifecycle.Event> {
 
-    String NAME = Lifecycle.class.getSimpleName();
+    String TAG = LifeCall.class.getSimpleName();
 
     Response<T> execute() throws IOException;
 
