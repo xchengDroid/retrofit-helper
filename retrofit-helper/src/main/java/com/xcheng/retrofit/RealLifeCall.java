@@ -20,6 +20,8 @@ final class RealLifeCall<T> implements LifeCall<T> {
     private final Lifecycle.Event lifeEvent;
     //是否回收了
     private boolean onLifecycle;
+    @Nullable
+    private LifecycleProvider provider;
 
     /**
      * The executor used for {@link Callback} methods on a {@link Call}. This may be {@code null},
@@ -121,12 +123,13 @@ final class RealLifeCall<T> implements LifeCall<T> {
 
     @Override
     public LifeCall<T> bindToLifecycle(@NonNull LifecycleProvider provider) {
-        provider.bindToLifecycle(this);
+        this.provider = provider;
+        provider.observe(this);
         return this;
     }
 
     @Override
-    public void onEvent(@NonNull Lifecycle.Event event) {
+    public void onChanged(@Nullable Lifecycle.Event event) {
         if (!onLifecycle && lifeEvent == event) {
             onLifecycle = true;
             cancel();
