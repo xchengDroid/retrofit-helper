@@ -12,6 +12,8 @@ public final class AndroidLifecycle implements LifecycleProvider, LifecycleObser
 
     private final MutableLiveData<Lifecycle.Event> mLiveData = new MutableLiveData<>();
 
+    private int observerCount;
+
     public static LifecycleProvider createLifecycleProvider(LifecycleOwner owner) {
         return new AndroidLifecycle(owner);
     }
@@ -31,10 +33,17 @@ public final class AndroidLifecycle implements LifecycleProvider, LifecycleObser
     @Override
     public void observe(@NonNull Observer<Lifecycle.Event> observer) {
         mLiveData.observeForever(observer);
+        observerCount++;
     }
 
     @Override
     public void removeObserver(@NonNull Observer<Lifecycle.Event> observer) {
         mLiveData.removeObserver(observer);
+        observerCount--;
+    }
+
+    //for test
+    public int getObserverCount() {
+        return observerCount;
     }
 }
