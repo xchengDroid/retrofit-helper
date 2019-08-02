@@ -116,12 +116,9 @@ final class RealLifeCall<T> implements LifeCall<T> {
         addToProvider();
         try {
             return delegate.execute();
-        } catch (Throwable t) {
-            t.printStackTrace();
         } finally {
             removeFromProvider();
         }
-        return null;
     }
 
     @Override
@@ -153,6 +150,11 @@ final class RealLifeCall<T> implements LifeCall<T> {
             isLifecycle = true;
             cancel();
         }
+    }
+
+    @Override
+    public boolean isLifecycle() {
+        return isLifecycle;
     }
 
     private void removeFromProvider() {

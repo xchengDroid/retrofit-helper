@@ -30,4 +30,7 @@ public interface LifeCall<T> extends Observer<Lifecycle.Event> {
     LifeCall<T> clone();
 
     Request request();
+
+    boolean isLifecycle();
+
 }
