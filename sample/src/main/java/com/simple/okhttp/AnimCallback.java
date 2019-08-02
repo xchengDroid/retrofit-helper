@@ -26,8 +26,8 @@ public abstract class AnimCallback<T> extends DefaultCallback<T> {
     }
 
     @Override
-    public void onCompleted(LifeCall<T> call2, @Nullable Throwable t, boolean canceled) {
-        if (canceled)
+    public void onCompleted(LifeCall<T> call2, @Nullable Throwable t) {
+        if (call2.isCanceled())
             return;
         if (mLoadingView != null)
             mLoadingView.hideLoading();
