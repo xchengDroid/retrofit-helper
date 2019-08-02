@@ -17,6 +17,9 @@ import retrofit2.Retrofit;
 public final class LifeCallAdapterFactory extends CallAdapter.Factory {
     private static final String RETURN_TYPE = "LifeCall";
 
+    /**
+     * 是否必须绑定生命周期，如果为true,当 {@code lifecycleProvider==null} 的时候回抛出异常
+     */
     private final boolean mustLifecycleProvider;
 
     private LifeCallAdapterFactory(boolean mustLifecycleProvider) {
