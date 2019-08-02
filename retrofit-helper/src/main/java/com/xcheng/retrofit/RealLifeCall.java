@@ -18,8 +18,10 @@ final class RealLifeCall<T> implements LifeCall<T> {
     private final Lifecycle.Event event;
     private final boolean mustLifecycleProvider;
 
-    //是否回收了
-    private boolean disposed;
+    /**
+     * LifeCall是否被释放了
+     */
+    private volatile boolean disposed;
 
     /**
      * The executor used for {@link Callback} methods on a {@link Call}. This may be {@code null},

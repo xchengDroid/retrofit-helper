@@ -72,6 +72,20 @@ public class MainActivity extends EasyActivity {
                     }
                 });
 
+//        NetTaskExecutor.getInstance().executeOnDiskIO(new Runnable() {
+//            @Override
+//            public void run() {
+//                try {
+//                    Response<LoginInfo> info = RetrofitFactory.create(ApiService.class)
+//                            .getLogin("singleman", "123456").execute(provider);
+//                    Log.e("print",info.body().toString()) ;
+//
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        });
+
     }
 
 

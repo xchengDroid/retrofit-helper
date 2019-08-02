@@ -32,5 +32,10 @@ public interface LifeCall<T> extends Observer<Lifecycle.Event> {
 
     Request request();
 
+    /**
+     * Returns true if this call has been disposed.
+     *
+     * @return true if this call has been disposed
+     */
     boolean isDisposed();
 }
