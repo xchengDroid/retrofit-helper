@@ -57,7 +57,7 @@ public class MainActivity extends EasyActivity {
     public void login(View view) {
         RetrofitFactory.create(ApiService.class)
                 .getLogin("singleman", "123456")
-                .enqueue(provider, new AnimCallback<LoginInfo>(this) {
+                .enqueue(null, new AnimCallback<LoginInfo>(this) {
                     @Override
                     public void onError(LifeCall<LoginInfo> call2, HttpError error) {
                         Toast.makeText(MainActivity.this, error.msg, Toast.LENGTH_SHORT).show();

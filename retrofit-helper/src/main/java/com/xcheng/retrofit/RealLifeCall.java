@@ -69,7 +69,7 @@ final class RealLifeCall<T> implements LifeCall<T> {
             private void callResult(@Nullable Response<T> response, @Nullable Throwable t) {
                 try {
                     if (disposed) {
-                        callback.onLifecycle(RealLifeCall.this);
+                        callback.onDisposed(RealLifeCall.this);
                         return;
                     }
                     //1、获取解析结果

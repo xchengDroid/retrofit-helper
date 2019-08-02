@@ -46,5 +46,5 @@ public interface LifeCallback<T> {
     /**
      * 由于生命周期原因请求被取消了
      */
-    void onLifecycle(LifeCall<T> call);
+    void onDisposed(LifeCall<T> call);
 }

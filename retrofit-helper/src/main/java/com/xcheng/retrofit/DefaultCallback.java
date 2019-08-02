@@ -62,7 +62,7 @@ public abstract class DefaultCallback<T> implements LifeCallback<T> {
     }
 
     @Override
-    public void onLifecycle(LifeCall<T> call) {
+    public void onDisposed(LifeCall<T> call) {
 
     }
 }
