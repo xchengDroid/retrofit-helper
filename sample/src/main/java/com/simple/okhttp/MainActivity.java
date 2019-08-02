@@ -12,7 +12,6 @@ import com.simple.entity.Article;
 import com.simple.entity.LoginInfo;
 import com.simple.entity.WXArticle;
 import com.xcheng.retrofit.AndroidLifecycle;
-import com.xcheng.retrofit.CallManager;
 import com.xcheng.retrofit.DefaultCallback;
 import com.xcheng.retrofit.HttpError;
 import com.xcheng.retrofit.LifeCall;
@@ -143,7 +142,7 @@ public class MainActivity extends EasyActivity {
     public void download(View view) {
         final Button button = (Button) view;
         if (button.getText().equals("取消下载")) {
-            CallManager.getInstance().cancel(TAG_LOAD_APK);
+           // CallManager.getInstance().cancel(TAG_LOAD_APK);
             return;
         }
 
