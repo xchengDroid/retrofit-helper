@@ -29,13 +29,14 @@ final class RealLifeCall<T> implements LifeCall<T> {
     }
 
     @Override
-    public void enqueue(@Nullable final LifecycleProvider provider, final LifeCallback<T> lifeCallback) {
+    public void enqueue(@Nullable final LifecycleProvider provider, final LifeCallback<T> callback) {
+        Utils.checkNotNull(callback, "callback==null");
         addToProvider(provider);
         NetTaskExecutor.getInstance().postToMainThread(new Runnable() {
             @Override
             public void run() {
                 if (!isLifecycle) {
-                    lifeCallback.onStart(RealLifeCall.this);
+                    callback.onStart(RealLifeCall.this);
                 }
             }
         });
@@ -65,25 +66,25 @@ final class RealLifeCall<T> implements LifeCall<T> {
             private void callResult(@Nullable Response<T> response, @Nullable Throwable t) {
                 try {
                     if (isLifecycle) {
-                        lifeCallback.onLifecycle(RealLifeCall.this);
+                        callback.onLifecycle(RealLifeCall.this);
                         return;
                     }
                     //1、获取解析结果
                     Result<T> result;
                     if (response != null) {
-                        result = lifeCallback.parseResponse(RealLifeCall.this, response);
+                        result = callback.parseResponse(RealLifeCall.this, response);
                         Utils.checkNotNull(result, "result==null");
                     } else {
-                        HttpError error = lifeCallback.parseThrowable(RealLifeCall.this, t);
+                        HttpError error = callback.parseThrowable(RealLifeCall.this, t);
                         result = Result.error(error);
                     }
                     //2、回调成功失败
                     if (result.isSuccess()) {
-                        lifeCallback.onSuccess(RealLifeCall.this, result.body());
+                        callback.onSuccess(RealLifeCall.this, result.body());
                     } else {
-                        lifeCallback.onError(RealLifeCall.this, result.error());
+                        callback.onError(RealLifeCall.this, result.error());
                     }
-                    lifeCallback.onCompleted(RealLifeCall.this, t);
+                    callback.onCompleted(RealLifeCall.this, t);
                 } finally {
                     removeFromProvider(provider);
                 }
