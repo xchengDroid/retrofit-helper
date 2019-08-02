@@ -1,17 +1,15 @@
 package com.simple.okhttp;
 
-import android.arch.lifecycle.MutableLiveData;
-import android.arch.lifecycle.Observer;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
 import com.simple.converter.FileConverterFactory;
 import com.simple.entity.Article;
+import com.simple.entity.LoginInfo;
 import com.simple.entity.WXArticle;
 import com.xcheng.retrofit.AndroidLifecycle;
 import com.xcheng.retrofit.CallManager;
@@ -54,44 +52,32 @@ public class MainActivity extends EasyActivity {
                 return String.valueOf(value) + "%";
             }
         });
-        liveData.observeForever(new Observer<String>() {
-            @Override
-            public void onChanged(@Nullable String s) {
-                Log.e("print", s);
-            }
-        });
-
     }
 
     public void login(View view) {
-//        RetrofitFactory.create(ApiService.class)
-//                .getLogin("singleman", "123456")
-//                .bindToLifecycle(provider)
-//                .enqueue(new AnimCallback<LoginInfo>(this) {
-//                    @Override
-//                    public void onError(LifeCall<LoginInfo> call2, HttpError error) {
-//                        Toast.makeText(MainActivity.this, error.msg, Toast.LENGTH_SHORT).show();
-//                        if (error==null){
-//                            System.gc();
-//                        }
-//                    }
-//
-//                    @Override
-//                    public void onSuccess(LifeCall<LoginInfo> call2, LoginInfo response) {
-//                        Toast.makeText(MainActivity.this, "登录成功", Toast.LENGTH_SHORT).show();
-//                        if (response==null){
-//                            System.gc();
-//                        }
-//                    }
-//                });
+        RetrofitFactory.ERROR_WHEN_NO_PROVIDER = true;
+        RetrofitFactory.create(ApiService.class)
+                .getLogin("singleman", "123456")
+                .enqueue(new AnimCallback<LoginInfo>(this) {
+                    @Override
+                    public void onError(LifeCall<LoginInfo> call2, HttpError error) {
+                        Toast.makeText(MainActivity.this, error.msg, Toast.LENGTH_SHORT).show();
+                        if (error == null) {
+                            System.gc();
+                        }
+                    }
 
-        liveData.setValue("1");
-        liveData.setValue("1");
-        liveData.setValue("1");
+                    @Override
+                    public void onSuccess(LifeCall<LoginInfo> call2, LoginInfo response) {
+                        Toast.makeText(MainActivity.this, "登录成功", Toast.LENGTH_SHORT).show();
+                        if (response == null) {
+                            System.gc();
+                        }
+                    }
+                });
+
 
     }
-
-    MutableLiveData<String> liveData = new MutableLiveData<>();
 
 
     public void wxarticle(View view) {
