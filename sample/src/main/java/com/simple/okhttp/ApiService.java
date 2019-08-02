@@ -7,7 +7,6 @@ import com.simple.entity.Article;
 import com.simple.entity.LoginInfo;
 import com.simple.entity.WXArticle;
 import com.xcheng.retrofit.LifeCall;
-import com.xcheng.retrofit.LifecycleProvider;
 
 import java.io.File;
 import java.util.List;
@@ -16,7 +15,6 @@ import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
-import retrofit2.http.Tag;
 
 /**
  * 创建时间：2018/4/8
@@ -28,7 +26,7 @@ public interface ApiService {
     @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
     @FormUrlEncoded
     @POST("user/login")
-    LifeCall<LoginInfo> getLogin(@Tag LifecycleProvider provider, @Field("username") String username, @Field("password") String password);
+    LifeCall<LoginInfo> getLogin(@Field("username") String username, @Field("password") String password);
 
     //获取微信公众号列表
     @GET("wxarticle/chapters/json")

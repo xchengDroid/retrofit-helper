@@ -2,12 +2,10 @@ package com.xcheng.retrofit;
 
 import android.arch.lifecycle.Lifecycle;
 import android.arch.lifecycle.OnLifecycleEvent;
-import android.support.annotation.Nullable;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.concurrent.Executor;
 
 import retrofit2.Call;
 import retrofit2.CallAdapter;
@@ -19,23 +17,21 @@ import retrofit2.Retrofit;
 public final class LifeCallAdapterFactory extends CallAdapter.Factory {
     private static final String RETURN_TYPE = "LifeCall";
 
-    @Nullable
-    private final Executor callbackExecutor;
+    private final boolean mustLifecycleProvider;
 
-    private LifeCallAdapterFactory(@Nullable Executor callbackExecutor) {
-        this.callbackExecutor = callbackExecutor;
+    private LifeCallAdapterFactory(boolean mustLifecycleProvider) {
+        this.mustLifecycleProvider = mustLifecycleProvider;
     }
 
     /**
      * 如果用此构造函数，默认的executor为{@link Retrofit#callbackExecutor()}
      */
     public static LifeCallAdapterFactory create() {
-        return new LifeCallAdapterFactory(null);
+        return new LifeCallAdapterFactory(false);
     }
 
-    public static LifeCallAdapterFactory create(Executor executor) {
-        Utils.checkNotNull(executor, "executor == null");
-        return new LifeCallAdapterFactory(executor);
+    public static LifeCallAdapterFactory create(boolean mustLifecycleProvider) {
+        return new LifeCallAdapterFactory(mustLifecycleProvider);
     }
 
 
@@ -69,7 +65,7 @@ public final class LifeCallAdapterFactory extends CallAdapter.Factory {
 
             @Override
             public LifeCall<Object> adapt(Call<Object> call) {
-                return new RealLifeCall<>(call, event);
+                return new RealLifeCall<>(call, event, mustLifecycleProvider);
             }
         };
     }

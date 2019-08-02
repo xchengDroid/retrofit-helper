@@ -7,6 +7,7 @@ import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.OnLifecycleEvent;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 public final class AndroidLifecycle implements LifecycleProvider, LifecycleObserver {
 
@@ -34,6 +35,7 @@ public final class AndroidLifecycle implements LifecycleProvider, LifecycleObser
     public void observe(@NonNull Observer<Lifecycle.Event> observer) {
         mLiveData.observeForever(observer);
         observerCount++;
+        Log.d(LifeCall.TAG, "observer count -->" + observerCount);
     }
 
     @Override

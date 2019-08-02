@@ -55,16 +55,12 @@ public class MainActivity extends EasyActivity {
     }
 
     public void login(View view) {
-        RetrofitFactory.ERROR_WHEN_NO_PROVIDER = false;
         RetrofitFactory.create(ApiService.class)
-                .getLogin(provider, "singleman", "123456")
-                .enqueue(new AnimCallback<LoginInfo>(this) {
+                .getLogin("singleman", "123456")
+                .enqueue(provider, new AnimCallback<LoginInfo>(this) {
                     @Override
                     public void onError(LifeCall<LoginInfo> call2, HttpError error) {
                         Toast.makeText(MainActivity.this, error.msg, Toast.LENGTH_SHORT).show();
-                        if (error == null) {
-                            System.gc();
-                        }
                     }
 
                     @Override
@@ -76,14 +72,13 @@ public class MainActivity extends EasyActivity {
                     }
                 });
 
-
     }
 
 
     public void wxarticle(View view) {
         RetrofitFactory.create(ApiService.class)
                 .getWXarticle()
-                .enqueue(new AnimCallback<List<WXArticle>>(this) {
+                .enqueue(provider, new AnimCallback<List<WXArticle>>(this) {
                     @Override
                     public void onError(LifeCall<List<WXArticle>> call2, HttpError error) {
                         Toast.makeText(MainActivity.this, error.msg, Toast.LENGTH_SHORT).show();
@@ -100,7 +95,7 @@ public class MainActivity extends EasyActivity {
     public void article0(View view) {
         RetrofitFactory.create(ApiService.class)
                 .getArticle0()
-                .enqueue(new AnimCallback<List<Article>>(this) {
+                .enqueue(provider, new AnimCallback<List<Article>>(this) {
                     @Override
                     public void onError(LifeCall<List<Article>> call2, HttpError error) {
                         Toast.makeText(MainActivity.this, error.msg, Toast.LENGTH_SHORT).show();
@@ -116,7 +111,7 @@ public class MainActivity extends EasyActivity {
     public void progress(View view) {
         RetrofitFactory.create(ApiService.class)
                 .getArticle0()
-                .enqueue(new AnimCallback<List<Article>>(this) {
+                .enqueue(provider, new AnimCallback<List<Article>>(this) {
                     @Override
                     public void onError(LifeCall<List<Article>> call2, HttpError error) {
                         Toast.makeText(MainActivity.this, error.msg, Toast.LENGTH_SHORT).show();
@@ -150,7 +145,7 @@ public class MainActivity extends EasyActivity {
                 .build();
         retrofit.create(ApiService.class)
                 .loadDouYinApk()
-                .enqueue(new DefaultCallback<File>() {
+                .enqueue(provider, new DefaultCallback<File>() {
                     @Override
                     public void onStart(LifeCall<File> call2) {
                         button.setText("取消下载");

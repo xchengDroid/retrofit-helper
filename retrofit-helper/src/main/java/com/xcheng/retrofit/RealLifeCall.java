@@ -16,16 +16,19 @@ final class RealLifeCall<T> implements LifeCall<T> {
 
     private final Call<T> delegate;
     private final Lifecycle.Event event;
+    private final boolean mustLifecycleProvider;
+
     //是否回收了
-    private boolean isLifecycle;
+    private boolean disposed;
 
     /**
      * The executor used for {@link Callback} methods on a {@link Call}. This may be {@code null},
      * in which case callbacks should be made synchronously on the background thread.
      */
-    RealLifeCall(Call<T> delegate, Lifecycle.Event event) {
+    RealLifeCall(Call<T> delegate, Lifecycle.Event event, boolean mustLifecycleProvider) {
         this.delegate = delegate;
         this.event = event;
+        this.mustLifecycleProvider = mustLifecycleProvider;
     }
 
     @Override
@@ -35,7 +38,7 @@ final class RealLifeCall<T> implements LifeCall<T> {
         NetTaskExecutor.getInstance().postToMainThread(new Runnable() {
             @Override
             public void run() {
-                if (!isLifecycle) {
+                if (!disposed) {
                     callback.onStart(RealLifeCall.this);
                 }
             }
@@ -65,7 +68,7 @@ final class RealLifeCall<T> implements LifeCall<T> {
             @UiThread
             private void callResult(@Nullable Response<T> response, @Nullable Throwable t) {
                 try {
-                    if (isLifecycle) {
+                    if (disposed) {
                         callback.onLifecycle(RealLifeCall.this);
                         return;
                     }
@@ -122,7 +125,7 @@ final class RealLifeCall<T> implements LifeCall<T> {
     @SuppressWarnings("CloneDoesntCallSuperClone") // Performing deep clone.
     @Override
     public LifeCall<T> clone() {
-        return new RealLifeCall<>(delegate.clone(), event);
+        return new RealLifeCall<>(delegate.clone(), event, mustLifecycleProvider);
     }
 
     @Override
@@ -132,17 +135,18 @@ final class RealLifeCall<T> implements LifeCall<T> {
 
     @Override
     public void onChanged(@Nullable Lifecycle.Event event) {
-        if (isLifecycle)
+        //just in case
+        if (disposed)
             return;
         if (this.event == event || event == Lifecycle.Event.ON_DESTROY) {
-            isLifecycle = true;
+            disposed = true;
             cancel();
         }
     }
 
     @Override
-    public boolean isLifecycle() {
-        return isLifecycle;
+    public boolean isDisposed() {
+        return disposed;
     }
 
     private void removeFromProvider(@Nullable final LifecycleProvider provider) {
@@ -157,6 +161,7 @@ final class RealLifeCall<T> implements LifeCall<T> {
     }
 
     private void addToProvider(@Nullable final LifecycleProvider provider) {
+        Utils.checkNotNull(!mustLifecycleProvider, "provider==null");
         if (provider != null) {
             NetTaskExecutor.getInstance().executeOnMainThread(new Runnable() {
                 @Override

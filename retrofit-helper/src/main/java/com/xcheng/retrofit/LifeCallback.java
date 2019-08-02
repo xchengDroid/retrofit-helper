@@ -33,7 +33,7 @@ public interface LifeCallback<T> {
      */
     @NonNull
     HttpError parseThrowable(LifeCall<T> call2, Throwable t);
-    
+
     void onError(LifeCall<T> call, HttpError error);
 
     void onSuccess(LifeCall<T> call, T response);

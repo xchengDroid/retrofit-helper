@@ -32,6 +32,5 @@ public interface LifeCall<T> extends Observer<Lifecycle.Event> {
 
     Request request();
 
-    boolean isLifecycle();
-
+    boolean isDisposed();
 }
