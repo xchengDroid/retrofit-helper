@@ -60,4 +60,9 @@ public abstract class DefaultCallback<T> implements LifeCallback<T> {
             return new HttpError("请求失败", t);
         }
     }
+
+    @Override
+    public void onLifecycle(LifeCall<T> call) {
+
+    }
 }

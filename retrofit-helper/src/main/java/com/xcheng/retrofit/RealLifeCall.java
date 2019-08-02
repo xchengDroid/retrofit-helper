@@ -16,11 +16,14 @@ final class RealLifeCall<T> implements LifeCall<T> {
 
     private final Call<T> delegate;
     private final Lifecycle.Event event;
+
+    /**
+     * request 中一直引用到
+     */
     @Nullable
     private final LifecycleProvider provider;
-
     //是否回收了
-    private boolean onLifecycle;
+    private boolean isLifecycle;
 
     /**
      * The executor used for {@link Callback} methods on a {@link Call}. This may be {@code null},
@@ -30,7 +33,7 @@ final class RealLifeCall<T> implements LifeCall<T> {
         this.delegate = delegate;
         this.event = event;
         this.provider = delegate.request().tag(LifecycleProvider.class);
-        if (provider == null) {
+        if (this.provider == null) {
             if (RetrofitFactory.ERROR_WHEN_NO_PROVIDER) {
                 throw new IllegalStateException("Missing (@Tag LifecycleProvider provider) parameter in method");
             } else {
@@ -45,7 +48,7 @@ final class RealLifeCall<T> implements LifeCall<T> {
         NetTaskExecutor.getInstance().postToMainThread(new Runnable() {
             @Override
             public void run() {
-                if (!onLifecycle) {
+                if (!isLifecycle) {
                     lifeCallback.onStart(RealLifeCall.this);
                 }
             }
@@ -76,26 +79,31 @@ final class RealLifeCall<T> implements LifeCall<T> {
 
     @UiThread
     private void callResult(LifeCallback<T> lifeCallback, @Nullable Response<T> response, @Nullable Throwable failureThrowable) {
-        removeFromProvider();
-        if (onLifecycle)
-            return;
-        //1、获取解析结果
-        Result<T> result;
-        if (response != null) {
-            result = lifeCallback.parseResponse(this, response);
-            Utils.checkNotNull(result, "result==null");
-        } else {
-            Utils.checkNotNull(failureThrowable, "failureThrowable==null");
-            HttpError error = lifeCallback.parseThrowable(this, failureThrowable);
-            result = Result.error(error);
+        try {
+            if (isLifecycle) {
+                lifeCallback.onLifecycle(this);
+                return;
+            }
+            //1、获取解析结果
+            Result<T> result;
+            if (response != null) {
+                result = lifeCallback.parseResponse(this, response);
+                Utils.checkNotNull(result, "result==null");
+            } else {
+                Utils.checkNotNull(failureThrowable, "failureThrowable==null");
+                HttpError error = lifeCallback.parseThrowable(this, failureThrowable);
+                result = Result.error(error);
+            }
+            //2、回调成功失败
+            if (result.isSuccess()) {
+                lifeCallback.onSuccess(this, result.body());
+            } else {
+                lifeCallback.onError(this, result.error());
+            }
+            lifeCallback.onCompleted(this, failureThrowable);
+        } finally {
+            removeFromProvider();
         }
-        //2、回调成功失败
-        if (result.isSuccess()) {
-            lifeCallback.onSuccess(this, result.body());
-        } else {
-            lifeCallback.onError(this, result.error());
-        }
-        lifeCallback.onCompleted(this, failureThrowable, isCanceled());
     }
 
     @Override
@@ -106,7 +114,14 @@ final class RealLifeCall<T> implements LifeCall<T> {
     @Override
     public Response<T> execute() throws IOException {
         addToProvider();
-        return delegate.execute();
+        try {
+            return delegate.execute();
+        } catch (Throwable t) {
+            t.printStackTrace();
+        } finally {
+            removeFromProvider();
+        }
+        return null;
     }
 
     @Override
@@ -132,24 +147,11 @@ final class RealLifeCall<T> implements LifeCall<T> {
 
     @Override
     public void onChanged(@Nullable Lifecycle.Event event) {
-        if (!onLifecycle && this.event == event) {
-            onLifecycle = true;
+        if (isLifecycle)
+            return;
+        if (this.event == event || event == Lifecycle.Event.ON_DESTROY) {
+            isLifecycle = true;
             cancel();
-        }
-    }
-
-
-    /**
-     * ensure observe on MainThread
-     */
-    private void addToProvider() {
-        if (provider != null) {
-            NetTaskExecutor.getInstance().executeOnMainThread(new Runnable() {
-                @Override
-                public void run() {
-                    provider.observe(RealLifeCall.this);
-                }
-            });
         }
     }
 
@@ -159,6 +161,17 @@ final class RealLifeCall<T> implements LifeCall<T> {
                 @Override
                 public void run() {
                     provider.removeObserver(RealLifeCall.this);
+                }
+            });
+        }
+    }
+
+    private void addToProvider() {
+        if (provider != null) {
+            NetTaskExecutor.getInstance().executeOnMainThread(new Runnable() {
+                @Override
+                public void run() {
+                    provider.observe(RealLifeCall.this);
                 }
             });
         }

@@ -16,15 +16,19 @@ import retrofit2.Response;
 @UiThread
 public interface LifeCallback<T> extends HttpParser<T> {
 
-    void onStart(LifeCall<T> call2);
+    void onStart(LifeCall<T> call);
 
-    void onError(LifeCall<T> call2, HttpError error);
+    void onError(LifeCall<T> call, HttpError error);
 
-    void onSuccess(LifeCall<T> call2, T response);
+    void onSuccess(LifeCall<T> call, T response);
 
     /**
-     * @param t        请求失败的错误信息
-     * @param canceled 请求是否被取消了
+     * @param t 请求失败的错误信息
      */
-    void onCompleted(LifeCall<T> call2, @Nullable Throwable t, boolean canceled);
+    void onCompleted(LifeCall<T> call, @Nullable Throwable t);
+
+    /**
+     * 由于生命周期原因请求被取消了
+     */
+    void onLifecycle(LifeCall<T> call);
 }

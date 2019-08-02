@@ -55,7 +55,7 @@ public class MainActivity extends EasyActivity {
     }
 
     public void login(View view) {
-        RetrofitFactory.ERROR_WHEN_NO_PROVIDER = true;
+        RetrofitFactory.ERROR_WHEN_NO_PROVIDER = false;
         RetrofitFactory.create(ApiService.class)
                 .getLogin("singleman", "123456")
                 .enqueue(new AnimCallback<LoginInfo>(this) {
