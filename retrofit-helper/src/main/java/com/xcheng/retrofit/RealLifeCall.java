@@ -161,7 +161,6 @@ final class RealLifeCall<T> implements LifeCall<T> {
     }
 
     private void addToProvider(@Nullable final LifecycleProvider provider) {
-        Utils.checkNotNull(!mustLifecycleProvider, "provider==null");
         if (provider != null) {
             NetTaskExecutor.getInstance().executeOnMainThread(new Runnable() {
                 @Override
@@ -170,7 +169,10 @@ final class RealLifeCall<T> implements LifeCall<T> {
                 }
             });
         } else {
-            Log.w(LifeCall.TAG, "provider is null, lifecycle will not provide");
+            if (mustLifecycleProvider) {
+                throw new NullPointerException("lifecycleProvider==null");
+            }
+            Log.w(LifeCall.TAG, "lifecycleProvider is null, lifecycle will not provide");
         }
     }
 }
