@@ -57,7 +57,7 @@ public class MainActivity extends EasyActivity {
         liveData.observeForever(new Observer<String>() {
             @Override
             public void onChanged(@Nullable String s) {
-                Log.e("print",s);
+                Log.e("print", s);
             }
         });
 

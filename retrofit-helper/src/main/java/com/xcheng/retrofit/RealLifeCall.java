@@ -1,9 +1,10 @@
 package com.xcheng.retrofit;
 
 import android.arch.lifecycle.Lifecycle;
-import android.support.annotation.NonNull;
+import android.support.annotation.MainThread;
 import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
+import android.util.Log;
 
 import java.io.IOException;
 import java.util.concurrent.Executor;
@@ -17,11 +18,13 @@ final class RealLifeCall<T> implements LifeCall<T> {
 
     private final Executor callbackExecutor;
     private final Call<T> delegate;
-    private final Lifecycle.Event lifeEvent;
+    private final Lifecycle.Event event;
+    @Nullable
+    private final LifecycleProvider provider;
+
     //是否回收了
     private boolean onLifecycle;
-    @Nullable
-    private LifecycleProvider provider;
+
 
     /**
      * The executor used for {@link Callback} methods on a {@link Call}. This may be {@code null},
@@ -30,11 +33,16 @@ final class RealLifeCall<T> implements LifeCall<T> {
     RealLifeCall(Executor callbackExecutor, Call<T> delegate, Lifecycle.Event event) {
         this.callbackExecutor = callbackExecutor;
         this.delegate = delegate;
-        this.lifeEvent = event;
+        this.event = event;
+        this.provider = delegate.request().tag(LifecycleProvider.class);
+        if (provider == null) {
+            Log.w(LifeCall.TAG, "Can not find LifecycleProvider in request.tag(), lifecycle will not provide");
+        }
     }
 
     @Override
     public void enqueue(final LifeCallback<T> lifeCallback) {
+        addToProvider();
         callbackExecutor.execute(new Runnable() {
             @Override
             public void run() {
@@ -97,6 +105,7 @@ final class RealLifeCall<T> implements LifeCall<T> {
 
     @Override
     public Response<T> execute() throws IOException {
+        addToProvider();
         return delegate.execute();
     }
 
@@ -113,7 +122,7 @@ final class RealLifeCall<T> implements LifeCall<T> {
     @SuppressWarnings("CloneDoesntCallSuperClone") // Performing deep clone.
     @Override
     public LifeCall<T> clone() {
-        return new RealLifeCall<>(callbackExecutor, delegate.clone(), lifeEvent);
+        return new RealLifeCall<>(callbackExecutor, delegate.clone(), event);
     }
 
     @Override
@@ -122,17 +131,22 @@ final class RealLifeCall<T> implements LifeCall<T> {
     }
 
     @Override
-    public LifeCall<T> bindToLifecycle(@NonNull LifecycleProvider provider) {
-        this.provider = provider;
-        provider.observe(this);
-        return this;
-    }
-
-    @Override
     public void onChanged(@Nullable Lifecycle.Event event) {
-        if (!onLifecycle && lifeEvent == event) {
+        if (!onLifecycle && this.event == event) {
             onLifecycle = true;
             cancel();
+        }
+    }
+
+    @MainThread
+    private void addToProvider() {
+        if (provider != null) {
+            callbackExecutor.execute(new Runnable() {
+                @Override
+                public void run() {
+                    provider.observe(RealLifeCall.this);
+                }
+            });
         }
     }
 }

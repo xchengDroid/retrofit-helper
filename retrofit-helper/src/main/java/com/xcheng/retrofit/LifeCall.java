@@ -2,7 +2,6 @@ package com.xcheng.retrofit;
 
 import android.arch.lifecycle.Lifecycle;
 import android.arch.lifecycle.Observer;
-import android.support.annotation.NonNull;
 
 import java.io.IOException;
 
@@ -15,6 +14,8 @@ import retrofit2.Response;
  * 功能描述：支持生命周期绑定的Call{@link retrofit2.Call}
  */
 public interface LifeCall<T> extends Observer<Lifecycle.Event> {
+    
+    String TAG = Lifecycle.class.getSimpleName();
 
     Response<T> execute() throws IOException;
 
@@ -29,12 +30,4 @@ public interface LifeCall<T> extends Observer<Lifecycle.Event> {
     LifeCall<T> clone();
 
     Request request();
-
-    /**
-     * called before {@link #enqueue(LifeCallback)} and {@link #execute()}
-     *
-     * @param provider
-     * @return
-     */
-    LifeCall<T> bindToLifecycle(@NonNull LifecycleProvider provider);
 }
