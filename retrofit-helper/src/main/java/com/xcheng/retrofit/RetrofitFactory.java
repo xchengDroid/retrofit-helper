@@ -21,13 +21,6 @@ public final class RetrofitFactory {
      */
     public static volatile Retrofit DEFAULT;
 
-    /**
-     * 当没有设置provider时
-     * true ->抛出异常
-     * false->打印日志
-     */
-    public static boolean ERROR_WHEN_NO_PROVIDER = false;
-
     private RetrofitFactory() {
     }
 

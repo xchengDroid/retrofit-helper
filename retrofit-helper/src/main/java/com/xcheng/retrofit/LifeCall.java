@@ -2,6 +2,7 @@ package com.xcheng.retrofit;
 
 import android.arch.lifecycle.Lifecycle;
 import android.arch.lifecycle.Observer;
+import android.support.annotation.Nullable;
 
 import java.io.IOException;
 
@@ -17,9 +18,9 @@ public interface LifeCall<T> extends Observer<Lifecycle.Event> {
 
     String TAG = "LifeCall";
 
-    Response<T> execute() throws IOException;
+    Response<T> execute(@Nullable LifecycleProvider provider) throws IOException;
 
-    void enqueue(LifeCallback<T> callback2);
+    void enqueue(@Nullable LifecycleProvider provider, LifeCallback<T> callback);
 
     boolean isExecuted();
 
