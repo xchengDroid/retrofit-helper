@@ -61,9 +61,6 @@ public final class LifeCallAdapterFactory extends CallAdapter.Factory {
         OnLifecycleEvent annotation = Utils.findAnnotation(annotations, OnLifecycleEvent.class);
         final Lifecycle.Event event = annotation != null ? annotation.value() : Lifecycle.Event.ON_DESTROY;
 
-        final Executor executor = callbackExecutor != null ? callbackExecutor : retrofit.callbackExecutor();
-        if (executor == null) throw new AssertionError();
-
         return new CallAdapter<Object, LifeCall<?>>() {
             @Override
             public Type responseType() {
@@ -72,7 +69,7 @@ public final class LifeCallAdapterFactory extends CallAdapter.Factory {
 
             @Override
             public LifeCall<Object> adapt(Call<Object> call) {
-                return new RealLifeCall<>(executor, call, event);
+                return new RealLifeCall<>(call, event);
             }
         };
     }

@@ -16,19 +16,36 @@
 
 package com.xcheng.retrofit;
 
+import android.annotation.SuppressLint;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicInteger;
 
-public class DefaultTaskExecutor extends TaskExecutor {
-    private final Object mLock = new Object();
-    private ExecutorService mDiskIO = Executors.newFixedThreadPool(2);
-    @Nullable
-    private volatile Handler mMainHandler;
+/**
+ * 处理网络相关线程的IO操作
+ */
+public final class NetTaskExecutor extends TaskExecutor {
+
+    private final ExecutorService mDiskIO = Executors.newFixedThreadPool(2, new ThreadFactory() {
+        private static final String THREAD_NAME_STEM = "net_disk_io_%d";
+
+        private final AtomicInteger mThreadId = new AtomicInteger(0);
+
+        @SuppressLint("DefaultLocale")
+        @Override
+        public Thread newThread(Runnable r) {
+            Thread t = new Thread(r);
+            t.setName(String.format(THREAD_NAME_STEM, mThreadId.getAndIncrement()));
+            return t;
+        }
+    });
+    
+    private final Handler mMainHandler = new Handler(Looper.getMainLooper());
 
     @Override
     public void executeOnDiskIO(@NonNull Runnable runnable) {
@@ -43,14 +60,6 @@ public class DefaultTaskExecutor extends TaskExecutor {
 
     @Override
     public void postToMainThread(@NonNull Runnable runnable) {
-        if (mMainHandler == null) {
-            synchronized (mLock) {
-                if (mMainHandler == null) {
-                    mMainHandler = new Handler(Looper.getMainLooper());
-                }
-            }
-        }
-        //noinspection ConstantConditions
         mMainHandler.post(runnable);
     }
 
