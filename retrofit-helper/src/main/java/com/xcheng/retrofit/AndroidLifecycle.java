@@ -35,13 +35,15 @@ public final class AndroidLifecycle implements LifecycleProvider, LifecycleObser
     public void observe(@NonNull Observer<Lifecycle.Event> observer) {
         mLiveData.observeForever(observer);
         observerCount++;
-        Log.d(LifeCall.TAG, "observer count -->" + observerCount);
+        Log.d(LifeCall.TAG, "observer -->" + observerCount);
     }
 
     @Override
     public void removeObserver(@NonNull Observer<Lifecycle.Event> observer) {
         mLiveData.removeObserver(observer);
         observerCount--;
+        Log.d(LifeCall.TAG, "removeObserver -->" + observerCount);
+
     }
 
     //for test

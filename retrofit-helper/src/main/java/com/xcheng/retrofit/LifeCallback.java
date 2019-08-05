@@ -1,6 +1,5 @@
 package com.xcheng.retrofit;
 
-import android.arch.lifecycle.Lifecycle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
@@ -41,7 +40,7 @@ public interface LifeCallback<T> {
     void onCompleted(LifeCall<T> call, @Nullable Throwable t);
 
     /**
-     * 由于生命周期原因请求被取消了
+     * 由于生命周期原因请求被取消了,此回调函数不是与生命周期函数同步的
      */
-    void onDisposed(LifeCall<T> call, Lifecycle.Event event);
+    void onDisposed(LifeCall<T> call);
 }

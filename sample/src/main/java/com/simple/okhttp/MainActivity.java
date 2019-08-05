@@ -1,6 +1,5 @@
 package com.simple.okhttp;
 
-import android.arch.lifecycle.Lifecycle;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -58,7 +57,7 @@ public class MainActivity extends EasyActivity {
     public void login(View view) {
         RetrofitFactory.create(ApiService.class)
                 .getLogin("singleman", "123456")
-                .enqueue(null, new AnimCallback<LoginInfo>(this) {
+                .enqueue(provider, new AnimCallback<LoginInfo>(this) {
                     @Override
                     public void onError(LifeCall<LoginInfo> call2, HttpError error) {
                         Toast.makeText(MainActivity.this, error.msg, Toast.LENGTH_SHORT).show();
@@ -188,10 +187,9 @@ public class MainActivity extends EasyActivity {
                     }
 
                     @Override
-                    public void onDisposed(LifeCall<File> call, Lifecycle.Event event) {
-                        super.onDisposed(call, event);
-                        Log.e("print","onDisposed");
-
+                    public void onDisposed(LifeCall<File> call) {
+                        super.onDisposed(call);
+                        Log.e("LifeCall","onDisposed");
                     }
                 });
     }

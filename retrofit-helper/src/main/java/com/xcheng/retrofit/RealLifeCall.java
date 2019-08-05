@@ -23,9 +23,6 @@ final class RealLifeCall<T> implements LifeCall<T> {
      */
     private volatile boolean disposed;
 
-    @Nullable
-    private volatile LifeCallback<T> lifeCallback;
-
     /**
      * The executor used for {@link Callback} methods on a {@link Call}. This may be {@code null},
      * in which case callbacks should be made synchronously on the background thread.
@@ -39,12 +36,11 @@ final class RealLifeCall<T> implements LifeCall<T> {
     @Override
     public void enqueue(@Nullable final LifecycleProvider provider, final LifeCallback<T> callback) {
         Utils.checkNotNull(callback, "callback==null");
-        //make sure call before addToProvider
-        this.lifeCallback = callback;
-        addToProvider(provider);
         NetTaskExecutor.getInstance().postToMainThread(new Runnable() {
             @Override
             public void run() {
+                //make sure had checked delegate.isExecuted() and other exceptions
+                addToProvider(provider);
                 if (!disposed) {
                     callback.onStart(RealLifeCall.this);
                 }
@@ -75,8 +71,10 @@ final class RealLifeCall<T> implements LifeCall<T> {
             @UiThread
             private void callResult(@Nullable Response<T> response, @Nullable Throwable t) {
                 try {
-                    if (disposed)
+                    if (disposed) {
+                        callback.onDisposed(RealLifeCall.this);
                         return;
+                    }
                     if (response != null) {
                         T body = response.body();
                         if (body != null) {
@@ -92,7 +90,6 @@ final class RealLifeCall<T> implements LifeCall<T> {
                     callback.onCompleted(RealLifeCall.this, t);
                 } finally {
                     removeFromProvider(provider);
-                    RealLifeCall.this.lifeCallback = null;
                 }
             }
         });
@@ -142,13 +139,9 @@ final class RealLifeCall<T> implements LifeCall<T> {
         if (disposed)
             return;
         if (this.event == event || event == Lifecycle.Event.ON_DESTROY) {
+            Log.d(LifeCall.TAG, "disposed by " + event);
             disposed = true;
             cancel();
-            LifeCallback<T> callback = this.lifeCallback;
-            //volatile 会警告NullPointException
-            if (callback != null) {
-                callback.onDisposed(this, event);
-            }
         }
     }
 
