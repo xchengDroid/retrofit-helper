@@ -36,12 +36,11 @@ final class RealLifeCall<T> implements LifeCall<T> {
     @Override
     public void enqueue(@Nullable final LifecycleProvider provider, final LifeCallback<T> callback) {
         Utils.checkNotNull(callback, "callback==null");
-        //make sure if throw  Already executed and other exceptions
-        //remove from outside
-        addToProvider(provider);
         NetTaskExecutor.getInstance().postToMainThread(new Runnable() {
             @Override
             public void run() {
+                //make sure had checked delegate.isExecuted() and other exceptions
+                addToProvider(provider);
                 if (!disposed) {
                     callback.onStart(RealLifeCall.this);
                 }
