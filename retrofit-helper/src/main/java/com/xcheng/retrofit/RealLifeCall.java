@@ -77,20 +77,16 @@ final class RealLifeCall<T> implements LifeCall<T> {
                 try {
                     if (disposed)
                         return;
-                    //1、获取解析结果
-                    Result<T> result;
                     if (response != null) {
-                        result = callback.parseResponse(RealLifeCall.this, response);
-                        Utils.checkNotNull(result, "result==null");
+                        T body = response.body();
+                        if (body != null) {
+                            callback.onSuccess(RealLifeCall.this, body);
+                        } else {
+                            callback.onError(RealLifeCall.this, new HttpError("response.body()==null", response));
+                        }
                     } else {
                         HttpError error = callback.parseThrowable(RealLifeCall.this, t);
-                        result = Result.error(error);
-                    }
-                    //2、回调成功失败
-                    if (result.isSuccess()) {
-                        callback.onSuccess(RealLifeCall.this, result.body());
-                    } else {
-                        callback.onError(RealLifeCall.this, result.error());
+                        callback.onError(RealLifeCall.this, error);
                     }
                     callback.onCompleted(RealLifeCall.this, t);
                 } finally {
