@@ -29,10 +29,15 @@ public interface LifeCallback<T> {
     @NonNull
     HttpError parseThrowable(LifeCall<T> call, Throwable t);
 
+    /**
+     * 过滤一次数据 ，如剔除List中的null等，默认可以返回t
+     */
+    @NonNull
+    T transform(LifeCall<T> call, T t);
 
     void onError(LifeCall<T> call, HttpError error);
 
-    void onSuccess(LifeCall<T> call, T response);
+    void onSuccess(LifeCall<T> call, T t);
 
     /**
      * @param t 请求失败的错误信息

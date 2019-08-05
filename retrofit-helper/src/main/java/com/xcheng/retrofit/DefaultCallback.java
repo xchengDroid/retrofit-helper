@@ -13,7 +13,8 @@ import retrofit2.Response;
 @UiThread
 public abstract class DefaultCallback<T> implements LifeCallback<T> {
     @NonNull
-    public HttpError parseThrowable(LifeCall<T> call2, Throwable t) {
+    @Override
+    public HttpError parseThrowable(LifeCall<T> call, Throwable t) {
         if (t instanceof HttpError) {
             HttpError error = (HttpError) t;
             Response<?> response = error.response();
@@ -51,6 +52,12 @@ public abstract class DefaultCallback<T> implements LifeCallback<T> {
         } else {
             return new HttpError("请求失败", t);
         }
+    }
+
+    @NonNull
+    @Override
+    public T transform(LifeCall<T> call, T t) {
+        return t;
     }
 
     @Override
