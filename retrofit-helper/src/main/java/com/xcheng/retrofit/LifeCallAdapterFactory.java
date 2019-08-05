@@ -20,10 +20,10 @@ public final class LifeCallAdapterFactory extends CallAdapter.Factory {
     /**
      * 是否必须绑定生命周期，如果为true,当 {@code lifecycleProvider==null} 的时候回抛出异常
      */
-    private final boolean mustLifecycleProvider;
+    private final boolean checkProviderNonNull;
 
-    private LifeCallAdapterFactory(boolean mustLifecycleProvider) {
-        this.mustLifecycleProvider = mustLifecycleProvider;
+    private LifeCallAdapterFactory(boolean checkProviderNonNull) {
+        this.checkProviderNonNull = checkProviderNonNull;
     }
 
     /**
@@ -33,8 +33,8 @@ public final class LifeCallAdapterFactory extends CallAdapter.Factory {
         return new LifeCallAdapterFactory(false);
     }
 
-    public static LifeCallAdapterFactory create(boolean mustLifecycleProvider) {
-        return new LifeCallAdapterFactory(mustLifecycleProvider);
+    public static LifeCallAdapterFactory create(boolean checkProviderNonNull) {
+        return new LifeCallAdapterFactory(checkProviderNonNull);
     }
 
 
@@ -68,7 +68,7 @@ public final class LifeCallAdapterFactory extends CallAdapter.Factory {
 
             @Override
             public LifeCall<Object> adapt(Call<Object> call) {
-                return new RealLifeCall<>(call, event, mustLifecycleProvider);
+                return new RealLifeCall<>(call, event, checkProviderNonNull);
             }
         };
     }
