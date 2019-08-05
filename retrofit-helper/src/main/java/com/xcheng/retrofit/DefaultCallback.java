@@ -16,31 +16,29 @@ public abstract class DefaultCallback<T> implements LifeCallback<T> {
     @NonNull
     public HttpError parseThrowable(LifeCall<T> call2, Throwable t) {
         if (t instanceof HttpError) {
-            //用于convert函数直接抛出异常接收
             HttpError error = (HttpError) t;
             Response<?> response = error.response();
-            if (response != null) {
-                if (response.isSuccessful()) {
-                    return new HttpError("暂无数据", response);
-                }
-                final String msg;
-                switch (response.code()) {
-                    case 400:
-                        msg = "参数错误";
-                        break;
-                    case 401:
-                        msg = "身份未授权";
-                        break;
-                    case 403:
-                        msg = "禁止访问";
-                        break;
-                    case 404:
-                        msg = "地址未找到";
-                        break;
-                    default:
-                        msg = "服务异常";
-                }
-                return new HttpError(msg, response);
+            if (response == null)
+                return error;
+            switch (response.code()) {
+                case 400:
+                    error.msg = "参数错误";
+                    break;
+                case 401:
+                    error.msg = "身份未授权";
+                    break;
+                case 403:
+                    error.msg = "禁止访问";
+                    break;
+                case 404:
+                    error.msg = "地址未找到";
+                    break;
+                default:
+                    if (response.isSuccessful()) {
+                        error.msg = "暂无数据";
+                    } else {
+                        error.msg = "服务异常";
+                    }
             }
             return error;
         } else if (t instanceof UnknownHostException) {
