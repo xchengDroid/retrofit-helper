@@ -24,7 +24,7 @@ final class RealLifeCall<T> implements LifeCall<T> {
     private volatile boolean disposed;
 
     @Nullable
-    private LifeCallback<T> callback;
+    private volatile LifeCallback<T> callback;
 
     /**
      * The executor used for {@link Callback} methods on a {@link Call}. This may be {@code null},
@@ -95,7 +95,7 @@ final class RealLifeCall<T> implements LifeCall<T> {
                     callback.onCompleted(RealLifeCall.this, t);
                 } finally {
                     removeFromProvider(provider);
-                    RealLifeCall.this.callback=null;
+                    RealLifeCall.this.callback = null;
                 }
             }
         });
@@ -147,6 +147,8 @@ final class RealLifeCall<T> implements LifeCall<T> {
         if (this.event == event || event == Lifecycle.Event.ON_DESTROY) {
             disposed = true;
             cancel();
+            LifeCallback<T> callback = this.callback;
+            //volatile 会警告NullPointException
             if (callback != null) {
                 callback.onDisposed(this, event);
             }
