@@ -24,7 +24,7 @@ public final class RetrofitFactory {
     /**
      * 是否显示日志
      */
-    public static boolean SHOW_LOG = false;
+    public static boolean SHOW_LOG = true;
 
     private RetrofitFactory() {
     }
