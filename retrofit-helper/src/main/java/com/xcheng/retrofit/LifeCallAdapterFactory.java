@@ -22,19 +22,27 @@ public final class LifeCallAdapterFactory extends CallAdapter.Factory {
      */
     private final boolean checkProviderNonNull;
 
-    private LifeCallAdapterFactory(boolean checkProviderNonNull) {
+    /**
+     * 默认是哪个生命周期事件释放请求
+     */
+    private final Lifecycle.Event defaultEvent;
+
+
+    private LifeCallAdapterFactory(boolean checkProviderNonNull, Lifecycle.Event defaultEvent) {
+        Utils.checkNotNull(defaultEvent, "defaultEvent==null");
         this.checkProviderNonNull = checkProviderNonNull;
+        this.defaultEvent = defaultEvent;
     }
 
     /**
      * 如果用此构造函数，默认的executor为{@link Retrofit#callbackExecutor()}
      */
     public static LifeCallAdapterFactory create() {
-        return new LifeCallAdapterFactory(false);
+        return new LifeCallAdapterFactory(false, Lifecycle.Event.ON_DESTROY);
     }
 
-    public static LifeCallAdapterFactory create(boolean checkProviderNonNull) {
-        return new LifeCallAdapterFactory(checkProviderNonNull);
+    public static LifeCallAdapterFactory create(boolean checkProviderNonNull, Lifecycle.Event defaultEvent) {
+        return new LifeCallAdapterFactory(checkProviderNonNull, defaultEvent);
     }
 
 
@@ -58,8 +66,7 @@ public final class LifeCallAdapterFactory extends CallAdapter.Factory {
         final Type responseType = getParameterUpperBound(0, (ParameterizedType) returnType);
 
         OnLifecycleEvent annotation = Utils.findAnnotation(annotations, OnLifecycleEvent.class);
-        final Lifecycle.Event event = annotation != null ? annotation.value() : Lifecycle.Event.ON_DESTROY;
-
+        final Lifecycle.Event event = annotation != null ? annotation.value() : defaultEvent;
         return new CallAdapter<Object, LifeCall<?>>() {
             @Override
             public Type responseType() {
