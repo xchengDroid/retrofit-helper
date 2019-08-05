@@ -30,7 +30,7 @@ public interface LifeCallback<T> {
     HttpError parseThrowable(LifeCall<T> call, Throwable t);
 
     /**
-     * 过滤一次数据 ，如剔除List中的null等，默认可以返回t
+     * 过滤一次数据,如剔除List中的null等,默认可以返回t
      */
     @NonNull
     T transform(LifeCall<T> call, T t);
