@@ -21,6 +21,11 @@ public final class RetrofitFactory {
      */
     public static volatile Retrofit DEFAULT;
 
+    /**
+     * 是否显示日志
+     */
+    public static boolean SHOW_LOG = false;
+
     private RetrofitFactory() {
     }
 

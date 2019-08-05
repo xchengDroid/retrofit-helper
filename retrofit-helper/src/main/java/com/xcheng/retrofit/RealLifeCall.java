@@ -139,7 +139,9 @@ final class RealLifeCall<T> implements LifeCall<T> {
         if (disposed)
             return;
         if (this.event == event || event == Lifecycle.Event.ON_DESTROY) {
-            Log.d(LifeCall.TAG, "disposed by " + event + " url-->" + request().url());
+            if (RetrofitFactory.SHOW_LOG) {
+                Log.d(LifeCall.TAG, "disposed by " + event + " url-->" + request().url());
+            }
             disposed = true;
             cancel();
         }
@@ -173,7 +175,9 @@ final class RealLifeCall<T> implements LifeCall<T> {
             if (checkProviderNonNull) {
                 throw new NullPointerException("lifecycleProvider==null");
             }
-            Log.w(LifeCall.TAG, "lifecycleProvider is null, lifecycle will not provide");
+            if (RetrofitFactory.SHOW_LOG) {
+                Log.w(LifeCall.TAG, "lifecycleProvider is null, lifecycle will not provide");
+            }
         }
     }
 }
