@@ -82,11 +82,10 @@ final class RealLifeCall<T> implements LifeCall<T> {
                         if (body != null) {
                             callback.onSuccess(RealLifeCall.this, body);
                         } else {
-                            HttpError noBodyError = new HttpError("response.body()==null", response);
-                            HttpError error = callback.parseThrowable(RealLifeCall.this, noBodyError);
-                            callback.onError(RealLifeCall.this, error);
+                            t = new HttpError("response.body()==null", response);
                         }
-                    } else {
+                    }
+                    if (t != null) {
                         HttpError error = callback.parseThrowable(RealLifeCall.this, t);
                         callback.onError(RealLifeCall.this, error);
                     }
