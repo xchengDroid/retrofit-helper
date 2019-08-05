@@ -21,19 +21,14 @@ public interface LifeCallback<T> {
 
     void onStart(LifeCall<T> call);
 
-    @NonNull
-    Result<T> parseResponse(LifeCall<T> call2, Response<T> response);
-
     /**
-     * 统一解析Throwable对象转换为HttpError对象。如果为HttpError，
-     * 则为{@link retrofit2.Converter#convert(Object)}内抛出的异常
-     *
-     * @param call2 call
-     * @param t     Throwable
-     * @return HttpError result
+     * 统一解析Throwable对象转换为HttpError对象。
+     * <li>如果为{@link HttpError}则为{@link retrofit2.Converter#convert(Object)}内抛出的异常</li>
+     * <li>或者为{@link retrofit2.HttpException}当 {@code body==null}的时候</li>
      */
     @NonNull
-    HttpError parseThrowable(LifeCall<T> call2, Throwable t);
+    HttpError parseThrowable(LifeCall<T> call, Throwable t);
+
 
     void onError(LifeCall<T> call, HttpError error);
 
