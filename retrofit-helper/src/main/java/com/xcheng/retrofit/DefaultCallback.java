@@ -1,5 +1,6 @@
 package com.xcheng.retrofit;
 
+import android.arch.lifecycle.Lifecycle;
 import android.support.annotation.NonNull;
 import android.support.annotation.UiThread;
 
@@ -62,7 +63,7 @@ public abstract class DefaultCallback<T> implements LifeCallback<T> {
     }
 
     @Override
-    public void onDisposed(LifeCall<T> call) {
+    public void onDisposed(LifeCall<T> call, Lifecycle.Event event) {
 
     }
 }

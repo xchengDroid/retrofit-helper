@@ -1,8 +1,10 @@
 package com.simple.okhttp;
 
+import android.arch.lifecycle.Lifecycle;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -183,6 +185,13 @@ public class MainActivity extends EasyActivity {
                         } else {
                             button.setText("下载完成");
                         }
+                    }
+
+                    @Override
+                    public void onDisposed(LifeCall<File> call, Lifecycle.Event event) {
+                        super.onDisposed(call, event);
+                        Log.e("print","onDisposed");
+
                     }
                 });
     }
