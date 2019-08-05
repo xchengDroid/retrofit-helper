@@ -24,7 +24,7 @@ final class RealLifeCall<T> implements LifeCall<T> {
     private volatile boolean disposed;
 
     @Nullable
-    private volatile LifeCallback<T> callback;
+    private volatile LifeCallback<T> lifeCallback;
 
     /**
      * The executor used for {@link Callback} methods on a {@link Call}. This may be {@code null},
@@ -40,7 +40,7 @@ final class RealLifeCall<T> implements LifeCall<T> {
     public void enqueue(@Nullable final LifecycleProvider provider, final LifeCallback<T> callback) {
         Utils.checkNotNull(callback, "callback==null");
         //make sure call before addToProvider
-        this.callback = callback;
+        this.lifeCallback = callback;
         addToProvider(provider);
         NetTaskExecutor.getInstance().postToMainThread(new Runnable() {
             @Override
@@ -92,7 +92,7 @@ final class RealLifeCall<T> implements LifeCall<T> {
                     callback.onCompleted(RealLifeCall.this, t);
                 } finally {
                     removeFromProvider(provider);
-                    RealLifeCall.this.callback = null;
+                    RealLifeCall.this.lifeCallback = null;
                 }
             }
         });
@@ -144,7 +144,7 @@ final class RealLifeCall<T> implements LifeCall<T> {
         if (this.event == event || event == Lifecycle.Event.ON_DESTROY) {
             disposed = true;
             cancel();
-            LifeCallback<T> callback = this.callback;
+            LifeCallback<T> callback = this.lifeCallback;
             //volatile 会警告NullPointException
             if (callback != null) {
                 callback.onDisposed(this, event);
