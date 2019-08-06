@@ -80,8 +80,8 @@ final class RealLifeCall<T> implements LifeCall<T> {
                         T body = response.body();
                         if (body != null) {
                             T transformer = callback.transform(RealLifeCall.this, body);
-                            Utils.checkNotNull(transformer == null, "transform==null");
-                            callback.onSuccess(RealLifeCall.this, body);
+                            Utils.checkNotNull(transformer == null, "transformer==null");
+                            callback.onSuccess(RealLifeCall.this, transformer);
                         } else {
                             t = new HttpError("response.body()==null", response);
                         }
