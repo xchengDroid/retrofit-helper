@@ -16,7 +16,7 @@ final class RealLifeCall<T> implements LifeCall<T> {
 
     private final Call<T> delegate;
     private final Lifecycle.Event event;
-    private final boolean checkProviderNonNull;
+    private final boolean checkProvider;
 
     /**
      * LifeCall是否被释放了
@@ -27,10 +27,10 @@ final class RealLifeCall<T> implements LifeCall<T> {
      * The executor used for {@link Callback} methods on a {@link Call}. This may be {@code null},
      * in which case callbacks should be made synchronously on the background thread.
      */
-    RealLifeCall(Call<T> delegate, Lifecycle.Event event, boolean checkProviderNonNull) {
+    RealLifeCall(Call<T> delegate, Lifecycle.Event event, boolean checkProvider) {
         this.delegate = delegate;
         this.event = event;
-        this.checkProviderNonNull = checkProviderNonNull;
+        this.checkProvider = checkProvider;
     }
 
     @Override
@@ -130,7 +130,7 @@ final class RealLifeCall<T> implements LifeCall<T> {
     @SuppressWarnings("CloneDoesntCallSuperClone") // Performing deep clone.
     @Override
     public LifeCall<T> clone() {
-        return new RealLifeCall<>(delegate.clone(), event, checkProviderNonNull);
+        return new RealLifeCall<>(delegate.clone(), event, checkProvider);
     }
 
     @Override
@@ -177,7 +177,7 @@ final class RealLifeCall<T> implements LifeCall<T> {
                 }
             });
         } else {
-            if (checkProviderNonNull) {
+            if (checkProvider) {
                 throw new NullPointerException("lifecycleProvider==null");
             }
             if (RetrofitFactory.SHOW_LOG) {
