@@ -4,13 +4,10 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
 
-import retrofit2.Call;
 import retrofit2.Response;
 
 /**
- * if {@link Call#cancel()}called, {@link #onStart(LifeCall)}、{@link #parseResponse(LifeCall, Response)}
- * 、{@link #parseThrowable(LifeCall, Throwable)}、{@link #onSuccess(LifeCall, Object)}、
- * {@link #onError(LifeCall, HttpError)}will not be called
+ * if {@link LifeCall#isDisposed()} return true,only call {@link #onDisposed(LifeCall)}method
  *
  * @param <T> Successful response body type.
  */
