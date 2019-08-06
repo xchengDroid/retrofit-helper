@@ -18,9 +18,9 @@ public final class LifeCallAdapterFactory extends CallAdapter.Factory {
     private static final String RETURN_TYPE = "LifeCall";
 
     /**
-     * 是否必须绑定生命周期，如果为true,当 {@code lifecycleProvider==null} 的时候回抛出异常
+     * 默认是否必须绑定生命周期，如果为true,当 {@code lifecycleProvider==null} 的时候回抛出异常
      */
-    private final boolean checkProviderNonNull;
+    private final boolean checkProvider;
 
     /**
      * 默认是哪个生命周期事件释放请求
@@ -28,9 +28,9 @@ public final class LifeCallAdapterFactory extends CallAdapter.Factory {
     private final Lifecycle.Event defaultEvent;
 
 
-    private LifeCallAdapterFactory(boolean checkProviderNonNull, Lifecycle.Event defaultEvent) {
+    private LifeCallAdapterFactory(boolean checkProvider, Lifecycle.Event defaultEvent) {
         Utils.checkNotNull(defaultEvent, "defaultEvent==null");
-        this.checkProviderNonNull = checkProviderNonNull;
+        this.checkProvider = checkProvider;
         this.defaultEvent = defaultEvent;
     }
 
@@ -41,10 +41,9 @@ public final class LifeCallAdapterFactory extends CallAdapter.Factory {
         return new LifeCallAdapterFactory(false, Lifecycle.Event.ON_DESTROY);
     }
 
-    public static LifeCallAdapterFactory create(boolean checkProviderNonNull, Lifecycle.Event defaultEvent) {
-        return new LifeCallAdapterFactory(checkProviderNonNull, defaultEvent);
+    public static LifeCallAdapterFactory create(boolean checkProvider, Lifecycle.Event defaultEvent) {
+        return new LifeCallAdapterFactory(checkProvider, defaultEvent);
     }
-
 
     /**
      * Extract the raw class type from {@code type}. For example, the type representing
@@ -65,8 +64,12 @@ public final class LifeCallAdapterFactory extends CallAdapter.Factory {
         }
         final Type responseType = getParameterUpperBound(0, (ParameterizedType) returnType);
 
-        OnLifecycleEvent annotation = Utils.findAnnotation(annotations, OnLifecycleEvent.class);
-        final Lifecycle.Event event = annotation != null ? annotation.value() : defaultEvent;
+        OnLifecycleEvent eventAnnotation = Utils.findAnnotation(annotations, OnLifecycleEvent.class);
+        final Lifecycle.Event event = eventAnnotation != null ? eventAnnotation.value() : this.defaultEvent;
+
+        CheckProvider providerAnnotation = Utils.findAnnotation(annotations, CheckProvider.class);
+        final boolean checkProvider = providerAnnotation != null ? providerAnnotation.value() : this.checkProvider;
+
         return new CallAdapter<Object, LifeCall<?>>() {
             @Override
             public Type responseType() {
@@ -75,7 +78,7 @@ public final class LifeCallAdapterFactory extends CallAdapter.Factory {
 
             @Override
             public LifeCall<Object> adapt(Call<Object> call) {
-                return new RealLifeCall<>(call, event, checkProviderNonNull);
+                return new RealLifeCall<>(call, event, checkProvider);
             }
         };
     }
