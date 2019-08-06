@@ -39,6 +39,7 @@ final class RealLifeCall<T> implements LifeCall<T> {
         //make sure if throw  Already executed and other exceptions
         //remove from outside
         addToProvider(provider);
+        //postToMainThread ensure queue
         NetTaskExecutor.getInstance().postToMainThread(new Runnable() {
             @Override
             public void run() {
