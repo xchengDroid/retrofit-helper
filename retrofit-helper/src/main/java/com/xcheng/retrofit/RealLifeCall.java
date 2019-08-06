@@ -170,6 +170,7 @@ final class RealLifeCall<T> implements LifeCall<T> {
 
     private void addToProvider(@Nullable final LifecycleProvider provider) {
         if (provider != null) {
+            //ensure on MainThread
             NetTaskExecutor.getInstance().executeOnMainThread(new Runnable() {
                 @Override
                 public void run() {
