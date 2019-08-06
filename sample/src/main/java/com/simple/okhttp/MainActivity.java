@@ -17,6 +17,7 @@ import com.xcheng.retrofit.DefaultCallback;
 import com.xcheng.retrofit.HttpError;
 import com.xcheng.retrofit.LifeCall;
 import com.xcheng.retrofit.LifecycleProvider;
+import com.xcheng.retrofit.NetTaskExecutor;
 import com.xcheng.retrofit.RetrofitFactory;
 import com.xcheng.retrofit.progress.ProgressInterceptor;
 import com.xcheng.retrofit.progress.ProgressListener;
@@ -55,22 +56,41 @@ public class MainActivity extends EasyActivity {
     }
 
     public void login(View view) {
-        RetrofitFactory.create(ApiService.class)
-                .getLogin("singleman", "123456")
-                .enqueue(provider, new AnimCallback<LoginInfo>(this) {
-                    @Override
-                    public void onError(LifeCall<LoginInfo> call2, HttpError error) {
-                        Toast.makeText(MainActivity.this, error.msg, Toast.LENGTH_SHORT).show();
-                    }
+//        RetrofitFactory.create(ApiService.class)
+//                .getLogin("singleman", "123456")
+//                .enqueue(null, new AnimCallback<LoginInfo>(this) {
+//                    @Override
+//                    public void onError(LifeCall<LoginInfo> call2, HttpError error) {
+//                        Toast.makeText(MainActivity.this, error.msg, Toast.LENGTH_SHORT).show();
+//                    }
+//
+//                    @Override
+//                    public void onSuccess(LifeCall<LoginInfo> call2, LoginInfo response) {
+//                        Toast.makeText(MainActivity.this, "登录成功", Toast.LENGTH_SHORT).show();
+//                        if (response == null) {
+//                            System.gc();
+//                        }
+//                    }
+//                });
 
-                    @Override
-                    public void onSuccess(LifeCall<LoginInfo> call2, LoginInfo response) {
-                        Toast.makeText(MainActivity.this, "登录成功", Toast.LENGTH_SHORT).show();
-                        if (response == null) {
-                            System.gc();
-                        }
-                    }
-                });
+        NetTaskExecutor.getInstance().executeOnDiskIO(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    LoginInfo loginInfo = RetrofitFactory.create(ApiService.class)
+                            .getLogin("singleman", "123456").execute(provider);
+                    Log.e("print", "loginInfo:" + loginInfo);
+                } catch (Throwable throwable) {
+                    throwable.printStackTrace();
+                }
+            }
+        });
+
+
+//        } catch (Throwable e) {
+//
+//        }
+
 
 //        NetTaskExecutor.getInstance().executeOnDiskIO(new Runnable() {
 //            @Override
@@ -143,7 +163,7 @@ public class MainActivity extends EasyActivity {
     public void download(View view) {
         final Button button = (Button) view;
         if (button.getText().equals("取消下载")) {
-           // CallManager.getInstance().cancel(TAG_LOAD_APK);
+            // CallManager.getInstance().cancel(TAG_LOAD_APK);
             return;
         }
 
@@ -189,7 +209,7 @@ public class MainActivity extends EasyActivity {
                     @Override
                     public void onDisposed(LifeCall<File> call) {
                         super.onDisposed(call);
-                        Log.e("LifeCall","onDisposed");
+                        Log.e("LifeCall", "onDisposed");
                     }
                 });
     }

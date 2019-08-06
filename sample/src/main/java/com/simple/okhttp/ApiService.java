@@ -20,6 +20,8 @@ import retrofit2.http.POST;
  */
 public interface ApiService {
     //登录
+    //@CheckProvider(true)
+    //@OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     @FormUrlEncoded
     @POST("user/login")
     LifeCall<LoginInfo> getLogin(@Field("username") String username, @Field("password") String password);

@@ -1,11 +1,10 @@
 package com.xcheng.retrofit;
 
 import android.arch.lifecycle.Lifecycle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
 import android.util.Log;
-
-import java.io.IOException;
 
 import okhttp3.Request;
 import retrofit2.Call;
@@ -100,18 +99,30 @@ final class RealLifeCall<T> implements LifeCall<T> {
         });
     }
 
-
     @Override
     public boolean isExecuted() {
         return delegate.isExecuted();
     }
 
-
+    @NonNull
     @Override
-    public Response<T> execute(@Nullable LifecycleProvider provider) throws IOException {
+    public T execute(@Nullable LifecycleProvider provider) throws Throwable {
         addToProvider(provider);
         try {
-            return delegate.execute();
+            Response<T> response = delegate.execute();
+            if (disposed) {
+                throw new DisposedException("already disposed");
+            }
+            T body = response.body();
+            if (body != null) {
+                return body;
+            }
+            throw new HttpError("response.body()==null", response);
+        } catch (Throwable t) {
+            if (disposed && !(t instanceof DisposedException)) {
+                throw new DisposedException("already disposed", t);
+            }
+            throw t;
         } finally {
             removeFromProvider(provider);
         }
