@@ -11,6 +11,11 @@ import android.util.Log;
 
 import java.util.ArrayList;
 
+/**
+ * 实现LifecycleObserver监听Activity和Fragment的生命周期
+ *
+ * @see android.database.Observable
+ */
 public final class AndroidLifecycle implements LifecycleProvider, LifecycleObserver {
 
     @GuardedBy("mObservers")
