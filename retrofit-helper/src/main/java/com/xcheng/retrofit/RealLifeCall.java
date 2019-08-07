@@ -170,24 +170,13 @@ final class RealLifeCall<T> implements LifeCall<T> {
 
     private void removeFromProvider(@Nullable final LifecycleProvider provider) {
         if (provider != null) {
-            NetTaskExecutor.getInstance().executeOnMainThread(new Runnable() {
-                @Override
-                public void run() {
-                    provider.removeObserver(RealLifeCall.this);
-                }
-            });
+            provider.removeObserver(RealLifeCall.this);
         }
     }
 
     private void addToProvider(@Nullable final LifecycleProvider provider) {
         if (provider != null) {
-            //ensure on MainThread
-            NetTaskExecutor.getInstance().executeOnMainThread(new Runnable() {
-                @Override
-                public void run() {
-                    provider.observe(RealLifeCall.this);
-                }
-            });
+            provider.observe(RealLifeCall.this);
         } else {
             if (checkProvider) {
                 throw new NullPointerException("lifecycleProvider==null");
