@@ -9,6 +9,7 @@ import android.util.Log;
 import okhttp3.Request;
 import retrofit2.Call;
 import retrofit2.Callback;
+import retrofit2.HttpException;
 import retrofit2.Response;
 
 final class RealLifeCall<T> implements LifeCall<T> {
@@ -83,7 +84,7 @@ final class RealLifeCall<T> implements LifeCall<T> {
                             Utils.checkNotNull(transformer == null, "transformer==null");
                             callback.onSuccess(RealLifeCall.this, transformer);
                         } else {
-                            t = new HttpError("response.body()==null", response);
+                            t = new HttpException(response);
                         }
                     }
                     if (t != null) {
@@ -109,6 +110,9 @@ final class RealLifeCall<T> implements LifeCall<T> {
     public T execute(@Nullable LifecycleProvider provider) throws Throwable {
         addToProvider(provider);
         try {
+            if (disposed) {
+                throw new DisposedException("already disposed");
+            }
             Response<T> response = delegate.execute();
             if (disposed) {
                 throw new DisposedException("already disposed");
@@ -117,7 +121,7 @@ final class RealLifeCall<T> implements LifeCall<T> {
             if (body != null) {
                 return body;
             }
-            throw new HttpError("response.body()==null", response);
+            throw new HttpException(response);
         } catch (Throwable t) {
             if (disposed && !(t instanceof DisposedException)) {
                 throw new DisposedException("already disposed", t);

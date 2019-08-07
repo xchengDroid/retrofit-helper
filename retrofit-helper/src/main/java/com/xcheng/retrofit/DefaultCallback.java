@@ -8,7 +8,7 @@ import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 
-import retrofit2.Response;
+import retrofit2.HttpException;
 
 @UiThread
 public abstract class DefaultCallback<T> implements LifeCallback<T> {
@@ -16,31 +16,27 @@ public abstract class DefaultCallback<T> implements LifeCallback<T> {
     @Override
     public HttpError parseThrowable(LifeCall<T> call, Throwable t) {
         if (t instanceof HttpError) {
-            HttpError error = (HttpError) t;
-            Response<?> response = error.response();
-            if (response == null)
-                return error;
-            switch (response.code()) {
+            return (HttpError) t;
+        } else if (t instanceof HttpException) {
+            HttpException httpException = (HttpException) t;
+            final String msg;
+            switch (httpException.code()) {
                 case 400:
-                    error.msg = "参数错误";
+                    msg = "参数错误";
                     break;
                 case 401:
-                    error.msg = "身份未授权";
+                    msg = "身份未授权";
                     break;
                 case 403:
-                    error.msg = "禁止访问";
+                    msg = "禁止访问";
                     break;
                 case 404:
-                    error.msg = "地址未找到";
+                    msg = "地址未找到";
                     break;
                 default:
-                    if (response.isSuccessful()) {
-                        error.msg = "暂无数据";
-                    } else {
-                        error.msg = "服务异常";
-                    }
+                    msg = "服务异常";
             }
-            return error;
+            return new HttpError(msg, httpException);
         } else if (t instanceof UnknownHostException) {
             return new HttpError("网络异常", t);
         } else if (t instanceof ConnectException) {

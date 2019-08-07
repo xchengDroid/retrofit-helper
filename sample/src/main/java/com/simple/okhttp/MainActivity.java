@@ -56,33 +56,41 @@ public class MainActivity extends EasyActivity {
     }
 
     public void login(View view) {
-//        RetrofitFactory.create(ApiService.class)
-//                .getLogin("singleman", "123456")
-//                .enqueue(null, new AnimCallback<LoginInfo>(this) {
-//                    @Override
-//                    public void onError(LifeCall<LoginInfo> call2, HttpError error) {
-//                        Toast.makeText(MainActivity.this, error.msg, Toast.LENGTH_SHORT).show();
-//                    }
-//
-//                    @Override
-//                    public void onSuccess(LifeCall<LoginInfo> call2, LoginInfo response) {
-//                        Toast.makeText(MainActivity.this, "登录成功", Toast.LENGTH_SHORT).show();
-//                        if (response == null) {
-//                            System.gc();
-//                        }
-//                    }
-//                });
+        for (int index = 0; index < 1000; index++) {
+            RetrofitFactory.create(ApiService.class)
+                    .getLogin("singleman", "123456")
+                    .enqueue(provider, new AnimCallback<LoginInfo>(this) {
+                        @Override
+                        public void onError(LifeCall<LoginInfo> call2, HttpError error) {
+                            Toast.makeText(MainActivity.this, error.msg, Toast.LENGTH_SHORT).show();
+                        }
+
+                        @Override
+                        public void onSuccess(LifeCall<LoginInfo> call2, LoginInfo response) {
+                            Toast.makeText(MainActivity.this, "登录成功", Toast.LENGTH_SHORT).show();
+                            if (response == null) {
+                                System.gc();
+                            }
+                        }
+                    });
+        }
+
 
         NetTaskExecutor.getInstance().executeOnDiskIO(new Runnable() {
             @Override
             public void run() {
-                try {
-                    LoginInfo loginInfo = RetrofitFactory.create(ApiService.class)
-                            .getLogin("singleman", "123456").execute(provider);
-                    Log.e("print", "loginInfo:" + loginInfo);
-                } catch (Throwable throwable) {
-                    throwable.printStackTrace();
-                }
+              //  for (int index = 0; index < 10; index++) {
+                    try {
+
+                        LoginInfo loginInfo = RetrofitFactory.create(ApiService.class)
+                                .getLogin("singleman", "123456").execute(provider);
+
+
+                        //Log.e("print", "loginInfo:" + loginInfo);
+                    } catch (Throwable throwable) {
+                        throwable.printStackTrace();
+                    }
+                //}
             }
         });
 

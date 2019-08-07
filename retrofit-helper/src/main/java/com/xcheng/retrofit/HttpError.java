@@ -2,8 +2,6 @@ package com.xcheng.retrofit;
 
 import android.support.annotation.Nullable;
 
-import retrofit2.Response;
-
 /**
  * 通用的错误信息，一般请求是失败只需要弹出一些错误信息即可,like{@link retrofit2.HttpException}
  * Created by chengxin on 2017/6/22.
@@ -56,18 +54,5 @@ public final class HttpError extends RuntimeException {
                 + ", body="
                 + body
                 + '}';
-    }
-
-    /**
-     * Exception for an unexpected, non-2xx HTTP response.
-     * <p>
-     * The full HTTP response. This may be null if the exception was serialized or no body
-     */
-    @Nullable
-    public Response<?> response() {
-        if (body instanceof Response<?>) {
-            return (Response<?>) body;
-        }
-        return null;
     }
 }

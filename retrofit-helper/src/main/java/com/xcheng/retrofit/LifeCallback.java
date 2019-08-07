@@ -21,7 +21,8 @@ public interface LifeCallback<T> {
      * @param call LifeCall
      * @param t    统一解析throwable对象转换为HttpError对象，如果throwable为{@link HttpError}
      *             <li>则为{@link retrofit2.Converter#convert(Object)}内抛出的异常</li>
-     *             <li>或者当{@link Response#body()}为null的时候，此时{@link HttpError#body}为{@code Response}对象</li>
+     *             如果为{@link retrofit2.HttpException}
+     *             <li>则为{@link Response#body()}为null的时候抛出的</li>
      */
     @NonNull
     HttpError parseThrowable(LifeCall<T> call, Throwable t);
