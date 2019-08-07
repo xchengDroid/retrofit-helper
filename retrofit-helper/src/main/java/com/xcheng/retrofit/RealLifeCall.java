@@ -150,7 +150,7 @@ final class RealLifeCall<T> implements LifeCall<T> {
     }
 
     @Override
-    public void onChanged(@Nullable Lifecycle.Event event) {
+    public void onChanged(@NonNull Lifecycle.Event event) {
         //just in case
         if (disposed)
             return;
