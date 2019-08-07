@@ -25,7 +25,7 @@ public final class AndroidLifecycle implements LifecycleProvider, LifecycleObser
      */
     @GuardedBy("mObservers")
     @Nullable
-    private Lifecycle.Event mEvent;
+    private volatile Lifecycle.Event mEvent;
 
     @MainThread
     public static LifecycleProvider createLifecycleProvider(LifecycleOwner owner) {
@@ -38,9 +38,9 @@ public final class AndroidLifecycle implements LifecycleProvider, LifecycleObser
 
     @OnLifecycleEvent(Lifecycle.Event.ON_ANY)
     void onEvent(LifecycleOwner owner, Lifecycle.Event event) {
+        //保证线程的可见性
+        mEvent = event;
         synchronized (mObservers) {
-            //保证线程的可见性
-            mEvent = event;
             // since onChanged() is implemented by the app, it could do anything, including
             // removing itself from {@link mObservers} - and that could cause problems if
             // an iterator is used on the ArrayList {@link mObservers}.
@@ -59,15 +59,16 @@ public final class AndroidLifecycle implements LifecycleProvider, LifecycleObser
         if (observer == null) {
             throw new IllegalArgumentException("The observer is null.");
         }
+        if (mEvent != null) {
+            //noinspection ConstantConditions
+            observer.onChanged(mEvent);
+        }
         synchronized (mObservers) {
             if (mObservers.contains(observer)) {
                 return;
             }
             mObservers.add(observer);
             logCount("observe");
-            if (mEvent != null) {
-                observer.onChanged(mEvent);
-            }
         }
     }
 
