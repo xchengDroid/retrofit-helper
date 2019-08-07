@@ -3,18 +3,25 @@ package com.xcheng.retrofit;
 import android.arch.lifecycle.Lifecycle;
 import android.arch.lifecycle.LifecycleObserver;
 import android.arch.lifecycle.LifecycleOwner;
-import android.arch.lifecycle.MutableLiveData;
-import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.OnLifecycleEvent;
-import android.support.annotation.NonNull;
+import android.support.annotation.GuardedBy;
+import android.support.annotation.MainThread;
+import android.support.annotation.Nullable;
 import android.util.Log;
+
+import java.util.ArrayList;
 
 public final class AndroidLifecycle implements LifecycleProvider, LifecycleObserver {
 
-    private final MutableLiveData<Lifecycle.Event> mLiveData = new MutableLiveData<>();
+    @GuardedBy("mObservers")
+    private final ArrayList<Observer> mObservers = new ArrayList<>();
+    /**
+     * 缓存当前的Event事件
+     */
+    @Nullable
+    private volatile Lifecycle.Event mEvent;
 
-    private int observerCount;
-
+    @MainThread
     public static LifecycleProvider createLifecycleProvider(LifecycleOwner owner) {
         return new AndroidLifecycle(owner);
     }
@@ -25,32 +32,53 @@ public final class AndroidLifecycle implements LifecycleProvider, LifecycleObser
 
     @OnLifecycleEvent(Lifecycle.Event.ON_ANY)
     void onEvent(LifecycleOwner owner, Lifecycle.Event event) {
-        mLiveData.setValue(event);
+        mEvent = event;
+        synchronized (mObservers) {
+            for (int i = mObservers.size() - 1; i >= 0; i--) {
+                mObservers.get(i).onChanged(event);
+            }
+        }
         if (event == Lifecycle.Event.ON_DESTROY) {
             owner.getLifecycle().removeObserver(this);
         }
     }
 
     @Override
-    public void observe(@NonNull Observer<Lifecycle.Event> observer) {
-        mLiveData.observeForever(observer);
-        observerCount++;
-        if (RetrofitFactory.SHOW_LOG) {
-            Log.d(LifeCall.TAG, "observer -->" + observerCount);
+    public void observe(Observer observer) {
+        if (observer == null) {
+            throw new IllegalArgumentException("The observer is null.");
+        }
+        synchronized (mObservers) {
+            if (mObservers.contains(observer)) {
+                throw new IllegalStateException("Observer " + observer + " is already registered.");
+            }
+            mObservers.add(observer);
+            Lifecycle.Event event = mEvent;
+            if (event != null) {
+                observer.onChanged(event);
+            }
+            logCount("observer");
         }
     }
 
     @Override
-    public void removeObserver(@NonNull Observer<Lifecycle.Event> observer) {
-        mLiveData.removeObserver(observer);
-        observerCount--;
-        if (RetrofitFactory.SHOW_LOG) {
-            Log.d(LifeCall.TAG, "removeObserver -->" + observerCount);
+    public void removeObserver(Observer observer) {
+        if (observer == null) {
+            throw new IllegalArgumentException("The observer is null.");
+        }
+        synchronized (mObservers) {
+            int index = mObservers.indexOf(observer);
+            if (index == -1) {
+                throw new IllegalStateException("Observer " + observer + " was not registered.");
+            }
+            mObservers.remove(index);
+            logCount("removeObserver");
         }
     }
 
-    //for test
-    public int getObserverCount() {
-        return observerCount;
+    private void logCount(String prefix) {
+        if (RetrofitFactory.SHOW_LOG) {
+            Log.d(LifeCall.TAG, prefix + " -->" + mObservers.size());
+        }
     }
 }
