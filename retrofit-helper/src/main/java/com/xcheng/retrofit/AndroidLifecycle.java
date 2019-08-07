@@ -62,11 +62,11 @@ public final class AndroidLifecycle implements LifecycleProvider, LifecycleObser
                 return;
             }
             mObservers.add(observer);
+            logCount("observe");
             Lifecycle.Event event = mEvent;
             if (event != null) {
                 observer.onChanged(event);
             }
-            logCount("observe");
         }
     }
 
