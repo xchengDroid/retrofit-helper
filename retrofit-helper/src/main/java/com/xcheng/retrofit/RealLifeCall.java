@@ -159,11 +159,11 @@ final class RealLifeCall<T> implements LifeCall<T> {
         if (disposed)
             return;
         if (this.event == event || event == Lifecycle.Event.ON_DESTROY) {
+            disposed = true;
+            cancel();
             if (RetrofitFactory.SHOW_LOG) {
                 Log.d(LifeCall.TAG, "disposed by " + event + " url-->" + request().url());
             }
-            disposed = true;
-            cancel();
         }
     }
 
