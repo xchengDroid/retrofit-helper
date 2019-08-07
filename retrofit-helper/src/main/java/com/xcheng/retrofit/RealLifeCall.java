@@ -162,7 +162,7 @@ final class RealLifeCall<T> implements LifeCall<T> {
             disposed = true;
             cancel();
             if (RetrofitFactory.SHOW_LOG) {
-                Log.d(LifeCall.TAG, "disposed by " + event + " url-->" + request().url());
+                Log.d(LifeCall.TAG, "disposed by " + event + " request-->" + request());
             }
         }
     }
