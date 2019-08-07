@@ -17,13 +17,14 @@ import java.util.ArrayList;
  * @see android.database.Observable
  */
 public final class AndroidLifecycle implements LifecycleProvider, LifecycleObserver {
+    private final Object mLock = new Object();
 
-    @GuardedBy("mObservers")
+    @GuardedBy("mLock")
     private final ArrayList<Observer> mObservers = new ArrayList<>();
     /**
      * 缓存当前的Event事件
      */
-    @GuardedBy("mObservers")
+    @GuardedBy("mLock")
     @Nullable
     private Lifecycle.Event mEvent;
 
@@ -38,7 +39,7 @@ public final class AndroidLifecycle implements LifecycleProvider, LifecycleObser
 
     @OnLifecycleEvent(Lifecycle.Event.ON_ANY)
     void onEvent(LifecycleOwner owner, Lifecycle.Event event) {
-        synchronized (mObservers) {
+        synchronized (mLock) {
             //保证线程的可见性
             mEvent = event;
             // since onChanged() is implemented by the app, it could do anything, including
@@ -59,7 +60,7 @@ public final class AndroidLifecycle implements LifecycleProvider, LifecycleObser
         if (observer == null) {
             throw new IllegalArgumentException("The observer is null.");
         }
-        synchronized (mObservers) {
+        synchronized (mLock) {
             if (mObservers.contains(observer)) {
                 return;
             }
@@ -76,7 +77,7 @@ public final class AndroidLifecycle implements LifecycleProvider, LifecycleObser
         if (observer == null) {
             throw new IllegalArgumentException("The observer is null.");
         }
-        synchronized (mObservers) {
+        synchronized (mLock) {
             int index = mObservers.indexOf(observer);
             if (index == -1) {
                 return;
