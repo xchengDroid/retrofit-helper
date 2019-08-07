@@ -170,13 +170,13 @@ final class RealLifeCall<T> implements LifeCall<T> {
 
     private void removeFromProvider(@Nullable final LifecycleProvider provider) {
         if (provider != null) {
-            provider.removeObserver(RealLifeCall.this);
+            provider.removeObserver(this);
         }
     }
 
     private void addToProvider(@Nullable final LifecycleProvider provider) {
         if (provider != null) {
-            provider.observe(RealLifeCall.this);
+            provider.observe(this);
         } else {
             if (checkProvider) {
                 throw new NullPointerException("lifecycleProvider==null");
