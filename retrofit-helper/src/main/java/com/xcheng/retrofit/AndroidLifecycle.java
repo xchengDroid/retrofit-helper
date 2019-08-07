@@ -34,6 +34,10 @@ public final class AndroidLifecycle implements LifecycleProvider, LifecycleObser
     void onEvent(LifecycleOwner owner, Lifecycle.Event event) {
         mEvent = event;
         synchronized (mObservers) {
+            // since onChanged() is implemented by the app, it could do anything, including
+            // removing itself from {@link mObservers} - and that could cause problems if
+            // an iterator is used on the ArrayList {@link mObservers}.
+            // to avoid such problems, just march thru the list in the reverse order.
             for (int i = mObservers.size() - 1; i >= 0; i--) {
                 mObservers.get(i).onChanged(event);
             }
@@ -50,14 +54,14 @@ public final class AndroidLifecycle implements LifecycleProvider, LifecycleObser
         }
         synchronized (mObservers) {
             if (mObservers.contains(observer)) {
-                throw new IllegalStateException("Observer " + observer + " is already registered.");
+                return;
             }
             mObservers.add(observer);
             Lifecycle.Event event = mEvent;
             if (event != null) {
                 observer.onChanged(event);
             }
-            logCount("observer");
+            logCount("observe");
         }
     }
 
@@ -69,7 +73,7 @@ public final class AndroidLifecycle implements LifecycleProvider, LifecycleObser
         synchronized (mObservers) {
             int index = mObservers.indexOf(observer);
             if (index == -1) {
-                throw new IllegalStateException("Observer " + observer + " was not registered.");
+                return;
             }
             mObservers.remove(index);
             logCount("removeObserver");

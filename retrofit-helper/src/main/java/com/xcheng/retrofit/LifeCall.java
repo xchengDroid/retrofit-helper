@@ -1,7 +1,5 @@
 package com.xcheng.retrofit;
 
-import android.arch.lifecycle.Lifecycle;
-import android.arch.lifecycle.Observer;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -13,7 +11,7 @@ import okhttp3.Request;
  * 功能描述：支持生命周期绑定的Call{@link retrofit2.Call}
  */
 @SuppressWarnings("JavadocReference")
-public interface LifeCall<T> extends Observer<Lifecycle.Event> {
+public interface LifeCall<T> extends LifecycleProvider.Observer {
 
     String TAG = "LifeCall";
 

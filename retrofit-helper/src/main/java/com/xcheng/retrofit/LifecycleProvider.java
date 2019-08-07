@@ -14,7 +14,6 @@ public interface LifecycleProvider {
      *
      * @param observer the observer to register
      * @throws IllegalArgumentException the observer is null
-     * @throws IllegalStateException    the observer is already registered
      */
     void observe(Observer observer);
 
@@ -24,7 +23,6 @@ public interface LifecycleProvider {
      *
      * @param observer the observer to unregister
      * @throws IllegalArgumentException the observer is null
-     * @throws IllegalStateException    the observer is not yet registered
      */
     void removeObserver(Observer observer);
 
