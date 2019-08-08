@@ -13,10 +13,4 @@ public interface LifeCall<T> extends Callable<T>, LifecycleProvider.Observer {
      * @return true if this call has been disposed
      */
     boolean isDisposed();
-
-    /**
-     * @throws Throwable if it is {@link DisposedException},mean that {@code LifeCall} has been disposed
-     */
-    @Override
-    T execute() throws Throwable;
 }
