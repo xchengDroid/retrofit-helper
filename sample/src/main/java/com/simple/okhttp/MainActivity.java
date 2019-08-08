@@ -1,9 +1,9 @@
 package com.simple.okhttp;
 
+import android.arch.lifecycle.Lifecycle;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -13,11 +13,10 @@ import com.simple.entity.Article;
 import com.simple.entity.LoginInfo;
 import com.simple.entity.WXArticle;
 import com.xcheng.retrofit.AndroidLifecycle;
+import com.xcheng.retrofit.Call;
 import com.xcheng.retrofit.DefaultCallback;
 import com.xcheng.retrofit.HttpError;
-import com.xcheng.retrofit.LifeCall;
 import com.xcheng.retrofit.LifecycleProvider;
-import com.xcheng.retrofit.NetTaskExecutor;
 import com.xcheng.retrofit.RetrofitFactory;
 import com.xcheng.retrofit.progress.ProgressInterceptor;
 import com.xcheng.retrofit.progress.ProgressListener;
@@ -56,43 +55,41 @@ public class MainActivity extends EasyActivity {
     }
 
     public void login(View view) {
-        for (int index = 0; index < 1000; index++) {
+        for (int index = 0; index < 10000; index++) {
             RetrofitFactory.create(ApiService.class)
                     .getLogin("singleman", "123456")
-                    .enqueue(provider, new AnimCallback<LoginInfo>(this) {
+                    .bindToLifecycle(provider, Lifecycle.Event.ON_RESUME)
+                    .enqueue(new AnimCallback<LoginInfo>(this) {
                         @Override
-                        public void onError(LifeCall<LoginInfo> call2, HttpError error) {
+                        public void onError(Call<LoginInfo> call2, HttpError error) {
                             Toast.makeText(MainActivity.this, error.msg, Toast.LENGTH_SHORT).show();
                         }
 
                         @Override
-                        public void onSuccess(LifeCall<LoginInfo> call2, LoginInfo response) {
+                        public void onSuccess(Call<LoginInfo> call2, LoginInfo response) {
                             Toast.makeText(MainActivity.this, "登录成功", Toast.LENGTH_SHORT).show();
-                            if (response == null) {
-                                System.gc();
-                            }
                         }
                     });
         }
 
-
-        NetTaskExecutor.getInstance().executeOnDiskIO(new Runnable() {
-            @Override
-            public void run() {
-              //  for (int index = 0; index < 10; index++) {
-                    try {
-
-                        LoginInfo loginInfo = RetrofitFactory.create(ApiService.class)
-                                .getLogin("singleman", "123456").execute(provider);
-
-
-                        //Log.e("print", "loginInfo:" + loginInfo);
-                    } catch (Throwable throwable) {
-                        throwable.printStackTrace();
-                    }
-                //}
-            }
-        });
+//
+//        NetTaskExecutor.getInstance().executeOnDiskIO(new Runnable() {
+//            @Override
+//            public void run() {
+//                for (int index = 0; index < 10; index++) {
+//                    try {
+//
+//                        LoginInfo loginInfo = RetrofitFactory.create(ApiService.class)
+//                                .getLogin("singleman", "123456").bindToLifecycle(provider, Lifecycle.Event.ON_RESUME).execute();
+//
+//
+//                        //Log.e("print", "loginInfo:" + loginInfo);
+//                    } catch (Throwable throwable) {
+//                        throwable.printStackTrace();
+//                    }
+//                }
+//            }
+//        });
 
 
 //        } catch (Throwable e) {
@@ -120,14 +117,15 @@ public class MainActivity extends EasyActivity {
     public void wxarticle(View view) {
         RetrofitFactory.create(ApiService.class)
                 .getWXarticle()
-                .enqueue(provider, new AnimCallback<List<WXArticle>>(this) {
+                .bindToLifecycle(provider)
+                .enqueue(new AnimCallback<List<WXArticle>>(this) {
                     @Override
-                    public void onError(LifeCall<List<WXArticle>> call2, HttpError error) {
+                    public void onError(Call<List<WXArticle>> call, HttpError error) {
                         Toast.makeText(MainActivity.this, error.msg, Toast.LENGTH_SHORT).show();
                     }
 
                     @Override
-                    public void onSuccess(LifeCall<List<WXArticle>> call2, List<WXArticle> response) {
+                    public void onSuccess(Call<List<WXArticle>> call, List<WXArticle> response) {
                         Toast.makeText(MainActivity.this, "获取公众号列表成功", Toast.LENGTH_SHORT).show();
 
                     }
@@ -137,14 +135,15 @@ public class MainActivity extends EasyActivity {
     public void article0(View view) {
         RetrofitFactory.create(ApiService.class)
                 .getArticle0()
-                .enqueue(provider, new AnimCallback<List<Article>>(this) {
+                .bindToLifecycle(provider)
+                .enqueue(new AnimCallback<List<Article>>(this) {
                     @Override
-                    public void onError(LifeCall<List<Article>> call2, HttpError error) {
+                    public void onError(Call<List<Article>> call, HttpError error) {
                         Toast.makeText(MainActivity.this, error.msg, Toast.LENGTH_SHORT).show();
                     }
 
                     @Override
-                    public void onSuccess(LifeCall<List<Article>> call2, List<Article> response) {
+                    public void onSuccess(Call<List<Article>> call, List<Article> response) {
                         Toast.makeText(MainActivity.this, "获取首页列表成功", Toast.LENGTH_SHORT).show();
                     }
                 });
@@ -153,14 +152,15 @@ public class MainActivity extends EasyActivity {
     public void progress(View view) {
         RetrofitFactory.create(ApiService.class)
                 .getArticle0()
-                .enqueue(provider, new AnimCallback<List<Article>>(this) {
+                .bindToLifecycle(provider)
+                .enqueue(new AnimCallback<List<Article>>(this) {
                     @Override
-                    public void onError(LifeCall<List<Article>> call2, HttpError error) {
+                    public void onError(Call<List<Article>> call2, HttpError error) {
                         Toast.makeText(MainActivity.this, error.msg, Toast.LENGTH_SHORT).show();
                     }
 
                     @Override
-                    public void onSuccess(LifeCall<List<Article>> call2, List<Article> response) {
+                    public void onSuccess(Call<List<Article>> call2, List<Article> response) {
                         Toast.makeText(MainActivity.this, "获取首页列表成功", Toast.LENGTH_SHORT).show();
                     }
                 });
@@ -187,37 +187,32 @@ public class MainActivity extends EasyActivity {
                 .build();
         retrofit.create(ApiService.class)
                 .loadDouYinApk()
-                .enqueue(provider, new DefaultCallback<File>() {
+                .bindToLifecycle(provider)
+                .enqueue(new DefaultCallback<File>() {
                     @Override
-                    public void onStart(LifeCall<File> call2) {
+                    public void onStart(Call<File> call2) {
                         button.setText("取消下载");
                     }
 
                     @Override
-                    public void onError(LifeCall<File> call2, HttpError error) {
+                    public void onError(Call<File> call2, HttpError error) {
                         progressView.setProgress(0);
                         Toast.makeText(MainActivity.this, error.msg, Toast.LENGTH_SHORT).show();
                     }
 
                     @Override
-                    public void onSuccess(LifeCall<File> call2, File response) {
+                    public void onSuccess(Call<File> call2, File response) {
 
                     }
 
                     @Override
-                    public void onCompleted(LifeCall<File> call2, @Nullable Throwable t) {
+                    public void onCompleted(Call<File> call2, @Nullable Throwable t) {
                         if (call2.isCanceled()) {
                             progressView.setProgress(0);
                             button.setText("下载抖音apk文件");
                         } else {
                             button.setText("下载完成");
                         }
-                    }
-
-                    @Override
-                    public void onDisposed(LifeCall<File> call) {
-                        super.onDisposed(call);
-                        Log.e("LifeCall", "onDisposed");
                     }
                 });
     }

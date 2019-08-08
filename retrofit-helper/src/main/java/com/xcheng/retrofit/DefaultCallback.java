@@ -11,10 +11,10 @@ import java.net.UnknownHostException;
 import retrofit2.HttpException;
 
 @UiThread
-public abstract class DefaultCallback<T> implements LifeCallback<T> {
+public abstract class DefaultCallback<T> implements Callback<T> {
     @NonNull
     @Override
-    public HttpError parseThrowable(LifeCall<T> call, Throwable t) {
+    public HttpError parseThrowable(Call<T> call, Throwable t) {
         if (t instanceof HttpError) {
             return (HttpError) t;
         } else if (t instanceof HttpException) {
@@ -52,12 +52,7 @@ public abstract class DefaultCallback<T> implements LifeCallback<T> {
 
     @NonNull
     @Override
-    public T transform(LifeCall<T> call, T t) {
+    public T transform(Call<T> call, T t) {
         return t;
-    }
-
-    @Override
-    public void onDisposed(LifeCall<T> call) {
-
     }
 }

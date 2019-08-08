@@ -13,9 +13,8 @@ import retrofit2.Response;
  */
 @SuppressWarnings("JavadocReference")
 @UiThread
-public interface LifeCallback<T> {
-
-    void onStart(LifeCall<T> call);
+public interface Callback<T> {
+    void onStart(Call<T> call);
 
     /**
      * @param call LifeCall
@@ -25,25 +24,21 @@ public interface LifeCallback<T> {
      *             <li>则为{@link Response#body()}为null的时候抛出的</li>
      */
     @NonNull
-    HttpError parseThrowable(LifeCall<T> call, Throwable t);
+    HttpError parseThrowable(Call<T> call, Throwable t);
 
     /**
      * 过滤一次数据,如剔除List中的null等,默认可以返回t
      */
     @NonNull
-    T transform(LifeCall<T> call, T t);
+    T transform(Call<T> call, T t);
 
-    void onError(LifeCall<T> call, HttpError error);
+    void onError(Call<T> call, HttpError error);
 
-    void onSuccess(LifeCall<T> call, T t);
+    void onSuccess(Call<T> call, T t);
 
     /**
      * @param t 请求失败的错误信息
      */
-    void onCompleted(LifeCall<T> call, @Nullable Throwable t);
+    void onCompleted(Call<T> call, @Nullable Throwable t);
 
-    /**
-     * 由于生命周期原因请求被取消了,此回调函数不是与生命周期函数同步的
-     */
-    void onDisposed(LifeCall<T> call);
 }

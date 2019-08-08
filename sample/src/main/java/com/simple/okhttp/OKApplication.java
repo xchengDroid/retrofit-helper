@@ -10,8 +10,8 @@ import com.orhanobut.logger.LogStrategy;
 import com.orhanobut.logger.Logger;
 import com.orhanobut.logger.PrettyFormatStrategy;
 import com.simple.converter.GsonConverterFactory;
+import com.xcheng.retrofit.CallAdapterFactory;
 import com.xcheng.retrofit.HttpLoggingInterceptor;
-import com.xcheng.retrofit.LifeCallAdapterFactory;
 import com.xcheng.retrofit.RetrofitFactory;
 import com.xcheng.view.EasyView;
 
@@ -39,7 +39,6 @@ public class OKApplication extends Application {
             }
         });
 
-
         HttpLoggingInterceptor httpLoggingInterceptor = new HttpLoggingInterceptor(new HttpLoggingInterceptor.Logger() {
             @Override
             public void log(String message) {
@@ -53,7 +52,7 @@ public class OKApplication extends Application {
                 .callFactory(new OkHttpClient.Builder()
                         .addNetworkInterceptor(httpLoggingInterceptor)
                         .build())
-                .addCallAdapterFactory(LifeCallAdapterFactory.create())
+                .addCallAdapterFactory(CallAdapterFactory.INSTANCE)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         //RetrofitManager.init(retrofit);

@@ -3,154 +3,91 @@ package com.xcheng.retrofit;
 import android.arch.lifecycle.Lifecycle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.UiThread;
 import android.util.Log;
 
-import okhttp3.Request;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.HttpException;
-import retrofit2.Response;
-
 final class RealLifeCall<T> implements LifeCall<T> {
-
     private final Call<T> delegate;
     private final Lifecycle.Event event;
-    private final boolean checkProvider;
-
+    private final LifecycleProvider provider;
     /**
      * LifeCall是否被释放了
      */
     private volatile boolean disposed;
 
-    /**
-     * The executor used for {@link Callback} methods on a {@link Call}. This may be {@code null},
-     * in which case callbacks should be made synchronously on the background thread.
-     */
-    RealLifeCall(Call<T> delegate, Lifecycle.Event event, boolean checkProvider) {
+    RealLifeCall(Call<T> delegate, Lifecycle.Event event, LifecycleProvider provider) {
         this.delegate = delegate;
         this.event = event;
-        this.checkProvider = checkProvider;
+        this.provider = provider;
+        provider.observe(this);
     }
 
     @Override
-    public void enqueue(@Nullable final LifecycleProvider provider, final LifeCallback<T> callback) {
+    public void enqueue(final Callback<T> callback) {
         Utils.checkNotNull(callback, "callback==null");
-        //make sure if throw  Already executed and other exceptions
-        //remove from outside
-        addToProvider(provider);
-        //postToMainThread ensure queue
-        NetTaskExecutor.getInstance().postToMainThread(new Runnable() {
-            @Override
-            public void run() {
-                if (!disposed) {
-                    callback.onStart(RealLifeCall.this);
-                }
-            }
-        });
-
         delegate.enqueue(new Callback<T>() {
             @Override
-            public void onResponse(Call<T> call, final Response<T> response) {
-                NetTaskExecutor.getInstance().postToMainThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        callResult(response, null);
-                    }
-                });
+            public void onStart(Call<T> call) {
+                if (!disposed) {
+                    callback.onStart(call);
+                }
+            }
+
+            @NonNull
+            @Override
+            public HttpError parseThrowable(Call<T> call, Throwable t) {
+                return callback.parseThrowable(call, t);
+            }
+
+            @NonNull
+            @Override
+            public T transform(Call<T> call, T t) {
+                return callback.transform(call, t);
             }
 
             @Override
-            public void onFailure(Call<T> call, final Throwable t) {
-                NetTaskExecutor.getInstance().postToMainThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        callResult(null, t);
-                    }
-                });
-            }
-
-            @UiThread
-            private void callResult(@Nullable Response<T> response, @Nullable Throwable t) {
-                try {
-                    if (disposed) {
-                        callback.onDisposed(RealLifeCall.this);
-                        return;
-                    }
-                    if (response != null) {
-                        T body = response.body();
-                        if (body != null) {
-                            T transformer = callback.transform(RealLifeCall.this, body);
-                            Utils.checkNotNull(transformer == null, "transformer==null");
-                            callback.onSuccess(RealLifeCall.this, transformer);
-                        } else {
-                            t = new HttpException(response);
-                        }
-                    }
-                    if (t != null) {
-                        HttpError error = callback.parseThrowable(RealLifeCall.this, t);
-                        Utils.checkNotNull(error == null, "error==null");
-                        callback.onError(RealLifeCall.this, error);
-                    }
-                    callback.onCompleted(RealLifeCall.this, t);
-                } finally {
-                    removeFromProvider(provider);
+            public void onSuccess(Call<T> call, T t) {
+                if (!disposed) {
+                    callback.onSuccess(call, t);
                 }
             }
-        });
-    }
 
-    @Override
-    public boolean isExecuted() {
-        return delegate.isExecuted();
+            @Override
+            public void onError(Call<T> call, HttpError error) {
+                if (!disposed) {
+                    callback.onError(call, error);
+                }
+            }
+
+            @Override
+            public void onCompleted(Call<T> call, @Nullable Throwable t) {
+                if (!disposed) {
+                    callback.onCompleted(call, t);
+                }
+                provider.removeObserver(RealLifeCall.this);
+            }
+        });
     }
 
     @NonNull
     @Override
-    public T execute(@Nullable LifecycleProvider provider) throws Throwable {
-        addToProvider(provider);
+    public T execute() throws Throwable {
         try {
             if (disposed) {
-                throw new DisposedException("already disposed");
+                throw new DisposedException("Already disposed.");
             }
-            Response<T> response = delegate.execute();
+            T body = delegate.execute();
             if (disposed) {
-                throw new DisposedException("already disposed");
+                throw new DisposedException("Already disposed.");
             }
-            T body = response.body();
-            if (body != null) {
-                return body;
-            }
-            throw new HttpException(response);
+            return body;
         } catch (Throwable t) {
             if (disposed && !(t instanceof DisposedException)) {
-                throw new DisposedException("already disposed", t);
+                throw new DisposedException("Already disposed.", t);
             }
             throw t;
         } finally {
-            removeFromProvider(provider);
+            provider.removeObserver(this);
         }
-    }
-
-    @Override
-    public void cancel() {
-        delegate.cancel();
-    }
-
-    @Override
-    public boolean isCanceled() {
-        return delegate.isCanceled();
-    }
-
-    @SuppressWarnings("CloneDoesntCallSuperClone") // Performing deep clone.
-    @Override
-    public LifeCall<T> clone() {
-        return new RealLifeCall<>(delegate.clone(), event, checkProvider);
-    }
-
-    @Override
-    public Request request() {
-        return delegate.request();
     }
 
     @Override
@@ -160,34 +97,16 @@ final class RealLifeCall<T> implements LifeCall<T> {
             return;
         if (this.event == event || event == Lifecycle.Event.ON_DESTROY) {
             disposed = true;
-            cancel();
+            delegate.cancel();
             if (RetrofitFactory.SHOW_LOG) {
-                Log.d(LifeCall.TAG, "disposed by " + event + " request-->" + request());
+                Log.d(Call.TAG, "disposed by " + event + " request-->" + delegate.request());
             }
+            provider.removeObserver(this);
         }
     }
 
     @Override
     public boolean isDisposed() {
         return disposed;
-    }
-
-    private void removeFromProvider(@Nullable final LifecycleProvider provider) {
-        if (provider != null) {
-            provider.removeObserver(this);
-        }
-    }
-
-    private void addToProvider(@Nullable final LifecycleProvider provider) {
-        if (provider != null) {
-            provider.observe(this);
-        } else {
-            if (checkProvider) {
-                throw new NullPointerException("lifecycleProvider==null");
-            }
-            if (RetrofitFactory.SHOW_LOG) {
-                Log.w(LifeCall.TAG, "lifecycleProvider is null, lifecycle will not provide");
-            }
-        }
     }
 }
