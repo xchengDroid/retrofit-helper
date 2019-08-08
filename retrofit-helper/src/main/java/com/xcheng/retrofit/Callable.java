@@ -1,6 +1,8 @@
 package com.xcheng.retrofit;
 
 
+import retrofit2.Response;
+
 /**
  * 创建时间：2019-08-08
  * 编写人： chengxin
@@ -13,9 +15,10 @@ public interface Callable<T> {
     /**
      * Synchronously send the request and return its response body.
      *
-     * @throws java.io.IOException if a problem occurred talking to the server.
-     * @throws RuntimeException    (and subclasses) if an unexpected error occurs creating the request
-     * @throws DisposedException   if {@link LifeCall} has been dispose
+     * @throws DisposedException       if {@link LifeCall} has been dispose
+     * @throws retrofit2.HttpException if {@link Response#body()} is null
+     * @throws java.io.IOException     if a problem occurred talking to the server.
+     * @throws RuntimeException        (and subclasses) if an unexpected error occurs creating the request
      */
     T execute() throws Throwable;
 
