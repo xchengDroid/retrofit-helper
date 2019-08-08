@@ -8,19 +8,18 @@
 
   | 描述                                             | 相关类和方法                                                 |
   | ------------------------------------------------ | ------------------------------------------------------------ |
-  | 回调函数中直接处理请求结果，无需再次判断是否成功 | `Callback2.onSuccess(Call2<T> call2, T response)`            |
-  | 请求开始和结束监听                               | `Callback2.onStart(Call2<T> call2)`  和`Callback2.onCompleted(Call2<T> call2, @Nullable Throwable t, boolean canceled);` |
+  | 回调函数中直接处理请求结果，无需再次判断是否成功 | `Callback.onSuccess(Call<T> call, T response)`               |
+  | 请求开始和结束监听                               | `Callback.onStart(Call<T> call)`  和`Callback.onCompleted(Call2<T> call, @Nullable Throwable t);` |
   | 全局维护多个Retrofit实例                         | `RetrofitFactory.DEFAULT` 和 `RetrofitFactory.OTHERS`        |
-  | 统一处理解析结果                                 | `Callback2.parseResponse(Call2<T> call2, Response<T> response)`和   `Callback2.parseThrowable(Call2<T> call2, Throwable t)` |
-  | 全局取消某个请求                                 | `CallManager.getInstance().cancel( yourTag )`                |
+  | 统一处理解析结果                                 | `Callback.parseResponse(Call2<T> call, Response<T> response)`和   `Callback.parseThrowable(Call<T> call, Throwable t)` |
   | 拦截器监听下载和上传进度                         | `ProgressInterceptor` 、`ProgressListener`                   |
   | 单独指定某个请求的日志级别                       | `HttpLoggingInterceptor`                                     |
-
+  
 - #### 2. 封装逻辑解析
 
   - 2.1  `RetrofitFactory`全局管理`retrofit`实例
 
-     DEFAULT 静态变量管理默认常用的的retrofit对象，OTHERS 管理其他多个不同配置的retrofit
+    DEFAULT 静态变量管理默认常用的的retrofit对象，OTHERS 管理其他多个不同配置的retrofit
 
     ```java
     /**
@@ -37,6 +36,15 @@
          * 全局的Retrofit对象
          */
         public static volatile Retrofit DEFAULT;
+       /**
+         * A {@code null} value is permitted
+         */
+        @Nullable
+        public static OnDisposedListener LISTENER = OnDisposedListener.DEFAULT;
+        /**
+         * 是否显示日志
+         */
+        public static boolean SHOW_LOG = true;
     
         private RetrofitFactory() {
         }
@@ -61,116 +69,99 @@
     }
     ```
 
-  - 2.2  `Call2`接口继承`retrofit.Call` 重载 ` enqueue(Callback<T> callback)`方法
-
-    ​	 `enqueue(@Nullable Object tag, Callback2<T> callback2)` 方法传入请求的tag标记此请求，tag标签就是取消请求所需要的
+  - 2.2  `Call`接口实现 ` enqueue(Callback<T> callback)`方法 `enqueue(Callback<T> callback)` ，支持绑定Activity或者Fragment生命周期`bindToLifecycle(LifecycleProvider provider, Lifecycle.Event event)`
 
     ```java
     /**
      * 创建时间：2018/4/8
      * 编写人： chengxin
-     * 功能描述：添加重载方法{@link Call2#enqueue(Object, Callback2)}方法
+     * 功能描述：支持生命周期绑定的Call{@link retrofit2.Call}
      */
-    public interface Call2<T> extends retrofit2.Call<T> {
-        /**
-         * @param tag       请求的tag,用于取消请求使用
-         * @param callback2 请求的回调
-         */
-        void enqueue(@Nullable Object tag, Callback2<T> callback2);
+    public interface Call<T> extends Callable<T> {
     
-        @Override
-        Call2<T> clone();
+        String TAG = Call.class.getSimpleName();
+    
+        boolean isExecuted();
+    
+        void cancel();
+    
+        boolean isCanceled();
+    
+        Call<T> clone();
+    
+        Request request();
+    
+        /**
+         * 绑定生命周期
+         *
+         * @param provider LifecycleProvider
+         * @param event    {@link Lifecycle.Event}
+         * @return
+         */
+        LifeCall<T> bindToLifecycle(LifecycleProvider provider, Lifecycle.Event event);
+    
+        /**
+         * default event is {@link Lifecycle.Event#ON_DESTROY}
+         *
+         * @param provider LifecycleProvider
+         * @return LifeCall
+         * @see Call#bindToLifecycle(LifecycleProvider, Lifecycle.Event)
+         */
+        LifeCall<T> bindToLifecycle(LifecycleProvider provider);
     }
     ```
 
     
 
-  - 2.3  `Callback2` 统一处理回调
+  - 2.3  `Callback` 统一处理回调
 
-    ​        请求开始、成功处理、失败处理、成功回调、失败回调、请求结束在此统一处理，各方法可以根据业务的不同自行重写，例如：可以重写`parseResponse`方法根据不同的http code做不同的提示描述 或者
-
-    重写`parseThrowable`方法处理各种Throwable
+    ​        请求开始、成功处理、失败处理、成功回调、失败回调、请求结束在此统一处理，各方法可以根据业务的不同自行重写,可以重写`parseThrowable`方法处理各种Throwable
 
     ```java
+
+    /**
+     * if {@link LifeCall#isDisposed()} return true,will not call {@link #onStart(Call)},
+     * {@link #onSuccess(Call, Object)},{@link #onError(Call, HttpError)},{@link #onCompleted(Call, Throwable)} methods
+     *
+     * @param <T> Successful response body type.
+     */
+    @SuppressWarnings("JavadocReference")
     @UiThread
-    public abstract class Callback2<T> {
-    
-        public abstract void onStart(Call2<T> call2);
-    
-        @NonNull
-        public Result<T> parseResponse(Call2<T> call2, Response<T> response) {
-            T body = response.body();
-            if (response.isSuccessful()) {
-                if (body != null) {
-                    return Result.success(body);
-                } else {
-                    return Result.error(new HttpError("暂无数据", response));
-                }
-            }
-    
-            final String msg;
-            switch (response.code()) {
-                case 400:
-                    msg = "参数错误";
-                    break;
-                case 401:
-                    msg = "身份未授权";
-                    break;
-                case 403:
-                    msg = "禁止访问";
-                    break;
-                case 404:
-                    msg = "地址未找到";
-                    break;
-                default:
-                    msg = "服务异常";
-            }
-            return Result.error(new HttpError(msg, response));
-        }
+    public interface Callback<T> {
+        void onStart(Call<T> call);
     
         /**
-         * 统一解析Throwable对象转换为HttpError对象。如果为HttpError，
-         * 则为{@link retrofit2.Converter#convert(Object)}内抛出的异常
-         *
-         * @param call2 call
-         * @param t     Throwable
-         * @return HttpError result
+         * @param call LifeCall
+         * @param t    统一解析throwable对象转换为HttpError对象，如果throwable为{@link HttpError}
+         *             <li>则为{@link retrofit2.Converter#convert(Object)}内抛出的异常</li>
+         *             如果为{@link retrofit2.HttpException}
+         *             <li>则为{@link Response#body()}为null的时候抛出的</li>
          */
         @NonNull
-        public HttpError parseThrowable(Call2<T> call2, Throwable t) {
-            if (t instanceof HttpError) {
-                //用于convert函数直接抛出异常接收
-                return (HttpError) t;
-            } else if (t instanceof UnknownHostException) {
-                return new HttpError("网络异常", t);
-            } else if (t instanceof ConnectException) {
-                return new HttpError("网络异常", t);
-            } else if (t instanceof SocketException) {
-                return new HttpError("服务异常", t);
-            } else if (t instanceof SocketTimeoutException) {
-                return new HttpError("响应超时", t);
-            } else {
-                return new HttpError("请求失败", t);
-            }
-        }
-    
-        public abstract void onError(Call2<T> call2, HttpError error);
-    
-        public abstract void onSuccess(Call2<T> call2, T response);
-    
+        HttpError parseThrowable(Call<T> call, Throwable t);
     
         /**
-         * @param t        请求失败的错误信息
-         * @param canceled 请求是否被取消了
+         * 过滤一次数据,如剔除List中的null等,默认可以返回t
          */
-        public abstract void onCompleted(Call2<T> call2, @Nullable Throwable t, boolean canceled);
+        @NonNull
+        T transform(Call<T> call, T t);
+    
+        void onError(Call<T> call, HttpError error);
+    
+        void onSuccess(Call<T> call, T t);
+    
+        /**
+         * @param t 请求失败的错误信息
+         */
+        void onCompleted(Call<T> call, @Nullable Throwable t);
+    
     }
     ```
-
     
-
+    
+    
     ​		
-
+    
   - 2.4  `HttpError` 统一处理异常错误
 
     ​       HttpError类中有两个成员属性msg 被body，msg是保存错误的描述信息等，body可以保存异常的具体信息或者原始的json等，`onError(Call2<T> call2, HttpError error)`回调方法可以根据body的具体信息做二次处理。
@@ -234,16 +225,17 @@
 
     
 
-  - 2.5  `ExecutorCallAdapterFactory`返回`Call2`请求适配器
+  - 2.5  CallAdapterFactory返回`Call`请求适配器
 
-    处理请求接口方法返回为Call2的请求适配器工厂类
+    处理请求接口方法返回为Call的请求适配器工厂类
 
     ```java
-    public final class ExecutorCallAdapterFactory extends CallAdapter.Factory {
+    public final class CallAdapterFactory extends CallAdapter.Factory {
+        private static final String RETURN_TYPE = Call.class.getSimpleName();
     
-        public static final CallAdapter.Factory INSTANCE = new ExecutorCallAdapterFactory();
+        public static final CallAdapter.Factory INSTANCE = new CallAdapterFactory();
     
-        private ExecutorCallAdapterFactory() {
+        private CallAdapterFactory() {
         }
     
         /**
@@ -256,17 +248,14 @@
     
         @Override
         public CallAdapter<?, ?> get(Type returnType, Annotation[] annotations, Retrofit retrofit) {
-            if (getRawType(returnType) != Call2.class) {
+            if (getRawType(returnType) != Call.class) {
                 return null;
             }
             if (!(returnType instanceof ParameterizedType)) {
                 throw new IllegalArgumentException(
-                        "Call return type must be parameterized as Call2<Foo> or Call2<? extends Foo>");
+                        String.format("%s return type must be parameterized as %s<Foo> or %s<? extends Foo>", RETURN_TYPE, RETURN_TYPE, RETURN_TYPE));
             }
             final Type responseType = getParameterUpperBound(0, (ParameterizedType) returnType);
-    
-            final Executor callbackExecutor = retrofit.callbackExecutor();
-            if (callbackExecutor == null) throw new AssertionError();
     
             return new CallAdapter<Object, Call<?>>() {
                 @Override
@@ -275,245 +264,222 @@
                 }
     
                 @Override
-                public Call<Object> adapt(Call<Object> call) {
-                    return new ExecutorCallbackCall2<>(callbackExecutor, call);
+                public Call<Object> adapt(retrofit2.Call<Object> call) {
+                    return new RealCall<>(call);
                 }
             };
         }
     }
     ```
-
-  - 2.6  `ExecutorCallbackCall2` 继承`Call2`代理`OkHttpCall`处理UI回调
-
-     装饰者模式代理`OkHttpCall`的所有方法，线程调度处理 `Callback2` 的回调方法在主线程执行
-
-    ```java
-    final class ExecutorCallbackCall2<T> implements Call2<T> {
-        private final Executor callbackExecutor;
-        private final Call<T> delegate;
     
+  - 2.6  `RealLifeCall` 继承`LifeCall`处理生命周期绑定，自动管理生命周期
+
+     ```java
+
+    final class RealLifeCall<T> implements LifeCall<T> {
+        private final Call<T> delegate;
+        private final Lifecycle.Event event;
+        private final LifecycleProvider provider;
         /**
-         * The executor used for {@link Callback} methods on a {@link Call}. This may be {@code null},
-         * in which case callbacks should be made synchronously on the background thread.
+         * LifeCall是否被释放了
          */
-        ExecutorCallbackCall2(Executor callbackExecutor, Call<T> delegate) {
-            this.callbackExecutor = callbackExecutor;
+        private volatile boolean disposed;
+    
+        RealLifeCall(Call<T> delegate, Lifecycle.Event event, LifecycleProvider provider) {
             this.delegate = delegate;
+            this.event = event;
+            this.provider = provider;
+            provider.observe(this);
         }
     
         @Override
         public void enqueue(final Callback<T> callback) {
-            throw new UnsupportedOperationException("please call enqueue(Object tag, Callback2<T> callback2)");
-        }
-    
-        @Override
-        public void enqueue(@Nullable Object tag, final Callback2<T> callback2) {
-            Utils.checkNotNull(callback2, "callback2==null");
-            CallManager.getInstance().add(this, tag != null ? tag : "NO_TAG");
-            callbackExecutor.execute(new Runnable() {
-                @Override
-                public void run() {
-                    if (!isCanceled()) {
-                        callback2.onStart(ExecutorCallbackCall2.this);
-                    }
-                }
-            });
-    
+            Utils.checkNotNull(callback, "callback==null");
             delegate.enqueue(new Callback<T>() {
                 @Override
-                public void onResponse(Call<T> call, final Response<T> response) {
-                    callbackExecutor.execute(new Runnable() {
-                        @Override
-                        public void run() {
-                            callResult(callback2, response, null);
-                        }
-                    });
+                public void onStart(Call<T> call) {
+                    if (!disposed) {
+                        callback.onStart(call);
+                    }
+                }
+    
+                @NonNull
+                @Override
+                public HttpError parseThrowable(Call<T> call, Throwable t) {
+                    return callback.parseThrowable(call, t);
+                }
+    
+                @NonNull
+                @Override
+                public T transform(Call<T> call, T t) {
+                    return callback.transform(call, t);
                 }
     
                 @Override
-                public void onFailure(Call<T> call, final Throwable t) {
-                    callbackExecutor.execute(new Runnable() {
-                        @Override
-                        public void run() {
-                            callResult(callback2, null, t);
-                        }
-                    });
+                public void onSuccess(Call<T> call, T t) {
+                    if (!disposed) {
+                        callback.onSuccess(call, t);
+                    }
+                }
+    
+                @Override
+                public void onError(Call<T> call, HttpError error) {
+                    if (!disposed) {
+                        callback.onError(call, error);
+                    }
+                }
+    
+                @Override
+                public void onCompleted(Call<T> call, @Nullable Throwable t) {
+                    if (!disposed) {
+                        callback.onCompleted(call, t);
+                    }
+                    provider.removeObserver(RealLifeCall.this);
                 }
             });
         }
     
-        @UiThread
-        private void callResult(Callback2<T> callback2, @Nullable Response<T> response, @Nullable Throwable failureThrowable) {
+        @NonNull
+        @Override
+        public T execute() throws Throwable {
             try {
-                if (!isCanceled()) {
-                    //1、获取解析结果
-                    Result<T> result;
-                    if (response != null) {
-                        result = callback2.parseResponse(this, response);
-                        Utils.checkNotNull(result, "result==null");
-                    } else {
-                        Utils.checkNotNull(failureThrowable, "failureThrowable==null");
-                        HttpError error = callback2.parseThrowable(this, failureThrowable);
-                        result = Result.error(error);
-                    }
-                    //2、回调成功失败
-                    if (result.isSuccess()) {
-                        callback2.onSuccess(this, result.body());
-                    } else {
-                        callback2.onError(this, result.error());
-                    }
+                if (disposed) {
+                    throw new DisposedException("Already disposed.");
                 }
-                callback2.onCompleted(this, failureThrowable, isCanceled());
+                T body = delegate.execute();
+                if (disposed) {
+                    throw new DisposedException("Already disposed.");
+                }
+                return body;
+            } catch (Throwable t) {
+                if (disposed && !(t instanceof DisposedException)) {
+                    throw new DisposedException("Already disposed.", t);
+                }
+                throw t;
             } finally {
-                CallManager.getInstance().remove(this);
+                provider.removeObserver(this);
             }
         }
     
         @Override
-        public boolean isExecuted() {
-            return delegate.isExecuted();
+        public void onChanged(@NonNull Lifecycle.Event event) {
+            //just in case
+            if (disposed)
+                return;
+            if (this.event == event || event == Lifecycle.Event.ON_DESTROY) {
+                disposed = true;
+                delegate.cancel();
+                if (RetrofitFactory.LISTENER != null) {
+                    RetrofitFactory.LISTENER.onDisposed(delegate, event);
+                }
+                provider.removeObserver(this);
+            }
         }
     
         @Override
-        public Response<T> execute() throws IOException {
-            return delegate.execute();
-        }
-    
-        @Override
-        public void cancel() {
-            delegate.cancel();
-        }
-    
-        @Override
-        public boolean isCanceled() {
-            return delegate.isCanceled();
-        }
-    
-        @SuppressWarnings("CloneDoesntCallSuperClone") // Performing deep clone.
-        @Override
-        public Call2<T> clone() {
-            return new ExecutorCallbackCall2<>(callbackExecutor, delegate.clone());
-        }
-    
-        @Override
-        public Request request() {
-            return delegate.request();
+        public boolean isDisposed() {
+            return disposed;
         }
     }
     ```
-
     
-
-  - 2.7  `CallManager`统一管理请求，取消请求
-
-    全局保存所有的请求，添加 、删除请求，取消某个某些匹配tag的请求。可以在Activity 或Fragment的销毁方法中调用`CallManager.getInstance().cancel( yourTag )` 
+    
+    
+  - 2.7  `AndroidLifecycle`观察者模式统一分发生命周期时间
 
     ```java
+
     /**
-     * 创建时间：2018/5/31
-     * 编写人： chengxin
-     * 功能描述：全局管理Call请求管理,just like {@link okhttp3.Dispatcher}
+     * 实现LifecycleObserver监听Activity和Fragment的生命周期
+     *
+     * @see android.database.Observable
      */
-    public final class CallManager implements ActionManager<Call<?>> {
-        @GuardedBy("this")
-        private final List<CallTag> callTags = new ArrayList<>(4);
-        private volatile static CallManager instance;
+    public final class AndroidLifecycle implements LifecycleProvider, LifecycleObserver {
+        private final Object mLock = new Object();
     
-        private CallManager() {
-        }
-    
-        public static CallManager getInstance() {
-            if (instance == null) {
-                synchronized (CallManager.class) {
-                    if (instance == null) {
-                        instance = new CallManager();
-                    }
-                }
-            }
-            return instance;
-        }
-    
-        @Override
-        public synchronized void add(Call<?> call, Object tag) {
-            Utils.checkState(!contains(call), "Call<?>  " + call + " is already added.");
-            callTags.add(new CallTag(call, tag));
-        }
-    
+        @GuardedBy("mLock")
+        private final ArrayList<Observer> mObservers = new ArrayList<>();
         /**
-         * 当call结束时移除
-         *
-         * @param call Retrofit Call
+         * 缓存当前的Event事件
          */
-        @Override
-        public synchronized void remove(Call<?> call) {
-            if (callTags.isEmpty())
-                return;
-            for (int index = 0; index < callTags.size(); index++) {
-                if (call == callTags.get(index).call) {
-                    //like okhttp3.Headers#removeAll(String name)
-                    //remove(int index) 方法优于 remove(Object o)，无需再次遍历
-                    callTags.remove(index);
-                    break;
-                }
-            }
+        @GuardedBy("mLock")
+        @Nullable
+        private Lifecycle.Event mEvent;
+    
+        @MainThread
+        public static LifecycleProvider createLifecycleProvider(LifecycleOwner owner) {
+            return new AndroidLifecycle(owner);
         }
     
-        /**
-         * 取消并移除对应tag的call，确保Call被取消后不再被引用，
-         * 结合{@link #remove(Call)}方法双保险
-         *
-         * @param tag call对应的tag
-         */
-        @Override
-        public synchronized void cancel(final @Nullable Object tag) {
-            if (callTags.isEmpty())
-                return;
-            if (tag != null) {
-                for (int index = 0; index < callTags.size(); index++) {
-                    CallTag callTag = callTags.get(index);
-                    if (callTag.tag.equals(tag)) {
-                        callTag.call.cancel();
-                        callTags.remove(index);
-                        index--;
-                    }
+        private AndroidLifecycle(LifecycleOwner owner) {
+            owner.getLifecycle().addObserver(this);
+        }
+    
+        @OnLifecycleEvent(Lifecycle.Event.ON_ANY)
+        void onEvent(LifecycleOwner owner, Lifecycle.Event event) {
+            synchronized (mLock) {
+                //保证线程的可见性
+                mEvent = event;
+                // since onChanged() is implemented by the app, it could do anything, including
+                // removing itself from {@link mObservers} - and that could cause problems if
+                // an iterator is used on the ArrayList {@link mObservers}.
+                // to avoid such problems, just march thru the list in the reverse order.
+                for (int i = mObservers.size() - 1; i >= 0; i--) {
+                    mObservers.get(i).onChanged(event);
                 }
-            } else {
-                for (CallTag callTag : callTags) {
-                    callTag.call.cancel();
-                }
-                callTags.clear();
+            }
+            if (event == Lifecycle.Event.ON_DESTROY) {
+                owner.getLifecycle().removeObserver(this);
             }
         }
     
         @Override
-        public synchronized boolean contains(Call<?> call) {
-            for (CallTag callTag : callTags) {
-                if (call == callTag.call) {
-                    return true;
+        public void observe(Observer observer) {
+            if (observer == null) {
+                throw new IllegalArgumentException("The observer is null.");
+            }
+            synchronized (mLock) {
+                if (mObservers.contains(observer)) {
+                    return;
+                }
+                mObservers.add(observer);
+                logCount("observe");
+                if (mEvent != null) {
+                    observer.onChanged(mEvent);
                 }
             }
-            return false;
         }
     
-        /**
-         * 保存call和tag
-         */
-        final static class CallTag {
-            private final Call<?> call;
-            private final Object tag;
-    
-            CallTag(Call<?> call, Object tag) {
-                Utils.checkNotNull(call == null, "call==null");
-                Utils.checkNotNull(tag == null, "tag==null");
-                this.call = call;
-                this.tag = tag;
+        @Override
+        public void removeObserver(Observer observer) {
+            if (observer == null) {
+                throw new IllegalArgumentException("The observer is null.");
             }
+            synchronized (mLock) {
+                int index = mObservers.indexOf(observer);
+                if (index == -1) {
+                    return;
+                }
+                mObservers.remove(index);
+                logCount("removeObserver");
+            }
+        }
+    
+        private void logCount(String prefix) {
+            if (RetrofitFactory.SHOW_LOG) {
+                Log.d(Call.TAG, prefix + "-->" + mObservers.size() + ", provider:" + this);
+            }
+        }
+    
+        @Override
+        public String toString() {
+            return "AndroidLifecycle@" + Integer.toHexString(hashCode());
         }
     }
     ```
-
     
-
+    
+    
   - 2.8  `ProgressInterceptor` 拦截器监听下载和上传进度
 
      继承`okhttp3.Interceptor`  ，构造方法中传入`ProgressListener`监听进度
@@ -580,7 +546,7 @@
                             .addNetworkInterceptor(httpLoggingInterceptor)
                             .build())
                     //必须添加此adapter 用于构建处理回调
-                    .addCallAdapterFactory(ExecutorCallAdapterFactory.INSTANCE)
+                    .addCallAdapterFactory(CallAdapterFactory.INSTANCE)
                     //添加自定义json解析器 
                     .addConverterFactory(GsonConverterFactory.create())
                     .build();
@@ -627,7 +593,11 @@
     这里重写`parseThrowable`处理一些`Callback2`中为未处理的异常
 
     ```java
-    public abstract class AnimCallback<T> extends Callback2<T> {
+    
+    /**
+     * Created by chengxin on 2017/9/24.
+     */
+    public abstract class AnimCallback<T> extends DefaultCallback<T> {
         private ILoadingView mLoadingView;
     
         public AnimCallback(@Nullable ILoadingView loadingView) {
@@ -635,27 +605,25 @@
         }
     
         @Override
-        public void onStart(Call2<T> call2) {
+        public void onStart(Call<T> call) {
             if (mLoadingView != null)
                 mLoadingView.showLoading();
         }
     
         @Override
-        public void onCompleted(Call2<T> call2, @Nullable Throwable t, boolean canceled) {
-            if (canceled)
-                return;
+        public void onCompleted(Call<T> call, @Nullable Throwable t) {
             if (mLoadingView != null)
                 mLoadingView.hideLoading();
         }
     
         @NonNull
         @Override
-        public HttpError parseThrowable(Call2<T> call2, Throwable t) {
+        public HttpError parseThrowable(Call<T> call, Throwable t) {
             HttpError filterError;
             if (t instanceof JsonSyntaxException) {
                 filterError = new HttpError("解析异常", t);
             } else {
-                filterError = super.parseThrowable(call2, t);
+                filterError = super.parseThrowable(call, t);
             }
             return filterError;
         }
@@ -665,47 +633,43 @@
   - 3.5 发起请求
 
     ```java
+    LifecycleProvider provider = AndroidLifecycle.createLifecycleProvider(this);
     RetrofitFactory.create(ApiService.class)
             .getLogin("xxxxx", "123456")
-            .enqueue(hashCode(), new AnimCallback<LoginInfo>(this) {
+            .bindToLifecycle(provider, Lifecycle.Event.ON_DESTROY)
+            .enqueue(new AnimCallback<LoginInfo>(this) {
                 @Override
-                public void onError(Call2<LoginInfo> call2, HttpError error) {
+                public void onError(Call<LoginInfo> call, HttpError error) {
                     //处理失败
                 }
     
                 @Override
-                public void onSuccess(Call2<LoginInfo> call2, LoginInfo response) {
+                public void onSuccess(Call<LoginInfo> call, LoginInfo response) {
                    //处理成功 如保存登录信息等
                 }
             });
-            
-            
-     //在onDestor中取消未结束的请求
-       @Override
-        protected void onDestroy() {
-            super.onDestroy();
-            //hashCode() 能保证唯一性，取消当前页面所发起的所有请求，只要
-            // enqueue(tag, callback2) 传入的是对应的hashCode() 即可
-            CallManager.getInstance().cancel(hashCode());
-        }
+           
     ```
 
 - #### 4.注意事项
 
-  - 4.1 构建retrofit是需要ExecutorCallAdapterFactory实例，否则无法处理返回为Call2的服务接口
+  - 4.1 构建retrofit是需要CallAdapterFactory实例，否则无法处理返回为Call的服务接口
 
-  - 4.2 `Callback2`的回调函数均在主线程执行，如果调用了`Call2.cancel()`方法，除了`onCompleted()`方法会执行外其他回调方法都不会执行
+  - 4.2 `Callback`的回调函数均在主线程执行，如果Call绑定了生命周期触发了`cancel()`方法
 
+    UI回调方法均不会执行，如果要监听那些请求被取消了，可以设置`RetrofitFactory.LISTENER`属性，其为一个全局的监听器`OnDisposedListener`。
+    
     
 
 - #### 5.下载
 
   ```groovy
   dependencies {
-       implementation 'com.xcheng:retrofit-helper:1.0.0'
+       implementation 'com.xcheng:retrofit-helper:1.5.1'
   }
   ```
   
+
 ​        github地址: [retrofit-helper](https://github.com/xchengDroid/retrofit-helper)
 
   
