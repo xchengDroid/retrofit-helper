@@ -7,7 +7,8 @@ import android.support.annotation.UiThread;
 import retrofit2.Response;
 
 /**
- * if {@link LifeCall#isDisposed()} return true
+ * if {@link LifeCall#isDisposed()} return true,will not call {@link #onStart(Call)},
+ * {@link #onSuccess(Call, Object)},{@link #onError(Call, HttpError)},{@link #onCompleted(Call, Throwable)} methods
  *
  * @param <T> Successful response body type.
  */
