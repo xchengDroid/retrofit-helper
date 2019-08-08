@@ -89,7 +89,12 @@ public final class AndroidLifecycle implements LifecycleProvider, LifecycleObser
 
     private void logCount(String prefix) {
         if (RetrofitFactory.SHOW_LOG) {
-            Log.d(Call.TAG, prefix + "-->" + mObservers.size());
+            Log.d(Call.TAG, prefix + "-->" + mObservers.size() + ", provider:" + this);
         }
+    }
+
+    @Override
+    public String toString() {
+        return "AndroidLifecycle@" + Integer.toHexString(hashCode());
     }
 }
