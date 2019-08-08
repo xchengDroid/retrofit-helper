@@ -9,9 +9,9 @@
   | 描述                                             | 相关类和方法                                                 |
   | ------------------------------------------------ | ------------------------------------------------------------ |
   | 回调函数中直接处理请求结果，无需再次判断是否成功 | `Callback.onSuccess(Call<T> call, T response)`               |
-  | 请求开始和结束监听                               | `Callback.onStart(Call<T> call)`  和`Callback.onCompleted(Call2<T> call, @Nullable Throwable t);` |
+  | 请求开始和结束监听                               | `Callback.onStart(Call<T> call)`  和`Callback.onCompleted(Call<T> call, @Nullable Throwable t)` |
   | 全局维护多个Retrofit实例                         | `RetrofitFactory.DEFAULT` 和 `RetrofitFactory.OTHERS`        |
-  | 统一处理解析结果                                 | `Callback.parseResponse(Call2<T> call, Response<T> response)`和   `Callback.parseThrowable(Call<T> call, Throwable t)` |
+  | 统一解析异常信息                                 | `Callback.parseThrowable(Call<T> call, Throwable t)`         |
   | 绑定Activity或者Fragment生命周期                 | `LifeCall<T> bindToLifecycle(LifecycleProvider provider, Lifecycle.Event event)` |
   | 拦截器监听下载和上传进度                         | `ProgressInterceptor` 、`ProgressListener`                   |
   | 单独指定某个请求的日志级别                       | `HttpLoggingInterceptor`                                     |
