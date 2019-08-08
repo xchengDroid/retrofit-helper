@@ -12,9 +12,10 @@
   | 请求开始和结束监听                               | `Callback.onStart(Call<T> call)`  和`Callback.onCompleted(Call2<T> call, @Nullable Throwable t);` |
   | 全局维护多个Retrofit实例                         | `RetrofitFactory.DEFAULT` 和 `RetrofitFactory.OTHERS`        |
   | 统一处理解析结果                                 | `Callback.parseResponse(Call2<T> call, Response<T> response)`和   `Callback.parseThrowable(Call<T> call, Throwable t)` |
+  | 绑定生命周期                                     | `LifeCall<T> bindToLifecycle(LifecycleProvider provider, Lifecycle.Event event)` |
   | 拦截器监听下载和上传进度                         | `ProgressInterceptor` 、`ProgressListener`                   |
   | 单独指定某个请求的日志级别                       | `HttpLoggingInterceptor`                                     |
-  
+
 - #### 2. 封装逻辑解析
 
   - 2.1  `RetrofitFactory`全局管理`retrofit`实例
@@ -162,9 +163,9 @@
     
     ​		
     
-  - 2.4  `HttpError` 统一处理异常错误
+  - 2.4  `HttpError` 统一包装异常错误
 
-    ​       HttpError类中有两个成员属性msg 被body，msg是保存错误的描述信息等，body可以保存异常的具体信息或者原始的json等，`onError(Call2<T> call2, HttpError error)`回调方法可以根据body的具体信息做二次处理。
+    ​       HttpError类中有两个成员属性msg 被body，msg是保存错误的描述信息等，body可以保存异常的具体信息或者原始的json等，`onError(Call<T> call, HttpError error)`回调方法可以根据body的具体信息做二次处理。
 
     ```java
     /**
@@ -272,7 +273,7 @@
     }
     ```
     
-  - 2.6  `RealLifeCall` 继承`LifeCall`处理生命周期绑定，自动管理生命周期
+  - 2.6  `RealLifeCall` 继承`LifeCall`实现Activity或Fragment生命周期绑定，自动管理生命周期
 
      ```java
 
@@ -545,7 +546,7 @@
                     .callFactory(new OkHttpClient.Builder()
                             .addNetworkInterceptor(httpLoggingInterceptor)
                             .build())
-                    //必须添加此adapter 用于构建处理回调
+                    //必须添加此adapter 用于构建Call
                     .addCallAdapterFactory(CallAdapterFactory.INSTANCE)
                     //添加自定义json解析器 
                     .addConverterFactory(GsonConverterFactory.create())
