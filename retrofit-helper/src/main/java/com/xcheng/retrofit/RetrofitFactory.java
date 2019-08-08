@@ -1,5 +1,7 @@
 package com.xcheng.retrofit;
 
+import android.support.annotation.Nullable;
+
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -21,6 +23,11 @@ public final class RetrofitFactory {
      */
     public static volatile Retrofit DEFAULT;
 
+    /**
+     * A {@code null} value is permitted
+     */
+    @Nullable
+    public static OnDisposedListener LISTENER = OnDisposedListener.DEFAULT;
     /**
      * 是否显示日志
      */

@@ -3,7 +3,6 @@ package com.xcheng.retrofit;
 import android.arch.lifecycle.Lifecycle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 final class RealLifeCall<T> implements LifeCall<T> {
     private final Call<T> delegate;
@@ -98,8 +97,8 @@ final class RealLifeCall<T> implements LifeCall<T> {
         if (this.event == event || event == Lifecycle.Event.ON_DESTROY) {
             disposed = true;
             delegate.cancel();
-            if (RetrofitFactory.SHOW_LOG) {
-                Log.d(Call.TAG, "disposed by " + event + " request-->" + delegate.request());
+            if (RetrofitFactory.LISTENER != null) {
+                RetrofitFactory.LISTENER.onDisposed(delegate, event);
             }
             provider.removeObserver(this);
         }
