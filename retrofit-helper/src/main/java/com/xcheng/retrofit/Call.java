@@ -9,7 +9,6 @@ import okhttp3.Request;
  * 编写人： chengxin
  * 功能描述：支持生命周期绑定的Call{@link retrofit2.Call}
  */
-@SuppressWarnings("JavadocReference")
 public interface Call<T> extends Callable<T> {
 
     String TAG = Call.class.getSimpleName();
