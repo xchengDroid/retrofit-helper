@@ -55,7 +55,7 @@ public class MainActivity extends EasyActivity {
     }
 
     public void login(View view) {
-        for (int index = 0; index < 100; index++) {
+        for (int index = 0; index < 10; index++) {
             RetrofitFactory.create(ApiService.class)
                     .getLogin("singleman", "123456")
                     .bindToLifecycle(provider, Lifecycle.Event.ON_RESUME)
