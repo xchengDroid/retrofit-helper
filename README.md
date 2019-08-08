@@ -386,7 +386,7 @@
     
     
     
-  - 2.7  `AndroidLifecycle`观察者模式统一分发生命周期时间
+  - 2.7  `AndroidLifecycle`观察者模式统一分发生命周期事件
 
     ```java
 
