@@ -34,6 +34,7 @@ public final class RetrofitFactory {
     public static boolean SHOW_LOG = true;
 
     private RetrofitFactory() {
+        throw new AssertionError("No instances.");
     }
 
     public static <T> T create(Class<T> service) {
