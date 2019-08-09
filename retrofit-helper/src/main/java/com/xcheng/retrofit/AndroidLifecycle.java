@@ -13,6 +13,7 @@ import java.util.ArrayList;
 
 /**
  * 实现LifecycleObserver监听Activity和Fragment的生命周期
+ * It is thread safe.
  *
  * @see android.database.Observable
  */
@@ -66,7 +67,10 @@ public final class AndroidLifecycle implements LifecycleProvider, LifecycleObser
             }
             mObservers.add(observer);
             logCount("observe");
-            //must be after add method,because may remove itself from {@link mObservers} on onChanged()
+            // since onChanged() is implemented by the app, it could do anything, including
+            // removing itself from {@link mObservers} - and that could cause problems if
+            // an iterator is used on the ArrayList {@link mObservers}.
+            // to avoid such problems, just call onChanged() after {@code mObservers.add(observer)}
             if (mEvent != null) {
                 observer.onChanged(mEvent);
             }
