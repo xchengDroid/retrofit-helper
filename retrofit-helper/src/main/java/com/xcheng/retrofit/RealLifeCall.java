@@ -101,9 +101,6 @@ final class RealLifeCall<T> implements LifeCall<T> {
 
     @Override
     public void onChanged(@NonNull Lifecycle.Event event) {
-        //just in case
-        if (disposed)
-            return;
         if (this.event == event || event == Lifecycle.Event.ON_DESTROY) {
             disposed = true;
             delegate.cancel();
