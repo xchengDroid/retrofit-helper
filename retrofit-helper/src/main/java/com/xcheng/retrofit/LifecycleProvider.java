@@ -4,7 +4,8 @@ import android.arch.lifecycle.Lifecycle;
 import android.support.annotation.NonNull;
 
 /**
- * 统一分发Activity和 Fragment的生命周期时间
+ * 统一分发Activity和 Fragment的生命周期时间.
+ * 实现类必须保证线程安全.
  */
 @SuppressWarnings("JavadocReference")
 public interface LifecycleProvider {
