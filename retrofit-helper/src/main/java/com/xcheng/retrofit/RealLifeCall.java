@@ -67,9 +67,9 @@ final class RealLifeCall<T> implements LifeCall<T> {
             public void onCompleted(Call<T> call, @Nullable Throwable t) {
                 if (!disposed) {
                     callback.onCompleted(call, t);
-                    //if disposed is true, it will be removed by onChanged method
-                    provider.removeObserver(RealLifeCall.this);
                 }
+                //ignore already removed
+                provider.removeObserver(RealLifeCall.this);
             }
         });
     }
@@ -92,10 +92,7 @@ final class RealLifeCall<T> implements LifeCall<T> {
             }
             throw t;
         } finally {
-            if (!disposed) {
-                //if disposed is true, it will be removed by onChanged method
-                provider.removeObserver(this);
-            }
+            provider.removeObserver(this);
         }
     }
 
