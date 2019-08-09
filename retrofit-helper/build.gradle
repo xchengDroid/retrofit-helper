@@ -28,7 +28,7 @@ dependencies {
     //noinspection GradleDependency
     compileOnly 'com.android.support:support-annotations:27.1.1'
     compileOnly 'android.arch.lifecycle:common:1.1.1'
-    api 'com.squareup.retrofit2:retrofit:2.6.0'
+    api 'com.squareup.retrofit2:retrofit:2.6.1'
 }
 //添加
 publish {
