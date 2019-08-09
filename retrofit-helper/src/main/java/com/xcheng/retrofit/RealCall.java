@@ -60,6 +60,7 @@ final class RealCall<T> implements Call<T> {
                 });
             }
 
+            @SuppressWarnings("ConstantConditions")
             @UiThread
             private void callResult(@Nullable Response<T> response, @Nullable Throwable t) {
                 if (response != null) {
