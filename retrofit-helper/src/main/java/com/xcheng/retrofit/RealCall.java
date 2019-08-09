@@ -117,7 +117,7 @@ final class RealCall<T> implements Call<T> {
     }
 
     @Override
-    public LifeCall<T> bindToLifecycle(LifecycleProvider provider) {
+    public LifeCall<T> bindUntilDestroy(LifecycleProvider provider) {
         return bindToLifecycle(provider, Lifecycle.Event.ON_DESTROY);
     }
 }

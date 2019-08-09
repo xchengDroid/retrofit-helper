@@ -117,7 +117,7 @@ public class MainActivity extends EasyActivity {
     public void wxarticle(View view) {
         RetrofitFactory.create(ApiService.class)
                 .getWXarticle()
-                .bindToLifecycle(provider)
+                .bindUntilDestroy(provider)
                 .enqueue(new AnimCallback<List<WXArticle>>(this) {
                     @Override
                     public void onError(Call<List<WXArticle>> call, HttpError error) {
@@ -135,7 +135,7 @@ public class MainActivity extends EasyActivity {
     public void article0(View view) {
         RetrofitFactory.create(ApiService.class)
                 .getArticle0()
-                .bindToLifecycle(provider)
+                .bindUntilDestroy(provider)
                 .enqueue(new AnimCallback<List<Article>>(this) {
                     @Override
                     public void onError(Call<List<Article>> call, HttpError error) {
@@ -152,7 +152,7 @@ public class MainActivity extends EasyActivity {
     public void progress(View view) {
         RetrofitFactory.create(ApiService.class)
                 .getArticle0()
-                .bindToLifecycle(provider)
+                .bindUntilDestroy(provider)
                 .enqueue(new AnimCallback<List<Article>>(this) {
                     @Override
                     public void onError(Call<List<Article>> call2, HttpError error) {
@@ -187,7 +187,7 @@ public class MainActivity extends EasyActivity {
                 .build();
         retrofit.create(ApiService.class)
                 .loadDouYinApk()
-                .bindToLifecycle(provider)
+                .bindUntilDestroy(provider)
                 .enqueue(new DefaultCallback<File>() {
                     @Override
                     public void onStart(Call<File> call2) {

@@ -28,7 +28,7 @@ public interface Call<T> extends Callable<T> {
      *
      * @param provider LifecycleProvider
      * @param event    {@link Lifecycle.Event}
-     * @return
+     * @return LifeCall
      */
     LifeCall<T> bindToLifecycle(LifecycleProvider provider, Lifecycle.Event event);
 
@@ -39,5 +39,5 @@ public interface Call<T> extends Callable<T> {
      * @return LifeCall
      * @see Call#bindToLifecycle(LifecycleProvider, Lifecycle.Event)
      */
-    LifeCall<T> bindToLifecycle(LifecycleProvider provider);
+    LifeCall<T> bindUntilDestroy(LifecycleProvider provider);
 }
