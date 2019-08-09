@@ -37,7 +37,6 @@ final class RealLifeCall<T> implements LifeCall<T> {
                 if (!disposed) {
                     return callback.parseThrowable(call, t);
                 }
-                //for not crash
                 return new HttpError("Already disposed.", t);
             }
 
@@ -47,7 +46,6 @@ final class RealLifeCall<T> implements LifeCall<T> {
                 if (!disposed) {
                     return callback.transform(call, t);
                 }
-                //for not crash
                 return t;
             }
 
@@ -69,7 +67,7 @@ final class RealLifeCall<T> implements LifeCall<T> {
             public void onCompleted(Call<T> call, @Nullable Throwable t) {
                 if (!disposed) {
                     callback.onCompleted(call, t);
-                    //防止重复调用
+                    //if disposed is true, it will be removed by onChanged method
                     provider.removeObserver(RealLifeCall.this);
                 }
             }
@@ -95,7 +93,7 @@ final class RealLifeCall<T> implements LifeCall<T> {
             throw t;
         } finally {
             if (!disposed) {
-                //防止重复调用
+                //if disposed is true, it will be removed by onChanged method
                 provider.removeObserver(this);
             }
         }
