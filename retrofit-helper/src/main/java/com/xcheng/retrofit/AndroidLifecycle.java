@@ -66,6 +66,7 @@ public final class AndroidLifecycle implements LifecycleProvider, LifecycleObser
             }
             mObservers.add(observer);
             logCount("observe");
+            //must be after add method,because may remove itself from {@link mObservers} on onChanged()
             if (mEvent != null) {
                 observer.onChanged(mEvent);
             }
