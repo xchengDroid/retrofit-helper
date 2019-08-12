@@ -101,9 +101,7 @@ final class RealLifeCall<T> implements LifeCall<T> {
         if (this.event == event || event == Lifecycle.Event.ON_DESTROY) {
             disposed = true;
             delegate.cancel();
-            if (RetrofitFactory.LISTENER != null) {
-                RetrofitFactory.LISTENER.onDisposed(delegate, event);
-            }
+            RetrofitFactory.getOnEventListener().onDisposed(delegate, event);
             provider.removeObserver(this);
         }
     }

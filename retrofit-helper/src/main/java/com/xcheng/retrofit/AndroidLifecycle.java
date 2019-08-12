@@ -7,7 +7,6 @@ import android.arch.lifecycle.OnLifecycleEvent;
 import android.support.annotation.GuardedBy;
 import android.support.annotation.MainThread;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 import java.util.ArrayList;
 
@@ -66,7 +65,7 @@ public final class AndroidLifecycle implements LifecycleProvider, LifecycleObser
                 return;
             }
             mObservers.add(observer);
-            logCount("observe");
+            RetrofitFactory.getOnEventListener().onObserverCountChanged(this, mObservers.size() - 1, mObservers.size());
             // since onChanged() is implemented by the app, it could do anything, including
             // removing itself from {@link mObservers} - and that could cause problems if
             // an iterator is used on the ArrayList {@link mObservers}.
@@ -88,13 +87,7 @@ public final class AndroidLifecycle implements LifecycleProvider, LifecycleObser
                 return;
             }
             mObservers.remove(index);
-            logCount("removeObserver");
-        }
-    }
-
-    private void logCount(String prefix) {
-        if (RetrofitFactory.SHOW_LOG) {
-            Log.d(Call.TAG, prefix + "-->" + mObservers.size() + ", provider:" + this);
+            RetrofitFactory.getOnEventListener().onObserverCountChanged(this, mObservers.size() + 1, mObservers.size());
         }
     }
 

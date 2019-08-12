@@ -1,38 +1,33 @@
 package com.xcheng.retrofit;
 
 import android.arch.lifecycle.Lifecycle;
+import android.util.Log;
 
 /**
  * 监听一些核心事件
  */
-public abstract class OnEventListener {
+public interface OnEventListener {
     OnEventListener NONE = new OnEventListener() {
+        @Override
+        public void onDisposed(Call<?> call, Lifecycle.Event event) {
+            Log.d(Call.TAG, "disposed by-->" + event + ", " + call.request());
+        }
 
+        @Override
+        public void onObserverCountChanged(LifecycleProvider provider, int oldCount, int newCount) {
+            Log.d(Call.TAG, "ObserverCountChanged-->old:" + oldCount + ", new:" + newCount + ", provider:" + provider);
+        }
     };
 
-    static OnEventListener.Factory factory(final OnEventListener listener) {
-        return new OnEventListener.Factory() {
-            public OnEventListener create(Call<?> call) {
-                return listener;
-            }
-        };
-    }
+    /**
+     * 由于生命周期原因请求被取消了,此回调函数不保证与生命周期函数同步的
+     */
+    void onDisposed(Call<?> call, Lifecycle.Event event);
 
-    public void onDisposed(Call<?> call, Lifecycle.Event event) {
-
-    }
-
-    public void onObserve(LifecycleProvider provider, LifecycleProvider.Observer observer) {
-
-
-    }
-
-    public void onRemoveObserver(LifecycleProvider provider, LifecycleProvider.Observer observer) {
-
-
-    }
-
-    public interface Factory {
-        OnEventListener create(Call<?> call);
-    }
+    /**
+     * @param provider current LifecycleProvider
+     * @param oldCount old observer count
+     * @param newCount new observer count
+     */
+    void onObserverCountChanged(LifecycleProvider provider, int oldCount, int newCount);
 }

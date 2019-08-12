@@ -1,5 +1,6 @@
 package com.xcheng.retrofit;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import java.util.Map;
@@ -27,11 +28,7 @@ public final class RetrofitFactory {
      * A {@code null} value is permitted
      */
     @Nullable
-    public static OnDisposedListener LISTENER = OnDisposedListener.DEFAULT;
-    /**
-     * 是否显示日志
-     */
-    public static boolean SHOW_LOG = true;
+    public static volatile OnEventListener LISTENER;
 
     private RetrofitFactory() {
         throw new AssertionError("No instances.");
@@ -53,5 +50,17 @@ public final class RetrofitFactory {
         Utils.checkState(retrofit != null,
                 String.format("retrofit named with '%s' was not found , have you put it in OTHERS ?", name));
         return retrofit.create(service);
+    }
+
+    /**
+     * @return OnEventListener, if LISTENER is null,return {@link OnEventListener#NONE}
+     */
+    @NonNull
+    public static OnEventListener getOnEventListener() {
+        OnEventListener listener = LISTENER;
+        if (listener != null) {
+            return listener;
+        }
+        return OnEventListener.NONE;
     }
 }
