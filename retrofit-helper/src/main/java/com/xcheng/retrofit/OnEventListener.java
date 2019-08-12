@@ -17,6 +17,11 @@ public interface OnEventListener {
         public void onObserverCountChanged(LifecycleProvider provider, int oldCount, int newCount) {
             Log.d(Call.TAG, "countChanged-->old:" + oldCount + ", new:" + newCount + ", provider:" + provider);
         }
+
+        @Override
+        public void onThrowable(Call<?> call, Throwable t) {
+            Log.w(Call.TAG, "onThrowable", t);
+        }
     };
 
     /**
@@ -30,4 +35,12 @@ public interface OnEventListener {
      * @param newCount new observer count
      */
     void onObserverCountChanged(LifecycleProvider provider, int oldCount, int newCount);
+
+    /**
+     * http请求抛出的异常信息
+     *
+     * @param call {@link Call}
+     * @param t    any throwable, exclude {@link DisposedException}
+     */
+    void onThrowable(Call<?> call, Throwable t);
 }
