@@ -4,7 +4,7 @@ import android.arch.lifecycle.Lifecycle;
 import android.util.Log;
 
 /**
- * 监听一些核心事件
+ * 全局监听一些核心事件
  */
 public interface OnEventListener {
     OnEventListener NONE = new OnEventListener() {
@@ -15,7 +15,7 @@ public interface OnEventListener {
 
         @Override
         public void onObserverCountChanged(LifecycleProvider provider, int oldCount, int newCount) {
-            Log.d(Call.TAG, "ObserverCountChanged-->old:" + oldCount + ", new:" + newCount + ", provider:" + provider);
+            Log.d(Call.TAG, "countChanged-->old:" + oldCount + ", new:" + newCount + ", provider:" + provider);
         }
     };
 
