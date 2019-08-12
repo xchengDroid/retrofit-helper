@@ -31,8 +31,8 @@ public interface OnEventListener {
 
     /**
      * @param provider current LifecycleProvider
-     * @param oldCount old observer count
-     * @param newCount new observer count
+     * @param oldCount old observers count
+     * @param newCount new observers count
      */
     void onObserverCountChanged(LifecycleProvider provider, int oldCount, int newCount);
 
