@@ -1,6 +1,7 @@
 package com.xcheng.retrofit;
 
 import android.arch.lifecycle.Lifecycle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
 
@@ -19,6 +20,7 @@ final class RealCall<T> implements Call<T> {
         this.delegate = delegate;
     }
 
+    @NonNull
     @Override
     public T execute() throws Throwable {
         try {
