@@ -1,6 +1,8 @@
 package com.xcheng.retrofit;
 
 
+import android.support.annotation.NonNull;
+
 import retrofit2.Response;
 
 /**
@@ -20,6 +22,7 @@ public interface Callable<T> {
      * @throws java.io.IOException     if a problem occurred talking to the server.
      * @throws RuntimeException        (and subclasses) if an unexpected error occurs creating the request
      */
+    @NonNull
     T execute() throws Throwable;
 
     /**
