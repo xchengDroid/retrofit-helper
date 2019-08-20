@@ -101,7 +101,11 @@ final class RealLifeCall<T> implements LifeCall<T> {
 
     @Override
     public void onChanged(@NonNull Lifecycle.Event event) {
-        if (this.event == event || event == Lifecycle.Event.ON_DESTROY) {
+        if (this.event == event
+                || event == Lifecycle.Event.ON_DESTROY
+                //Activity和Fragment的生命周期是不会传入 {@code Lifecycle.Event.ON_ANY},
+                // 可以手动调用此方法传入 {@code Lifecycle.Event.ON_ANY},用于区分是否为手动调用
+                || event == Lifecycle.Event.ON_ANY) {
             if (once.compareAndSet(false, true)/*保证原子性*/) {
                 delegate.cancel();
                 RetrofitFactory.getOnEventListener().onDisposed(delegate, event);
@@ -109,7 +113,7 @@ final class RealLifeCall<T> implements LifeCall<T> {
             }
         }
     }
-    
+
     @Override
     public boolean isDisposed() {
         return once.get();
