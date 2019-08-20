@@ -12,7 +12,7 @@ final class RealLifeCall<T> implements LifeCall<T> {
     private final LifecycleProvider provider;
     /**
      * LifeCall是否被释放了
-     * like rxAndroid  MainThreadDisposable,rxJava ObservableUnsubscribeOn
+     * like rxAndroid MainThreadDisposable or rxJava ObservableUnsubscribeOn, IoScheduler
      */
     private final AtomicBoolean once = new AtomicBoolean();
 
