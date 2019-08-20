@@ -8,9 +8,9 @@ package com.xcheng.retrofit;
 public interface LifeCall<T> extends Callable<T>, LifecycleProvider.Observer {
 
     /**
-     * Returns true if this resource has been disposed.
+     * Returns true if this call has been disposed.
      *
-     * @return true if this resource has been disposed
+     * @return true if this call has been disposed
      */
     boolean isDisposed();
 
