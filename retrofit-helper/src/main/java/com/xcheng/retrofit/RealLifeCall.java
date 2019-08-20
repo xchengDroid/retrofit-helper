@@ -4,14 +4,16 @@ import android.arch.lifecycle.Lifecycle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-final class RealLifeCall<T> implements LifeCall<T> {
+import java.util.concurrent.atomic.AtomicBoolean;
+
+final class RealLifeCall<T> implements LifeCall<T>, LifecycleProvider.Observer {
     private final Call<T> delegate;
     private final Lifecycle.Event event;
     private final LifecycleProvider provider;
     /**
      * LifeCall是否被释放了
      */
-    private volatile boolean disposed;
+    private final AtomicBoolean disposed = new AtomicBoolean();
 
     RealLifeCall(Call<T> delegate, Lifecycle.Event event, LifecycleProvider provider) {
         this.delegate = delegate;
@@ -26,7 +28,7 @@ final class RealLifeCall<T> implements LifeCall<T> {
         delegate.enqueue(new Callback<T>() {
             @Override
             public void onStart(Call<T> call) {
-                if (!disposed) {
+                if (!disposed.get()) {
                     callback.onStart(call);
                 }
             }
@@ -34,7 +36,7 @@ final class RealLifeCall<T> implements LifeCall<T> {
             @NonNull
             @Override
             public HttpError parseThrowable(Call<T> call, Throwable t) {
-                if (!disposed) {
+                if (!disposed.get()) {
                     return callback.parseThrowable(call, t);
                 }
                 return new HttpError("Already disposed.", t);
@@ -43,7 +45,7 @@ final class RealLifeCall<T> implements LifeCall<T> {
             @NonNull
             @Override
             public T transform(Call<T> call, T t) {
-                if (!disposed) {
+                if (!disposed.get()) {
                     return callback.transform(call, t);
                 }
                 return t;
@@ -51,21 +53,21 @@ final class RealLifeCall<T> implements LifeCall<T> {
 
             @Override
             public void onSuccess(Call<T> call, T t) {
-                if (!disposed) {
+                if (!disposed.get()) {
                     callback.onSuccess(call, t);
                 }
             }
 
             @Override
             public void onError(Call<T> call, HttpError error) {
-                if (!disposed) {
+                if (!disposed.get()) {
                     callback.onError(call, error);
                 }
             }
 
             @Override
             public void onCompleted(Call<T> call, @Nullable Throwable t) {
-                if (!disposed) {
+                if (!disposed.get()) {
                     callback.onCompleted(call, t);
                 }
                 //ignore already removed
@@ -78,16 +80,16 @@ final class RealLifeCall<T> implements LifeCall<T> {
     @Override
     public T execute() throws Throwable {
         try {
-            if (disposed) {
+            if (disposed.get()) {
                 throw new DisposedException("Already disposed.");
             }
             T body = delegate.execute();
-            if (disposed) {
+            if (disposed.get()) {
                 throw new DisposedException("Already disposed.");
             }
             return body;
         } catch (Throwable t) {
-            if (disposed && !(t instanceof DisposedException)) {
+            if (disposed.get() && !(t instanceof DisposedException)) {
                 throw new DisposedException("Already disposed.", t);
             }
             throw t;
@@ -99,15 +101,21 @@ final class RealLifeCall<T> implements LifeCall<T> {
     @Override
     public void onChanged(@NonNull Lifecycle.Event event) {
         if (this.event == event || event == Lifecycle.Event.ON_DESTROY) {
-            disposed = true;
-            delegate.cancel();
+            dispose();
             RetrofitFactory.getOnEventListener().onDisposed(delegate, event);
+        }
+    }
+
+    @Override
+    public void dispose() {
+        if (disposed.compareAndSet(false, true)) {
+            delegate.cancel();
             provider.removeObserver(this);
         }
     }
 
     @Override
     public boolean isDisposed() {
-        return disposed;
+        return disposed.get();
     }
 }

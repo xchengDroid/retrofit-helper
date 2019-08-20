@@ -5,11 +5,16 @@ package com.xcheng.retrofit;
  * 编写人： chengxin
  * 功能描述：实现生命周期绑定的Call{@link retrofit2.Call}
  */
-public interface LifeCall<T> extends Callable<T>, LifecycleProvider.Observer {
+public interface LifeCall<T> extends Callable<T> {
     /**
-     * Returns true if this call has been disposed.
-     *
-     * @return true if this call has been disposed
+     * Dispose the resource, the operation should be idempotent.
+     */
+    void dispose();
+
+    /**
+     * Returns true if this resource has been disposed.
+     * @return true if this resource has been disposed
      */
     boolean isDisposed();
+
 }
