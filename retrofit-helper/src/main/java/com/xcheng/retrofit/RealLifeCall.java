@@ -4,8 +4,6 @@ import android.arch.lifecycle.Lifecycle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-
 final class RealLifeCall<T> implements LifeCall<T>, LifecycleProvider.Observer {
     private final Call<T> delegate;
     private final Lifecycle.Event event;
@@ -13,7 +11,7 @@ final class RealLifeCall<T> implements LifeCall<T>, LifecycleProvider.Observer {
     /**
      * LifeCall是否被释放了
      */
-    private final AtomicBoolean once = new AtomicBoolean();
+    private volatile boolean disposed;
 
     RealLifeCall(Call<T> delegate, Lifecycle.Event event, LifecycleProvider provider) {
         this.delegate = delegate;
@@ -28,7 +26,7 @@ final class RealLifeCall<T> implements LifeCall<T>, LifecycleProvider.Observer {
         delegate.enqueue(new Callback<T>() {
             @Override
             public void onStart(Call<T> call) {
-                if (!isDisposed()) {
+                if (!disposed) {
                     callback.onStart(call);
                 }
             }
@@ -36,7 +34,7 @@ final class RealLifeCall<T> implements LifeCall<T>, LifecycleProvider.Observer {
             @NonNull
             @Override
             public HttpError parseThrowable(Call<T> call, Throwable t) {
-                if (!isDisposed()) {
+                if (!disposed) {
                     return callback.parseThrowable(call, t);
                 }
                 return new HttpError("Already disposed.", t);
@@ -45,7 +43,7 @@ final class RealLifeCall<T> implements LifeCall<T>, LifecycleProvider.Observer {
             @NonNull
             @Override
             public T transform(Call<T> call, T t) {
-                if (!isDisposed()) {
+                if (!disposed) {
                     return callback.transform(call, t);
                 }
                 return t;
@@ -53,26 +51,26 @@ final class RealLifeCall<T> implements LifeCall<T>, LifecycleProvider.Observer {
 
             @Override
             public void onSuccess(Call<T> call, T t) {
-                if (!isDisposed()) {
+                if (!disposed) {
                     callback.onSuccess(call, t);
                 }
             }
 
             @Override
             public void onError(Call<T> call, HttpError error) {
-                if (!isDisposed()) {
+                if (!disposed) {
                     callback.onError(call, error);
                 }
             }
 
             @Override
             public void onCompleted(Call<T> call, @Nullable Throwable t) {
-                if (!isDisposed()) {
+                if (!disposed) {
                     callback.onCompleted(call, t);
                 }
                 //ignore already removed
-                provider.removeObserver(RealLifeCall.this);
-            }
+                    provider.removeObserver(RealLifeCall.this);
+                }
         });
     }
 
@@ -80,34 +78,28 @@ final class RealLifeCall<T> implements LifeCall<T>, LifecycleProvider.Observer {
     @Override
     public T execute() throws Throwable {
         try {
-            if (isDisposed()) {
+            if (disposed) {
                 throw new DisposedException("Already disposed.");
             }
             T body = delegate.execute();
-            if (isDisposed()) {
+            if (disposed) {
                 throw new DisposedException("Already disposed.");
             }
             return body;
         } catch (Throwable t) {
-            if (isDisposed() && !(t instanceof DisposedException)) {
+            if (disposed && !(t instanceof DisposedException)) {
                 throw new DisposedException("Already disposed.", t);
             }
             throw t;
         } finally {
-            provider.removeObserver(this);
+                provider.removeObserver(this);
+            }
         }
-    }
 
     @Override
     public void onChanged(@NonNull Lifecycle.Event event) {
         if (this.event == event || event == Lifecycle.Event.ON_DESTROY) {
-            dispose();
-        }
-    }
-
-    @Override
-    public void dispose() {
-        if (once.compareAndSet(false, true)/*保证操作的原子性*/) {
+            disposed = true;
             delegate.cancel();
             RetrofitFactory.getOnEventListener().onDisposed(delegate, event);
             provider.removeObserver(this);
@@ -116,6 +108,6 @@ final class RealLifeCall<T> implements LifeCall<T>, LifecycleProvider.Observer {
 
     @Override
     public boolean isDisposed() {
-        return once.get();
+        return disposed;
     }
 }
