@@ -32,8 +32,8 @@ public interface LifecycleProvider {
     interface Observer {
         /**
          * <p>
-         * The action thus may be called concurrently from multiple
-         * threads; the action must be thread safe.
+         * The action may be called concurrently from multiple
+         * threads; the action must be thread safe,like{@code Observable#doOnDispose(Action)}.
          * <p>
          * Called when the event is changed.
          *
