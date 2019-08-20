@@ -69,8 +69,8 @@ final class RealLifeCall<T> implements LifeCall<T>, LifecycleProvider.Observer {
                     callback.onCompleted(call, t);
                 }
                 //ignore already removed
-                    provider.removeObserver(RealLifeCall.this);
-                }
+                provider.removeObserver(RealLifeCall.this);
+            }
         });
     }
 
@@ -92,9 +92,9 @@ final class RealLifeCall<T> implements LifeCall<T>, LifecycleProvider.Observer {
             }
             throw t;
         } finally {
-                provider.removeObserver(this);
-            }
+            provider.removeObserver(this);
         }
+    }
 
     @Override
     public void onChanged(@NonNull Lifecycle.Event event) {
