@@ -27,7 +27,7 @@ public interface Call<T> extends Callable<T> {
      * 绑定生命周期
      *
      * @param provider LifecycleProvider
-     * @param event    {@link Lifecycle.Event}
+     * @param event    {@link Lifecycle.Event}, {@link Lifecycle.Event#ON_ANY} is not allowed
      * @return LifeCall
      */
     LifeCall<T> bindToLifecycle(LifecycleProvider provider, Lifecycle.Event event);

@@ -12,6 +12,7 @@ final class RealLifeCall<T> implements LifeCall<T> {
     private final LifecycleProvider provider;
     /**
      * LifeCall是否被释放了
+     * like rxAndroid  MainThreadDisposable,rxJava ObservableUnsubscribeOn
      */
     private final AtomicBoolean once = new AtomicBoolean();
 
@@ -104,7 +105,7 @@ final class RealLifeCall<T> implements LifeCall<T> {
         if (this.event == event
                 || event == Lifecycle.Event.ON_DESTROY
                 //Activity和Fragment的生命周期是不会传入 {@code Lifecycle.Event.ON_ANY},
-                // 可以手动调用此方法传入 {@code Lifecycle.Event.ON_ANY},用于区分是否为手动调用
+                //可以手动调用此方法传入 {@code Lifecycle.Event.ON_ANY},用于区分是否为手动调用
                 || event == Lifecycle.Event.ON_ANY) {
             if (once.compareAndSet(false, true)/*保证原子性*/) {
                 delegate.cancel();
