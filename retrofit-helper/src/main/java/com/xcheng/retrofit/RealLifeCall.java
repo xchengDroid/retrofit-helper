@@ -13,7 +13,7 @@ final class RealLifeCall<T> implements LifeCall<T>, LifecycleProvider.Observer {
     /**
      * LifeCall是否被释放了
      */
-    private final AtomicBoolean unsubscribed = new AtomicBoolean();
+    private final AtomicBoolean once = new AtomicBoolean();
 
     RealLifeCall(Call<T> delegate, Lifecycle.Event event, LifecycleProvider provider) {
         this.delegate = delegate;
@@ -102,20 +102,20 @@ final class RealLifeCall<T> implements LifeCall<T>, LifecycleProvider.Observer {
     public void onChanged(@NonNull Lifecycle.Event event) {
         if (this.event == event || event == Lifecycle.Event.ON_DESTROY) {
             dispose();
-            RetrofitFactory.getOnEventListener().onDisposed(delegate, event);
         }
     }
 
     @Override
     public void dispose() {
-        if (unsubscribed.compareAndSet(false, true)) {
+        if (once.compareAndSet(false, true)/*保证操作的原子性*/) {
             delegate.cancel();
+            RetrofitFactory.getOnEventListener().onDisposed(delegate, event);
             provider.removeObserver(this);
         }
     }
 
     @Override
     public boolean isDisposed() {
-        return unsubscribed.get();
+        return once.get();
     }
 }
