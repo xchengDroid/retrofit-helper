@@ -13,7 +13,7 @@ final class RealLifeCall<T> implements LifeCall<T>, LifecycleProvider.Observer {
     /**
      * LifeCall是否被释放了
      */
-    private final AtomicBoolean disposed = new AtomicBoolean();
+    private final AtomicBoolean unsubscribed = new AtomicBoolean();
 
     RealLifeCall(Call<T> delegate, Lifecycle.Event event, LifecycleProvider provider) {
         this.delegate = delegate;
@@ -28,7 +28,7 @@ final class RealLifeCall<T> implements LifeCall<T>, LifecycleProvider.Observer {
         delegate.enqueue(new Callback<T>() {
             @Override
             public void onStart(Call<T> call) {
-                if (!disposed.get()) {
+                if (!isDisposed()) {
                     callback.onStart(call);
                 }
             }
@@ -36,7 +36,7 @@ final class RealLifeCall<T> implements LifeCall<T>, LifecycleProvider.Observer {
             @NonNull
             @Override
             public HttpError parseThrowable(Call<T> call, Throwable t) {
-                if (!disposed.get()) {
+                if (!isDisposed()) {
                     return callback.parseThrowable(call, t);
                 }
                 return new HttpError("Already disposed.", t);
@@ -45,7 +45,7 @@ final class RealLifeCall<T> implements LifeCall<T>, LifecycleProvider.Observer {
             @NonNull
             @Override
             public T transform(Call<T> call, T t) {
-                if (!disposed.get()) {
+                if (!isDisposed()) {
                     return callback.transform(call, t);
                 }
                 return t;
@@ -53,21 +53,21 @@ final class RealLifeCall<T> implements LifeCall<T>, LifecycleProvider.Observer {
 
             @Override
             public void onSuccess(Call<T> call, T t) {
-                if (!disposed.get()) {
+                if (!isDisposed()) {
                     callback.onSuccess(call, t);
                 }
             }
 
             @Override
             public void onError(Call<T> call, HttpError error) {
-                if (!disposed.get()) {
+                if (!isDisposed()) {
                     callback.onError(call, error);
                 }
             }
 
             @Override
             public void onCompleted(Call<T> call, @Nullable Throwable t) {
-                if (!disposed.get()) {
+                if (!isDisposed()) {
                     callback.onCompleted(call, t);
                 }
                 //ignore already removed
@@ -80,16 +80,16 @@ final class RealLifeCall<T> implements LifeCall<T>, LifecycleProvider.Observer {
     @Override
     public T execute() throws Throwable {
         try {
-            if (disposed.get()) {
+            if (isDisposed()) {
                 throw new DisposedException("Already disposed.");
             }
             T body = delegate.execute();
-            if (disposed.get()) {
+            if (isDisposed()) {
                 throw new DisposedException("Already disposed.");
             }
             return body;
         } catch (Throwable t) {
-            if (disposed.get() && !(t instanceof DisposedException)) {
+            if (isDisposed() && !(t instanceof DisposedException)) {
                 throw new DisposedException("Already disposed.", t);
             }
             throw t;
@@ -108,7 +108,7 @@ final class RealLifeCall<T> implements LifeCall<T>, LifecycleProvider.Observer {
 
     @Override
     public void dispose() {
-        if (disposed.compareAndSet(false, true)) {
+        if (unsubscribed.compareAndSet(false, true)) {
             delegate.cancel();
             provider.removeObserver(this);
         }
@@ -116,6 +116,6 @@ final class RealLifeCall<T> implements LifeCall<T>, LifecycleProvider.Observer {
 
     @Override
     public boolean isDisposed() {
-        return disposed.get();
+        return unsubscribed.get();
     }
 }
