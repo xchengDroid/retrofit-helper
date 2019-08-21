@@ -8,8 +8,10 @@ import okhttp3.Request;
  * 创建时间：2018/4/8
  * 编写人： chengxin
  * 功能描述：支持生命周期绑定的Call{@link retrofit2.Call}
+ *
+ * @param <T> Successful response body type.
  */
-public interface Call<T> extends Callable<T> {
+public interface Call<T> extends Callable<T>, Cloneable {
 
     String TAG = Call.class.getSimpleName();
 
