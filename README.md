@@ -37,15 +37,11 @@
          * 全局的Retrofit对象
          */
         public static volatile Retrofit DEFAULT;
-       /**
+        /**
          * A {@code null} value is permitted
          */
         @Nullable
-        public static OnDisposedListener LISTENER = OnDisposedListener.DEFAULT;
-        /**
-         * 是否显示日志
-         */
-        public static boolean SHOW_LOG = true;
+        public static volatile OnEventListener LISTENER;
     
         private RetrofitFactory() {
         }
@@ -69,7 +65,7 @@
         }
     }
     ```
-
+    
   - 2.2  `Call`接口实现 ` enqueue(Callback<T> callback)`方法 `enqueue(Callback<T> callback)` ，支持绑定Activity或者Fragment生命周期`bindToLifecycle(LifecycleProvider provider, Lifecycle.Event event)`
 
     ```java
@@ -78,7 +74,7 @@
      * 编写人： chengxin
      * 功能描述：支持生命周期绑定的Call{@link retrofit2.Call}
      */
-    public interface Call<T> extends Callable<T> {
+    public interface Call<T> extends Callable<T>, Cloneable {
     
         String TAG = Call.class.getSimpleName();
     
@@ -101,14 +97,14 @@
          */
         LifeCall<T> bindToLifecycle(LifecycleProvider provider, Lifecycle.Event event);
     
-        /**
+       /**
          * default event is {@link Lifecycle.Event#ON_DESTROY}
          *
          * @param provider LifecycleProvider
          * @return LifeCall
          * @see Call#bindToLifecycle(LifecycleProvider, Lifecycle.Event)
          */
-        LifeCall<T> bindToLifecycle(LifecycleProvider provider);
+        LifeCall<T> bindUntilDestroy(LifecycleProvider provider);
     }
     ```
 
@@ -126,7 +122,6 @@
      *
      * @param <T> Successful response body type.
      */
-    @SuppressWarnings("JavadocReference")
     @UiThread
     public interface Callback<T> {
         void onStart(Call<T> call);
@@ -283,8 +278,9 @@
         private final LifecycleProvider provider;
         /**
          * LifeCall是否被释放了
+         * like rxAndroid MainThreadDisposable or rxJava ObservableUnsubscribeOn, IoScheduler
          */
-        private volatile boolean disposed;
+        private final AtomicBoolean once = new AtomicBoolean();
     
         RealLifeCall(Call<T> delegate, Lifecycle.Event event, LifecycleProvider provider) {
             this.delegate = delegate;
@@ -299,7 +295,7 @@
             delegate.enqueue(new Callback<T>() {
                 @Override
                 public void onStart(Call<T> call) {
-                    if (!disposed) {
+                    if (!isDisposed()) {
                         callback.onStart(call);
                     }
                 }
@@ -307,35 +303,41 @@
                 @NonNull
                 @Override
                 public HttpError parseThrowable(Call<T> call, Throwable t) {
-                    return callback.parseThrowable(call, t);
+                    if (!isDisposed()) {
+                        return callback.parseThrowable(call, t);
+                    }
+                    return new HttpError("Already disposed.", t);
                 }
     
                 @NonNull
                 @Override
                 public T transform(Call<T> call, T t) {
-                    return callback.transform(call, t);
+                    if (!isDisposed()) {
+                        return callback.transform(call, t);
+                    }
+                    return t;
                 }
     
                 @Override
                 public void onSuccess(Call<T> call, T t) {
-                    if (!disposed) {
+                    if (!isDisposed()) {
                         callback.onSuccess(call, t);
                     }
                 }
     
                 @Override
                 public void onError(Call<T> call, HttpError error) {
-                    if (!disposed) {
+                    if (!isDisposed()) {
                         callback.onError(call, error);
                     }
                 }
     
                 @Override
                 public void onCompleted(Call<T> call, @Nullable Throwable t) {
-                    if (!disposed) {
+                    if (!isDisposed()) {
                         callback.onCompleted(call, t);
+                        provider.removeObserver(RealLifeCall.this);
                     }
-                    provider.removeObserver(RealLifeCall.this);
                 }
             });
         }
@@ -344,42 +346,44 @@
         @Override
         public T execute() throws Throwable {
             try {
-                if (disposed) {
+                if (isDisposed()) {
                     throw new DisposedException("Already disposed.");
                 }
                 T body = delegate.execute();
-                if (disposed) {
+                if (isDisposed()) {
                     throw new DisposedException("Already disposed.");
                 }
                 return body;
             } catch (Throwable t) {
-                if (disposed && !(t instanceof DisposedException)) {
+                if (isDisposed() && !(t instanceof DisposedException)) {
                     throw new DisposedException("Already disposed.", t);
                 }
                 throw t;
             } finally {
-                provider.removeObserver(this);
+                if (!isDisposed()) {
+                    provider.removeObserver(this);
+                }
             }
         }
     
         @Override
         public void onChanged(@NonNull Lifecycle.Event event) {
-            //just in case
-            if (disposed)
-                return;
-            if (this.event == event || event == Lifecycle.Event.ON_DESTROY) {
-                disposed = true;
-                delegate.cancel();
-                if (RetrofitFactory.LISTENER != null) {
-                    RetrofitFactory.LISTENER.onDisposed(delegate, event);
+            if (this.event == event
+                    || event == Lifecycle.Event.ON_DESTROY
+                    //Activity和Fragment的生命周期是不会传入 {@code Lifecycle.Event.ON_ANY},
+                    //可以手动调用此方法传入 {@code Lifecycle.Event.ON_ANY},用于区分是否为手动调  用
+                    || event == Lifecycle.Event.ON_ANY) {
+                if (once.compareAndSet(false, true)/*保证原子性*/) {
+                    delegate.cancel();
+                    RetrofitFactory.getOnEventListener().onDisposed(delegate, event);
+                    provider.removeObserver(this);
                 }
-                provider.removeObserver(this);
             }
         }
     
         @Override
         public boolean isDisposed() {
-            return disposed;
+            return once.get();
         }
     }
     ```
@@ -392,6 +396,7 @@
 
     /**
      * 实现LifecycleObserver监听Activity和Fragment的生命周期
+     * It is thread safe.
      *
      * @see android.database.Observable
      */
@@ -444,7 +449,11 @@
                     return;
                 }
                 mObservers.add(observer);
-                logCount("observe");
+                RetrofitFactory.getOnEventListener().onObserverCountChanged(this, mObservers.size() - 1, mObservers.size());
+                // since onChanged() is implemented by the app, it could do anything, including
+                // removing itself from {@link mObservers} - and that could cause problems if
+                // an iterator is used on the ArrayList {@link mObservers}.
+                // to avoid such problems, just call onChanged() after {@code mObservers.add(observer)}
                 if (mEvent != null) {
                     observer.onChanged(mEvent);
                 }
@@ -462,13 +471,7 @@
                     return;
                 }
                 mObservers.remove(index);
-                logCount("removeObserver");
-            }
-        }
-    
-        private void logCount(String prefix) {
-            if (RetrofitFactory.SHOW_LOG) {
-                Log.d(Call.TAG, prefix + "-->" + mObservers.size() + ", provider:" + this);
+                RetrofitFactory.getOnEventListener().onObserverCountChanged(this, mObservers.size() + 1, mObservers.size());
             }
         }
     
@@ -658,7 +661,7 @@
 
   - 4.2 `Callback`的回调函数均在主线程执行，如果Call绑定了生命周期触发了`cancel()`方法
 
-    UI回调方法均不会执行，如果要监听那些请求被取消了，可以设置`RetrofitFactory.LISTENER`属性，其为一个全局的监听器`OnDisposedListener`。
+    UI回调方法均不会执行，如果要监听那些请求被取消了，可以设置`RetrofitFactory.LISTENER`属性，其为一个全局的监听器`OnEventListener`。
     
     
 
@@ -666,7 +669,7 @@
 
   ```groovy
   dependencies {
-       implementation 'com.xcheng:retrofit-helper:1.5.1'
+       implementation 'com.xcheng:retrofit-helper:1.5.5'
   }
   ```
   
