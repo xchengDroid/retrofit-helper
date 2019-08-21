@@ -6,7 +6,6 @@ import android.support.annotation.NonNull;
 /**
  * 统一分发Activity和 Fragment的生命周期时间.
  */
-@SuppressWarnings("JavadocReference")
 public interface LifecycleProvider {
     /**
      * Adds an observer to the list. The observer cannot be null and it must not already

@@ -11,7 +11,6 @@ import retrofit2.Response;
  *
  * @param <T> Successful response body type.
  */
-@SuppressWarnings("JavadocReference")
 @UiThread
 public interface Callback<T> {
     void onStart(Call<T> call);

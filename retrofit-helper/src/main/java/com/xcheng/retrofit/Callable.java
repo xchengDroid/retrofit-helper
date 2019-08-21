@@ -12,7 +12,6 @@ import retrofit2.Response;
  *
  * @param <T> Successful response body type.
  */
-@SuppressWarnings("JavadocReference")
 public interface Callable<T> {
     /**
      * Synchronously send the request and return its response body.
