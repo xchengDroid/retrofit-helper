@@ -26,16 +26,10 @@ public interface LifecycleProvider {
     void removeObserver(Observer observer);
 
     /**
-     * A simple callback that can receive from {@link Lifecycle.Event}.
+     * A simple callback that can receive from {@link android.arch.lifecycle.Lifecycle}
      */
     interface Observer {
         /**
-         * <p>
-         * The action may be called concurrently from multiple
-         * threads; the action must be thread safe,like{@code Observable#doOnDispose(Action)}.
-         * <p>
-         * you can invoke with {@link Lifecycle.Event#ON_ANY} to dispose from outside immediately.
-         * <p>
          * Called when the event is changed.
          *
          * @param event The new event

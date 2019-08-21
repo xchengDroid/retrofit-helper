@@ -1,5 +1,8 @@
 package com.xcheng.retrofit;
 
+import android.arch.lifecycle.Lifecycle;
+import android.support.annotation.NonNull;
+
 /**
  * 创建时间：2018/4/8
  * 编写人： chengxin
@@ -13,4 +16,16 @@ public interface LifeCall<T> extends Callable<T>, LifecycleProvider.Observer {
      * @return true if this call has been disposed
      */
     boolean isDisposed();
+
+    /**
+     * The method may be called concurrently from multiple
+     * threads; the method must be thread safe. Calling this method multiple
+     * times has no effect.
+     * <p>
+     * like {@code Observable#doOnDispose(Action)},{@code SingleSubject#onSuccess(Object)}
+     * <p>
+     * you can invoke with {@link Lifecycle.Event#ON_ANY} to dispose from outside immediately.
+     */
+    @Override
+    void onChanged(@NonNull Lifecycle.Event event);
 }
