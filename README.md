@@ -580,6 +580,7 @@ retrofit-helper
 
   ```java
    
+  
   public class MainActivity extends AppCompatActivity {
   
       LifecycleProvider provider = AndroidLifecycle.createLifecycleProvider(this);
@@ -589,16 +590,16 @@ retrofit-helper
           super.onCreate(savedInstanceState);
           setContentView(R.layout.activity_main);
           final Context context = this;
-          
+  
           RetrofitFactory.create(ApiService.class)
-                  .getLogin("loginName", "password")
-                //.bindUntilDestroy(provider) Activity销毁时取消请求
-                  .bindToLifecycle(provider, Lifecycle.Event.ON_STOP)
+                .getLogin("loginName", "password")
+                  //.bindUntilDestroy(provider) Activity销毁时取消请求
+                .bindToLifecycle(provider, Lifecycle.Event.ON_STOP)
                 .enqueue(new DefaultCallback<LoginInfo>() {
-                      @Override
-                    public void onStart(Call<LoginInfo> call) {
-                          showLoading();
-                    }
+                    @Override
+                      public void onStart(Call<LoginInfo> call) {
+                        showLoading();
+                      }
   
                       @Override
                       public void onError(Call<LoginInfo> call, HttpError error) {
