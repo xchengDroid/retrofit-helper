@@ -16,7 +16,7 @@ public interface Callback<T> {
     void onStart(Call<T> call);
 
     /**
-     * @param call LifeCall
+     * @param call The {@code Call} invoking this method.
      * @param t    统一解析throwable对象转换为HttpError对象，如果throwable为{@link HttpError}
      *             <li>则为{@link retrofit2.Converter#convert(Object)}内抛出的异常</li>
      *             如果为{@link retrofit2.HttpException}
