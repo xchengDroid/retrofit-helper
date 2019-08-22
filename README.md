@@ -539,7 +539,7 @@ retrofit-helper
     @FormUrlEncoded
     @Headers("LogLevel:HEADERS")
     @POST("user/login")
-    Call2<LoginInfo> getLogin(@Field("username") String username, @Field("password") String password);
+    Call<LoginInfo> getLogin(@Field("username") String username, @Field("password") String password);
     ```
 
 - #### 3.实战
@@ -548,7 +548,7 @@ retrofit-helper
 
     ```java
     Retrofit retrofit = new Retrofit.Builder()
-                    .baseUrl("http://wanandroid.com/")
+                    .baseUrl("https://wanandroid.com/")
                     .callFactory(new OkHttpClient.Builder()
                             .addNetworkInterceptor(httpLoggingInterceptor)
                             .build())
@@ -571,7 +571,7 @@ retrofit-helper
     ```java
     @FormUrlEncoded
     @POST("user/login")
-    Call2<LoginInfo> getLogin(@Field("username") String username, @Field("password") String password);
+    Call<LoginInfo> getLogin(@Field("username") String username, @Field("password") String password);
     ```
 
   - 3.3 发起请求
