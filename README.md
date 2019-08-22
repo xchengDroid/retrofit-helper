@@ -158,8 +158,6 @@ retrofit-helper
     
     
     
-    ​		
-    
   - 2.4  `HttpError` 统一包装异常错误，由Callback `parseThrowable` 方法统一返回
 
     ​       HttpError类中有两个成员属性msg 被body，msg是保存错误的描述信息等，body可以保存异常的具体信息或者原始的json等，`onError(Call<T> call, HttpError error)`回调方法可以根据body的具体信息做二次处理。
