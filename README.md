@@ -110,7 +110,52 @@ retrofit-helper
     }
     ```
 
-    
+  - 2.3`Callback` 统一处理回调和异常
+
+     retrofit 默认的callback只有支持成功和失败的回调，而一般我们的场景需要在请求开始和结束的地方做一些UI的展示处理，如显示加载动画等，故添加了`onStart` 和`onCompleted` 监听。`parseThrowable`方法可以处理各种请求过程中抛出的throwable,转换成统一的格式方便我们处理展示等
+
+     ```java
+     
+     /**
+      * if {@link LifeCall#isDisposed()} return true, all methods will not call
+      *
+      * @param <T> Successful response body type.
+      */
+     @UiThread
+     public interface Callback<T> {
+         /**
+          * @param call The {@code Call} that was started
+          */
+         void onStart(Call<T> call);
+     
+         /**
+          * @param call The {@code Call} that has thrown exception
+          * @param t    统一解析throwable对象转换为HttpError对象，如果throwable为{@link HttpError}
+          *             <li>则为{@link retrofit2.Converter#convert(Object)}内抛出的异常</li>
+          *             如果为{@link retrofit2.HttpException}
+          *             <li>则为{@link Response#body()}为null的时候抛出的</li>
+          */
+         @NonNull
+         HttpError parseThrowable(Call<T> call, Throwable t);
+     
+         /**
+          * 过滤一次数据,如剔除List中的null等,默认可以返回t
+          */
+         @NonNull
+         T transform(Call<T> call, T t);
+     
+         void onError(Call<T> call, HttpError error);
+     
+         void onSuccess(Call<T> call, T t);
+     
+         /**
+          * @param t 请求失败的错误信息
+          */
+         void onCompleted(Call<T> call, @Nullable Throwable t);
+     }
+     ```
+
+     
 
   - 2.4  `HttpError` 统一包装异常错误，由Callback `parseThrowable` 方法统一返回
 
