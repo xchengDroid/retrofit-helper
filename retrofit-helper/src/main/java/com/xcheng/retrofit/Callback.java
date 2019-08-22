@@ -42,5 +42,4 @@ public interface Callback<T> {
      * @param t 请求失败的错误信息
      */
     void onCompleted(Call<T> call, @Nullable Throwable t);
-
 }
