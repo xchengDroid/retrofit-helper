@@ -1,6 +1,6 @@
-### retrofit-helper 
+retrofit-helper 
 
-> Retrofit是很多android开发者都在使用的Http请求库！他负责网络请求接口的封装,底层实现是OkHttp,它的一个特点是包含了特别多注解，方便简化你的代码量,CallAdapter.Factory 和Converter.Factory可以很灵活的扩展你的请求。我们在使用的时候还是需要封装一层便于我们使用，retrofit-helper的作用就是再次简化你的请求。
+> Retrofit是很多android开发者都在使用的Http请求库！他负责网络请求接口的封装,底层实现是OkHttp,它的一个特点是包含了特别多注解，通过动态代理的方式使得开发者在使用访问网络的时候更加方便简单高效。
 
 
 
@@ -20,8 +20,10 @@
 
   - 2.1  `RetrofitFactory`全局管理`retrofit`实例
 
-    DEFAULT 静态变量管理默认常用的的retrofit对象，OTHERS 管理其他多个不同配置的retrofit
+     全局管理retrofit 实例，通用的做法有单利模式或者静态类成员属性的方式，并且在Application中初始化，在这里只是管理全局retrofit对象，故采用静态的成员属性即可满足需求
 
+    DEFAULT 静态变量管理默认常用的的retrofit对象，OTHERS 管理其他多个不同配置的retrofit
+    
     ```java
     /**
      * 创建时间：2018/4/3
@@ -66,7 +68,7 @@
     }
     ```
     
-  - 2.2  `Call`接口实现 ` enqueue(Callback<T> callback)`方法 `enqueue(Callback<T> callback)` ，支持绑定Activity或者Fragment生命周期`bindToLifecycle(LifecycleProvider provider, Lifecycle.Event event)`
+  - 2.2  自定义Call,支持绑定生命周期。`Call`接口实现 ` enqueue(Callback<T> callback)`方法 `enqueue(Callback<T> callback)` ，支持绑定Activity或者Fragment生命周期`bindToLifecycle(LifecycleProvider provider, Lifecycle.Event event)`
 
     ```java
     /**
@@ -110,24 +112,25 @@
 
     
 
-  - 2.3  `Callback` 统一处理回调
+  - 2.3  `Callback` 统一处理回调和异常
 
-    ​        请求开始、成功处理、失败处理、成功回调、失败回调、请求结束在此统一处理，各方法可以根据业务的不同自行重写,可以重写`parseThrowable`方法处理各种Throwable
+    retrofit 默认的callback只有支持成功和失败的回调，而一般我们的场景需要在请求开始和结束的地方做一些UI的展示处理，如显示加载动画等，故添加了`onStart` 和`onCompleted ` 监听。`parseThrowable`方法可以处理各种请求过程中抛出的throwable,转换成统一的格式方便我们处理展示等
 
     ```java
-
-    /**
-     * if {@link LifeCall#isDisposed()} return true,will not call {@link #onStart(Call)},
-     * {@link #onSuccess(Call, Object)},{@link #onError(Call, HttpError)},{@link #onCompleted(Call, Throwable)} methods
+  /**
+     * if {@link LifeCall#isDisposed()} return true, all methods will not call
      *
      * @param <T> Successful response body type.
      */
     @UiThread
     public interface Callback<T> {
+        /**
+         * @param call The {@code Call} that was started
+         */
         void onStart(Call<T> call);
     
         /**
-         * @param call LifeCall
+         * @param call The {@code Call} that has thrown exception
          * @param t    统一解析throwable对象转换为HttpError对象，如果throwable为{@link HttpError}
          *             <li>则为{@link retrofit2.Converter#convert(Object)}内抛出的异常</li>
          *             如果为{@link retrofit2.HttpException}
@@ -150,7 +153,6 @@
          * @param t 请求失败的错误信息
          */
         void onCompleted(Call<T> call, @Nullable Throwable t);
-    
     }
     ```
     
@@ -158,7 +160,7 @@
     
     ​		
     
-  - 2.4  `HttpError` 统一包装异常错误
+  - 2.4  `HttpError` 统一包装异常错误，由Callback `parseThrowable` 方法统一返回
 
     ​       HttpError类中有两个成员属性msg 被body，msg是保存错误的描述信息等，body可以保存异常的具体信息或者原始的json等，`onError(Call<T> call, HttpError error)`回调方法可以根据body的具体信息做二次处理。
 
@@ -270,8 +272,10 @@
     
   - 2.6  `RealLifeCall` 继承`LifeCall`实现Activity或Fragment生命周期绑定，自动管理生命周期
 
-     ```java
+     负责生命周期的监听，在`onChanged(@NonNull Lifecycle.Event event)`方法中如果匹配到指定的event，标记为disposed 并取消请求，这时Callback中所有的回调函数将不会在执行，保证回调处的安全性。
 
+    ```java
+    
     final class RealLifeCall<T> implements LifeCall<T> {
         private final Call<T> delegate;
         private final Lifecycle.Event event;
@@ -392,8 +396,10 @@
     
   - 2.7  `AndroidLifecycle`观察者模式统一分发生命周期事件
 
-    ```java
+    继承LifecycleObserver 接口监听当前的Activity或者Fragment的生命周期，分发生命周期事件到Observer的`onChanged`方法。这个类是线程安全的，保证多线程环境的正确性
 
+    ```java
+    
     /**
      * 实现LifecycleObserver监听Activity和Fragment的生命周期
      * It is thread safe.
@@ -571,90 +577,52 @@
     Call2<LoginInfo> getLogin(@Field("username") String username, @Field("password") String password);
     ```
 
-  - 3.3 添加ILoadingView，用于开启和结束动画
+  - 3.3 发起请求
 
-    Activity 或者Fragment 可以继承  ILoadingView接口实现开始和结束动画
+    是不是很简单，妈妈再也不用担心Activity销毁后资源回收导致的NullPointException等问题了
 
-    ```java
-    public interface ILoadingView {
-        /**
-         * 显示加载
-         */
-        void showLoading();
-    
-        /**
-         * 隐藏加载
-         */
-        void hideLoading();
-    
-    }
-    ```
-
+  ```java
+   
+  public class MainActivity extends AppCompatActivity {
   
-
-  - 3.4 添加AnimCallback 处理动画
-
-    这里重写`parseThrowable`处理一些`Callback2`中为未处理的异常
-
-    ```java
-    
-    /**
-     * Created by chengxin on 2017/9/24.
-     */
-    public abstract class AnimCallback<T> extends DefaultCallback<T> {
-        private ILoadingView mLoadingView;
-    
-        public AnimCallback(@Nullable ILoadingView loadingView) {
-            this.mLoadingView = loadingView;
-        }
-    
-        @Override
-        public void onStart(Call<T> call) {
-            if (mLoadingView != null)
-                mLoadingView.showLoading();
-        }
-    
-        @Override
-        public void onCompleted(Call<T> call, @Nullable Throwable t) {
-            if (mLoadingView != null)
-                mLoadingView.hideLoading();
-        }
-    
-        @NonNull
-        @Override
-        public HttpError parseThrowable(Call<T> call, Throwable t) {
-            HttpError filterError;
-            if (t instanceof JsonSyntaxException) {
-                filterError = new HttpError("解析异常", t);
-            } else {
-                filterError = super.parseThrowable(call, t);
-            }
-            return filterError;
-        }
-    }
-    ```
-
-  - 3.5 发起请求
-
-    ```java
-    LifecycleProvider provider = AndroidLifecycle.createLifecycleProvider(this);
-    RetrofitFactory.create(ApiService.class)
-            .getLogin("xxxxx", "123456")
-            .bindToLifecycle(provider, Lifecycle.Event.ON_DESTROY)
-            .enqueue(new AnimCallback<LoginInfo>(this) {
-                @Override
-                public void onError(Call<LoginInfo> call, HttpError error) {
-                    //处理失败
-                }
-    
-                @Override
-                public void onSuccess(Call<LoginInfo> call, LoginInfo response) {
-                   //处理成功 如保存登录信息等
-                }
-            });
-           
-    ```
-
+      LifecycleProvider provider = AndroidLifecycle.createLifecycleProvider(this);
+  
+      @Override
+      protected void onCreate(@Nullable Bundle savedInstanceState) {
+          super.onCreate(savedInstanceState);
+          setContentView(R.layout.activity_main);
+          final Context context = this;
+          
+          RetrofitFactory.create(ApiService.class)
+                  .getLogin("loginName", "password")
+                //.bindUntilDestroy(provider) Activity销毁时取消请求
+                  .bindToLifecycle(provider, Lifecycle.Event.ON_STOP)
+                .enqueue(new DefaultCallback<LoginInfo>() {
+                      @Override
+                    public void onStart(Call<LoginInfo> call) {
+                          showLoading();
+                    }
+  
+                      @Override
+                      public void onError(Call<LoginInfo> call, HttpError error) {
+                          Toast.makeText(context, error.msg, Toast.LENGTH_SHORT).show();
+                      }
+  
+                      @Override
+                      public void onSuccess(Call<LoginInfo> call, LoginInfo loginInfo) {
+                          Toast.makeText(context, "登录成功！", Toast.LENGTH_SHORT).show();
+                          //do...
+                      }
+  
+                      @Override
+                      public void onCompleted(Call<LoginInfo> call, @Nullable Throwable t){
+                          hideLoading();
+                      }
+                  });
+      }
+  }
+  ```
+  
 - #### 4.注意事项
 
   - 4.1 构建retrofit是需要CallAdapterFactory实例，否则无法处理返回为Call的服务接口
