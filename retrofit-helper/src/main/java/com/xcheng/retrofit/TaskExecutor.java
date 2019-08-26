@@ -39,6 +39,8 @@ public abstract class TaskExecutor {
      */
     public abstract void postToMainThread(@NonNull Runnable runnable);
 
+    public abstract void postToMainThreadDelayed(@NonNull Runnable runnable, long delayMillis);
+
     /**
      * Executes the given task on the main thread.
      * <p>

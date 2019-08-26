@@ -65,6 +65,11 @@ public final class NetTaskExecutor extends TaskExecutor {
     }
 
     @Override
+    public void postToMainThreadDelayed(@NonNull Runnable runnable, long delayMillis) {
+        mMainHandler.postDelayed(runnable, delayMillis);
+    }
+
+    @Override
     public boolean isMainThread() {
         return Looper.getMainLooper().getThread() == Thread.currentThread();
     }
