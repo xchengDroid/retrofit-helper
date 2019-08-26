@@ -80,7 +80,7 @@ public class Utils {
         pw.flush();
         return sw.toString();
     }
-    
+
     @Nullable
     public static <T extends Annotation> T findAnnotation(Annotation[] annotations, Class<T> cls) {
         //just in case
@@ -93,5 +93,18 @@ public class Utils {
             }
         }
         return null;
+    }
+
+    /**
+     * Returns true if {@code annotations} contains an instance of {@code cls}.
+     */
+    static boolean isAnnotationPresent(Annotation[] annotations,
+                                       Class<? extends Annotation> cls) {
+        for (Annotation annotation : annotations) {
+            if (cls.isInstance(annotation)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
