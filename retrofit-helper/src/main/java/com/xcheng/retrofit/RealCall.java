@@ -5,18 +5,18 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
 
+import java.util.concurrent.Executor;
+
 import okhttp3.Request;
 import retrofit2.HttpException;
 import retrofit2.Response;
 
 final class RealCall<T> implements Call<T> {
+    private final Executor callbackExecutor;
     private final retrofit2.Call<T> delegate;
 
-    /**
-     * The executor used for {@link retrofit2.Callback} methods on a {@link retrofit2.Call}. This may be {@code null},
-     * in which case callbacks should be made synchronously on the background thread.
-     */
-    RealCall(retrofit2.Call<T> delegate) {
+    RealCall(Executor callbackExecutor, retrofit2.Call<T> delegate) {
+        this.callbackExecutor = callbackExecutor;
         this.delegate = delegate;
     }
 
@@ -39,8 +39,7 @@ final class RealCall<T> implements Call<T> {
     @Override
     public void enqueue(final Callback<T> callback) {
         Utils.checkNotNull(callback, "callback==null");
-        //postToMainThread ensure queue
-        NetTaskExecutor.getInstance().postToMainThread(new Runnable() {
+        callbackExecutor.execute(new Runnable() {
             @Override
             public void run() {
                 callback.onStart(RealCall.this);
@@ -49,7 +48,7 @@ final class RealCall<T> implements Call<T> {
         delegate.enqueue(new retrofit2.Callback<T>() {
             @Override
             public void onResponse(retrofit2.Call<T> call, final Response<T> response) {
-                NetTaskExecutor.getInstance().postToMainThread(new Runnable() {
+                callbackExecutor.execute(new Runnable() {
                     @Override
                     public void run() {
                         callResult(response, null);
@@ -59,7 +58,7 @@ final class RealCall<T> implements Call<T> {
 
             @Override
             public void onFailure(retrofit2.Call<T> call, final Throwable t) {
-                NetTaskExecutor.getInstance().postToMainThread(new Runnable() {
+                callbackExecutor.execute(new Runnable() {
                     @Override
                     public void run() {
                         callResult(null, t);
@@ -109,7 +108,7 @@ final class RealCall<T> implements Call<T> {
     @SuppressWarnings("CloneDoesntCallSuperClone") // Performing deep clone.
     @Override
     public Call<T> clone() {
-        return new RealCall<>(delegate.clone());
+        return new RealCall<>(callbackExecutor, delegate.clone());
     }
 
     @Override

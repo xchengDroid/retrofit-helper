@@ -1,11 +1,15 @@
 package com.xcheng.retrofit;
 
+import android.support.annotation.NonNull;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.concurrent.Executor;
 
 import retrofit2.CallAdapter;
 import retrofit2.Retrofit;
+import retrofit2.SkipCallbackExecutor;
 
 /**
  * just for android post UI thread
@@ -14,6 +18,13 @@ public final class CallAdapterFactory extends CallAdapter.Factory {
     private static final String RETURN_TYPE = Call.class.getSimpleName();
 
     public static final CallAdapter.Factory INSTANCE = new CallAdapterFactory();
+
+    private static final Executor ADAPTER_NULL_EXECUTOR = new Executor() {
+        @Override
+        public void execute(@NonNull Runnable command) {
+            command.run();
+        }
+    };
 
     private CallAdapterFactory() {
     }
@@ -36,7 +47,10 @@ public final class CallAdapterFactory extends CallAdapter.Factory {
                     String.format("%s return type must be parameterized as %s<Foo> or %s<? extends Foo>", RETURN_TYPE, RETURN_TYPE, RETURN_TYPE));
         }
         final Type responseType = getParameterUpperBound(0, (ParameterizedType) returnType);
-
+        //支持SkipCallbackExecutor
+        final Executor executor = Utils.isAnnotationPresent(annotations, SkipCallbackExecutor.class)
+                ? null
+                : retrofit.callbackExecutor();
         return new CallAdapter<Object, Call<?>>() {
             @Override
             public Type responseType() {
@@ -45,7 +59,10 @@ public final class CallAdapterFactory extends CallAdapter.Factory {
 
             @Override
             public Call<Object> adapt(retrofit2.Call<Object> call) {
-                return new RealCall<>(call);
+                if (executor != null) {
+                    return new RealCall<>(executor, call);
+                }
+                return new RealCall<>(ADAPTER_NULL_EXECUTOR, call);
             }
         };
     }

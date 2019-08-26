@@ -2,16 +2,21 @@ package com.xcheng.retrofit;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.UiThread;
 
 import retrofit2.Response;
 
 /**
+ * Callback methods are executed using the {@link retrofit2.Retrofit} callback executor. When none is
+ * specified, the following defaults are used:
+ * <ul>
+ * <li>Android: Callbacks are executed on the application's main (UI) thread.</li>
+ * <li>JVM: Callbacks are executed on the background thread which performed the request.</li>
+ * </ul>
+ * <p>
  * if {@link LifeCall#isDisposed()} return true, all methods will not call
  *
  * @param <T> Successful response body type.
  */
-@UiThread
 public interface Callback<T> {
     /**
      * @param call The {@code Call} that was started
