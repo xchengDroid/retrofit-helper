@@ -11,15 +11,12 @@ import retrofit2.CallAdapter;
 import retrofit2.Retrofit;
 import retrofit2.SkipCallbackExecutor;
 
-/**
- * just for android post UI thread
- */
 public final class CallAdapterFactory extends CallAdapter.Factory {
     private static final String RETURN_TYPE = Call.class.getSimpleName();
 
     public static final CallAdapter.Factory INSTANCE = new CallAdapterFactory();
 
-    private static final Executor ADAPTER_NULL_EXECUTOR = new Executor() {
+    private static final Executor OPTIONAL_NULL_EXECUTOR = new Executor() {
         @Override
         public void execute(@NonNull Runnable command) {
             command.run();
@@ -62,7 +59,7 @@ public final class CallAdapterFactory extends CallAdapter.Factory {
                 if (executor != null) {
                     return new RealCall<>(executor, call);
                 }
-                return new RealCall<>(ADAPTER_NULL_EXECUTOR, call);
+                return new RealCall<>(OPTIONAL_NULL_EXECUTOR, call);
             }
         };
     }
