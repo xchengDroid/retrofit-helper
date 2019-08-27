@@ -39,7 +39,7 @@ public interface Call<T> extends Callable<T>, Cloneable {
      *
      * @param provider LifecycleProvider
      * @return LifeCall
-     * @see Call#bindToLifecycle(LifecycleProvider, Lifecycle.Event)
+     * @see #bindToLifecycle(LifecycleProvider, Lifecycle.Event)
      */
     LifeCall<T> bindUntilDestroy(LifecycleProvider provider);
 }
