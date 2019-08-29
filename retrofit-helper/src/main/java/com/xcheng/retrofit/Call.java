@@ -13,8 +13,6 @@ import okhttp3.Request;
  */
 public interface Call<T> extends Callable<T>, Cloneable {
 
-    String TAG = Call.class.getSimpleName();
-
     boolean isExecuted();
 
     void cancel();
