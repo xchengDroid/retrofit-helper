@@ -3,8 +3,11 @@ package com.xcheng.retrofit;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import java.io.Closeable;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.annotation.Annotation;
@@ -12,6 +15,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+
+import okhttp3.ResponseBody;
 
 /**
  * 创建时间：2018/4/8
@@ -58,12 +63,17 @@ public class Utils {
         return Collections.unmodifiableList(new ArrayList<>(list));
     }
 
-    public static void close(OutputStream os) {
-        if (os != null) {
+    /**
+     * Closes {@code closeable}, ignoring any checked exceptions. Does nothing if {@code closeable} is
+     * null.
+     */
+    public static void closeQuietly(Closeable closeable) {
+        if (closeable != null) {
             try {
-                os.close();
-            } catch (IOException e) {
-                e.printStackTrace();
+                closeable.close();
+            } catch (RuntimeException rethrown) {
+                throw rethrown;
+            } catch (Exception ignored) {
             }
         }
     }
@@ -106,5 +116,40 @@ public class Utils {
             }
         }
         return false;
+    }
+
+    public static File writeToFile(ResponseBody value, String path) throws IOException {
+        File file = new File(path);
+        if (file.exists() && !file.delete()) {
+            throw new IOException("failed to delete file:" + file.getPath());
+        }
+
+        File tmp = new File(file.getPath() + ".tmp");
+
+        if (tmp.exists() && !tmp.delete()) {
+            throw new IOException("failed to delete tmp file:" + tmp.getPath());
+        }
+        InputStream is = value.byteStream();
+        FileOutputStream fos = null;
+        try {
+            if (!tmp.createNewFile()) {
+                throw new IOException("failed to create file:" + tmp.getPath());
+            }
+
+            fos = new FileOutputStream(tmp);
+            byte[] buffer = new byte[8096];
+            int c;
+            while ((c = is.read(buffer)) != -1) {
+                fos.write(buffer, 0, c);
+            }
+            if (!tmp.renameTo(file)) {
+                throw new IOException("failed to rename file:" + tmp.getPath());
+            }
+            return file;
+        } catch (IOException e) {
+            throw new IOException(e.getMessage());
+        } finally {
+            closeQuietly(fos);
+        }
     }
 }
