@@ -8,6 +8,7 @@ import retrofit2.Converter;
 
 /**
  * Created by cx on 2017/7/31.
+ * use {@link retrofit2.http.Streaming} instead
  */
 @Deprecated
 public class FileResponseBodyConverter implements Converter<ResponseBody, File> {
