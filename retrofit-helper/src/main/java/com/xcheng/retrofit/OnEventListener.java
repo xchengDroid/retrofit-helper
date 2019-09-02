@@ -15,7 +15,7 @@ public interface OnEventListener {
 
         @Override
         public void onObserverCountChanged(LifecycleProvider provider, int oldCount, int newCount) {
-            Log.d("EventLog", "countChanged-->old:" + oldCount + ", new:" + newCount + ", provider:" + provider);
+            Log.d("EventLog", "onCountChanged-->old:" + oldCount + ", new:" + newCount + ", provider:" + provider);
         }
 
         @Override
