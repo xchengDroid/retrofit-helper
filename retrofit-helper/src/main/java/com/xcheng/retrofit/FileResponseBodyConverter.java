@@ -9,6 +9,7 @@ import retrofit2.Converter;
 /**
  * Created by cx on 2017/7/31.
  */
+@Deprecated
 public class FileResponseBodyConverter implements Converter<ResponseBody, File> {
     private final String path;
 

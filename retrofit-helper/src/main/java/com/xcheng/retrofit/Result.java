@@ -7,7 +7,6 @@ import static com.xcheng.retrofit.Utils.checkNotNull;
 /**
  * An HTTP Result. like Retrofit
  */
-@Deprecated
 public final class Result<T> {
 
     /**
