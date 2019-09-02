@@ -1,7 +1,6 @@
 package com.xcheng.retrofit;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.UiThread;
 
 import java.net.ConnectException;
 import java.net.SocketException;
@@ -10,7 +9,6 @@ import java.net.UnknownHostException;
 
 import retrofit2.HttpException;
 
-@UiThread
 public abstract class DefaultCallback<T> implements Callback<T> {
     @NonNull
     @Override
