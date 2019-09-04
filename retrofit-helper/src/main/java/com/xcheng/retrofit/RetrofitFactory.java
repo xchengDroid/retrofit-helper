@@ -14,6 +14,7 @@ import retrofit2.Retrofit;
  * 功能描述：管理全局的Retrofit实例,外观模式
  */
 public final class RetrofitFactory {
+    static final String TAG = "Retrofit-Helper";
     /**
      * 缓存不同配置的retrofit集合，如不同的url ,converter等
      */

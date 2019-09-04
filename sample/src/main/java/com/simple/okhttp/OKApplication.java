@@ -11,11 +11,14 @@ import com.orhanobut.logger.Logger;
 import com.orhanobut.logger.PrettyFormatStrategy;
 import com.simple.converter.GsonConverterFactory;
 import com.xcheng.retrofit.CallAdapterFactory;
+import com.xcheng.retrofit.CallFactoryProxy;
 import com.xcheng.retrofit.HttpLoggingInterceptor;
 import com.xcheng.retrofit.RetrofitFactory;
 import com.xcheng.view.EasyView;
 
+import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
+import okhttp3.Request;
 import retrofit2.Retrofit;
 
 /**
@@ -46,12 +49,18 @@ public class OKApplication extends Application {
             }
         });
         httpLoggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-
+        OkHttpClient client = new OkHttpClient.Builder()
+                .addNetworkInterceptor(httpLoggingInterceptor)
+                .build();
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("https://wanandroid.com/")
-                .callFactory(new OkHttpClient.Builder()
-                        .addNetworkInterceptor(httpLoggingInterceptor)
-                        .build())
+                .callFactory(new CallFactoryProxy(client) {
+                    @Nullable
+                    @Override
+                    protected HttpUrl getNewUrl(String baseUrlName, Request request) {
+                        return null;
+                    }
+                })
                 .addCallAdapterFactory(CallAdapterFactory.INSTANCE)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();

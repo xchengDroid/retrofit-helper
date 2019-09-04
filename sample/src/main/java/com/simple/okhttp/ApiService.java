@@ -32,6 +32,7 @@ public interface ApiService {
     Call<RegisterInfo> register(@Field("username") String username, @Field("password") String password);
 
     @FormUrlEncoded
+    @Headers("BaseUrlName:chengxin")
     @POST("user/login")
     Call<LoginInfo> getLogin(@Field("username") String username, @Field("password") String password);
 

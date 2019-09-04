@@ -10,17 +10,17 @@ public interface OnEventListener {
     OnEventListener NONE = new OnEventListener() {
         @Override
         public void onDisposed(Call<?> call, Lifecycle.Event event) {
-            Log.d("EventLog", "disposed by-->" + event + ", " + call.request());
+            Log.d(RetrofitFactory.TAG, "disposed by-->" + event + ", " + call.request());
         }
 
         @Override
         public void onObserverCountChanged(LifecycleProvider provider, int oldCount, int newCount) {
-            Log.d("EventLog", "onCountChanged-->old:" + oldCount + ", new:" + newCount + ", provider:" + provider);
+            Log.d(RetrofitFactory.TAG, "onCountChanged-->old:" + oldCount + ", new:" + newCount + ", provider:" + provider);
         }
 
         @Override
         public void onThrowable(Call<?> call, Throwable t) {
-            Log.w("EventLog", "onThrowable", t);
+            Log.w(RetrofitFactory.TAG, "onThrowable", t);
         }
     };
 

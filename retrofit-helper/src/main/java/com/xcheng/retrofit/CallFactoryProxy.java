@@ -29,7 +29,7 @@ public abstract class CallFactoryProxy implements Call.Factory {
                 Request newRequest = request.newBuilder().url(newHttpUrl).build();
                 return delegate.newCall(newRequest);
             } else {
-                Log.w("HttpUrl", "getNewUrl() return null when baseUrlName==" + baseUrlName);
+                Log.w(RetrofitFactory.TAG, "getNewUrl() return null when baseUrlName==" + baseUrlName);
             }
         }
         return delegate.newCall(request);
