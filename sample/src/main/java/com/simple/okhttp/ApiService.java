@@ -2,7 +2,6 @@ package com.simple.okhttp;
 
 import com.simple.entity.Article;
 import com.simple.entity.LoginInfo;
-import com.simple.entity.RegisterInfo;
 import com.simple.entity.WXArticle;
 import com.xcheng.retrofit.Call;
 
@@ -29,11 +28,7 @@ public interface ApiService {
     //@SkipCallbackExecutor
 
     @FormUrlEncoded
-    @POST("user/register")
-    Call<RegisterInfo> register(@Field("username") String username, @Field("password") String password);
-
-    @FormUrlEncoded
-    @Headers("BaseUrlName:baidu")
+   // @Headers("BaseUrlName:baidu")
     @POST("user/login")
     Call<LoginInfo> getLogin(@Field("username") String username, @Field("password") String password);
 

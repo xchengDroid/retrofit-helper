@@ -55,10 +55,10 @@ public class MainActivity extends EasyActivity {
     }
 
     public void login(View view) {
-        for (int index = 0; index < 10; index++) {
+        for (int index = 0; index < 1; index++) {
             RetrofitFactory.create(ApiService.class)
                     .getLogin("singleman", "123456")
-                    .bindToLifecycle(provider, Lifecycle.Event.ON_RESUME)
+                    .bindToLifecycle(provider, Lifecycle.Event.ON_DESTROY)
                     .enqueue(new AnimCallback<LoginInfo>(this) {
                         @Override
                         public void onError(Call<LoginInfo> call2, HttpError error) {

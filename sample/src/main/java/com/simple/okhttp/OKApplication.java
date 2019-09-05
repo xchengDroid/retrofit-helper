@@ -1,15 +1,14 @@
 package com.simple.okhttp;
 
 import android.app.Application;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.orhanobut.logger.AndroidLogAdapter;
-import com.orhanobut.logger.LogStrategy;
 import com.orhanobut.logger.Logger;
 import com.orhanobut.logger.PrettyFormatStrategy;
 import com.simple.converter.GsonConverterFactory;
+import com.xcheng.retrofit.CallAdapterFactory;
 import com.xcheng.retrofit.HttpLoggingInterceptor;
 import com.xcheng.retrofit.ReplaceUrlCallFactory;
 import com.xcheng.retrofit.RetrofitFactory;
@@ -32,7 +31,6 @@ public class OKApplication extends Application {
         EasyView.init(this);
         Logger.addLogAdapter(new AndroidLogAdapter(PrettyFormatStrategy
                 .newBuilder()
-                .logStrategy(new LogCatStrategy())
                 .tag("OKHTTP_LOG")
                 .methodCount(1).showThreadInfo(false).build()) {
             @Override
@@ -51,6 +49,7 @@ public class OKApplication extends Application {
 
 
         OkHttpClient client = new OkHttpClient.Builder()
+                .addNetworkInterceptor(httpLoggingInterceptor)
                 .build();
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("https://wanandroid.com/")
@@ -58,6 +57,7 @@ public class OKApplication extends Application {
                     @Nullable
                     @Override
                     protected HttpUrl getNewUrl(String baseUrlName, Request request) {
+                        Log.e("print", "baseUrlName:" + baseUrlName);
                         if (baseUrlName.equals("baidu")) {
                             String oldUrl = request.url().toString();
                             String newUrl = oldUrl.replace("https://wanandroid.com/", "https://www.baidu.com/");
@@ -66,28 +66,10 @@ public class OKApplication extends Application {
                         return null;
                     }
                 })
+                .addCallAdapterFactory(CallAdapterFactory.INSTANCE)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         //RetrofitManager.init(retrofit);
         RetrofitFactory.DEFAULT = retrofit;
-    }
-
-    public static class LogCatStrategy implements LogStrategy {
-
-        @Override
-        public void log(int priority, @Nullable String tag, @NonNull String message) {
-            Log.println(priority, randomKey() + tag, message);
-        }
-
-        private int last;
-
-        private String randomKey() {
-            int random = (int) (10 * Math.random());
-            if (random == last) {
-                random = (random + 1) % 10;
-            }
-            last = random;
-            return String.valueOf(random);
-        }
     }
 }
