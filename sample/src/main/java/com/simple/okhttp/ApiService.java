@@ -14,6 +14,7 @@ import retrofit2.SkipCallbackExecutor;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
+import retrofit2.http.Header;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
 import retrofit2.http.Streaming;
@@ -32,9 +33,13 @@ public interface ApiService {
     Call<RegisterInfo> register(@Field("username") String username, @Field("password") String password);
 
     @FormUrlEncoded
-    @Headers("BaseUrlName:chengxin")
+    @Headers("BaseUrlName:baidu")
     @POST("user/login")
     Call<LoginInfo> getLogin(@Field("username") String username, @Field("password") String password);
+
+    @FormUrlEncoded
+    @POST("user/login")
+    Call<LoginInfo> getLogin(@Header("BaseUrlName") /*动态替换*/String baseUrlName, @Field("username") String username, @Field("password") String password);
 
     //@SkipCallbackExecutor
     @Streaming

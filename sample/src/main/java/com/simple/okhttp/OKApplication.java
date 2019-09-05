@@ -10,9 +10,8 @@ import com.orhanobut.logger.LogStrategy;
 import com.orhanobut.logger.Logger;
 import com.orhanobut.logger.PrettyFormatStrategy;
 import com.simple.converter.GsonConverterFactory;
-import com.xcheng.retrofit.CallAdapterFactory;
-import com.xcheng.retrofit.CallFactoryProxy;
 import com.xcheng.retrofit.HttpLoggingInterceptor;
+import com.xcheng.retrofit.ReplaceUrlCallFactory;
 import com.xcheng.retrofit.RetrofitFactory;
 import com.xcheng.view.EasyView;
 
@@ -49,19 +48,24 @@ public class OKApplication extends Application {
             }
         });
         httpLoggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+
+
         OkHttpClient client = new OkHttpClient.Builder()
-                .addNetworkInterceptor(httpLoggingInterceptor)
                 .build();
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("https://wanandroid.com/")
-                .callFactory(new CallFactoryProxy(client) {
+                .callFactory(new ReplaceUrlCallFactory(client) {
                     @Nullable
                     @Override
                     protected HttpUrl getNewUrl(String baseUrlName, Request request) {
+                        if (baseUrlName.equals("baidu")) {
+                            String oldUrl = request.url().toString();
+                            String newUrl = oldUrl.replace("https://wanandroid.com/", "https://www.baidu.com/");
+                            return HttpUrl.get(newUrl);
+                        }
                         return null;
                     }
                 })
-                .addCallAdapterFactory(CallAdapterFactory.INSTANCE)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         //RetrofitManager.init(retrofit);
