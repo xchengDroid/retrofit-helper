@@ -1,7 +1,5 @@
 package com.xcheng.retrofit;
 
-import android.support.annotation.NonNull;
-
 import okhttp3.Call;
 import okhttp3.Request;
 
@@ -14,7 +12,7 @@ public abstract class CallFactoryProxy implements Call.Factory {
 
     protected final Call.Factory delegate;
 
-    public CallFactoryProxy(@NonNull Call.Factory delegate) {
+    public CallFactoryProxy(Call.Factory delegate) {
         Utils.checkNotNull(delegate, "delegate==null");
         this.delegate = delegate;
     }
