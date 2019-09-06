@@ -8,15 +8,15 @@ import com.xcheng.retrofit.Call;
 import java.io.File;
 import java.util.List;
 
+import okhttp3.FormBody;
 import okhttp3.ResponseBody;
 import retrofit2.SkipCallbackExecutor;
+import retrofit2.http.Body;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
-import retrofit2.http.Header;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
-import retrofit2.http.Streaming;
 
 /**
  * 创建时间：2018/4/8
@@ -28,19 +28,13 @@ public interface ApiService {
     //@SkipCallbackExecutor
 
     @FormUrlEncoded
-   // @Headers("BaseUrlName:baidu")
+    // @Headers("BaseUrlName:baidu")
     @POST("user/login")
     Call<LoginInfo> getLogin(@Field("username") String username, @Field("password") String password);
 
-    @FormUrlEncoded
+    //@FormUrlEncoded
     @POST("user/login")
-    Call<LoginInfo> getLogin(@Header("BaseUrlName") /*动态替换*/String baseUrlName, @Field("username") String username, @Field("password") String password);
-
-    //@SkipCallbackExecutor
-    @Streaming
-    @FormUrlEncoded
-    @POST("user/login")
-    retrofit2.Call<ResponseBody> getLoginTestOnMainThread(@Field("username") String username, @Field("password") String password);
+    Call<LoginInfo> getLogin(@Body FormBody body);
 
     //获取微信公众号列表
     @GET("wxarticle/chapters/json")
