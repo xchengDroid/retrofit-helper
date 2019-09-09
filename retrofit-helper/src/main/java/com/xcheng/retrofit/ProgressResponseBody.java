@@ -10,6 +10,9 @@ import okio.ForwardingSource;
 import okio.Okio;
 import okio.Source;
 
+/**
+ * 监听下载进度
+ */
 public abstract class ProgressResponseBody extends ResponseBody {
     private final ResponseBody delegate;
     private BufferedSource bufferedSource;
