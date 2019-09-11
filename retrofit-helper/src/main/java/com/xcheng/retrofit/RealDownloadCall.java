@@ -1,12 +1,12 @@
 package com.xcheng.retrofit;
 
 import android.support.annotation.Nullable;
-import android.support.annotation.UiThread;
 
 import java.util.concurrent.Executor;
 
 import okhttp3.Request;
 import okhttp3.ResponseBody;
+import retrofit2.HttpException;
 import retrofit2.Response;
 
 final class RealDownloadCall<T> implements DownloadCall<T> {
@@ -24,28 +24,32 @@ final class RealDownloadCall<T> implements DownloadCall<T> {
         delegate.enqueue(new retrofit2.Callback<ResponseBody>() {
             @Override
             public void onResponse(retrofit2.Call<ResponseBody> call, final Response<ResponseBody> response) {
+                if (response.body() == null) {
+                    callFailure(new HttpException(response));
+                    return;
+                }
+                ResponseBody responseBody = new ProgressResponseBody(response.body()) {
+                    @Override
+                    protected void onDownload(long progress, long contentLength, boolean done) {
+                        callProgress(progress, contentLength, done);
+                    }
+                };
                 try {
-                    ResponseBody responseBody = new ProgressResponseBody(response.body()) {
-                        @Override
-                        protected void onDownload(long progress, long contentLength, boolean done) {
-                            callProgress(progress, contentLength, done);
-                        }
-                    };
                     @Nullable
                     T body = callback.convert(RealDownloadCall.this, responseBody);
                     if (body != null) {
-                        callResult(body, null);
+                        callSuccess(body);
                         return;
                     }
-                    callResult(null, new NullPointerException("callback.convert return null"));
+                    callFailure(new NullPointerException("callback.convert return null"));
                 } catch (Throwable t) {
-                    callResult(null, t);
+                    callFailure(t);
                 }
             }
 
             @Override
             public void onFailure(retrofit2.Call<ResponseBody> call, final Throwable t) {
-                callResult(null, t);
+                callFailure(t);
             }
 
             private void callProgress(final long progress, final long contentLength, final boolean done) {
@@ -57,16 +61,20 @@ final class RealDownloadCall<T> implements DownloadCall<T> {
                 });
             }
 
-            @UiThread
-            private void callResult(@Nullable final T body, @Nullable final Throwable t) {
+            private void callSuccess(final T body) {
                 callbackExecutor.execute(new Runnable() {
                     @Override
                     public void run() {
-                        if (body != null) {
-                            callback.onSuccess(RealDownloadCall.this, body);
-                        } else {
-                            callback.onError(RealDownloadCall.this, t);
-                        }
+                        callback.onSuccess(RealDownloadCall.this, body);
+                    }
+                });
+            }
+
+            private void callFailure(final Throwable e) {
+                callbackExecutor.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        callback.onError(RealDownloadCall.this, e);
                     }
                 });
             }
