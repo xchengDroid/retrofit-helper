@@ -12,7 +12,7 @@ import okhttp3.ResponseBody;
  *
  * @param <T> Successful response body type.
  */
-interface DownloadCallback<T> {
+public interface DownloadCallback<T> {
     @Nullable
     @WorkerThread
     T convert(DownloadCall<T> call, ResponseBody value) throws IOException;

@@ -77,6 +77,7 @@ final class RealCall<T> implements Call<T> {
                             callback.onError(RealCall.this, error);
                             RetrofitFactory.getOnEventListener().onThrowable(RealCall.this, result.error());
                         }
+                        callback.onCompleted(RealCall.this, result.error());
                     }
                 });
             }
