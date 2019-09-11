@@ -12,7 +12,7 @@ import okhttp3.ResponseBody;
  * 创建时间：2018/4/8
  * 编写人： chengxin
  * 功能描述：支持下载功能{@link retrofit2.Call}
- * Note: 如果文件过大，防止retrofit这个文件读入内存请使用{@link retrofit2.http.Streaming}注解
+ * Note: 如果文件过大，防止retrofit将文件读入内存导致内存溢出，请使用{@link retrofit2.http.Streaming}注解
  *
  * @param <T> Successful response body type.
  */
