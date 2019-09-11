@@ -28,13 +28,13 @@ final class RealDownloadCall<T> implements DownloadCall<T> {
                     callFailure(new HttpException(response));
                     return;
                 }
-                ResponseBody responseBody = new ProgressResponseBody(response.body()) {
-                    @Override
-                    protected void onDownload(long progress, long contentLength, boolean done) {
-                        callProgress(progress, contentLength, done);
-                    }
-                };
                 try {
+                    ResponseBody responseBody = new ProgressResponseBody(response.body()) {
+                        @Override
+                        protected void onDownload(long progress, long contentLength, boolean done) {
+                            callProgress(progress, contentLength, done);
+                        }
+                    };
                     @Nullable
                     T body = callback.convert(RealDownloadCall.this, responseBody);
                     if (body != null) {
