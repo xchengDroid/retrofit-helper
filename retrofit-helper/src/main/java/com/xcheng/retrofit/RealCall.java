@@ -74,7 +74,7 @@ final class RealCall<T> implements Call<T> {
                             callback.onSuccess(RealCall.this, transformer);
                         } else {
                             HttpError error = callback.parseThrowable(RealCall.this, result.error());
-                            Utils.checkNotNull(error == null, "httpError==null");
+                            Utils.checkNotNull(error == null, "error==null");
                             callback.onError(RealCall.this, error);
                             RetrofitFactory.getOnEventListener().onThrowable(RealCall.this, result.error());
                         }
