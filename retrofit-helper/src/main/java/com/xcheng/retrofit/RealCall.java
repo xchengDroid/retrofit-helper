@@ -48,6 +48,7 @@ final class RealCall<T> implements Call<T> {
             @Override
             public void onResponse(retrofit2.Call<T> call, final Response<T> response) {
                 final Result<T> result;
+                //response.isSuccessful() 不能保证 response.body() != null,反之可以
                 if (response.body() != null) {
                     result = Result.success(response.body());
                 } else {
