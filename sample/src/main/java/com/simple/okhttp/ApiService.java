@@ -4,19 +4,19 @@ import com.simple.entity.Article;
 import com.simple.entity.LoginInfo;
 import com.simple.entity.WXArticle;
 import com.xcheng.retrofit.Call;
+import com.xcheng.retrofit.DownloadCall;
 
 import java.io.File;
 import java.util.List;
 
 import okhttp3.FormBody;
-import okhttp3.ResponseBody;
-import retrofit2.SkipCallbackExecutor;
 import retrofit2.http.Body;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
+import retrofit2.http.Streaming;
 
 /**
  * 创建时间：2018/4/8
@@ -45,15 +45,10 @@ public interface ApiService {
     Call<List<Article>> getArticle0();
 
     //下载文件
-    @GET("http://shouji.360tpcdn.com/181115/4dc46bd86bef036da927bc59680f514f/com.ss.android.ugc.aweme_330.apk")
-    Call<File> loadDouYinApk();
-
-    //下载文件
-    // @Streaming
-    @SkipCallbackExecutor
+    @Streaming
     @Headers("LogLevel:BASIC")
     @GET("http://shouji.360tpcdn.com/181115/4dc46bd86bef036da927bc59680f514f/com.ss.android.ugc.aweme_330.apk")
-    retrofit2.Call<ResponseBody> loadDouYinApkTestOnMainThread();
+    DownloadCall<File> loadDouYinApk();
 }
 
 

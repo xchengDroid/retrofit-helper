@@ -4,32 +4,30 @@ import android.arch.lifecycle.Lifecycle;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.simple.converter.FileConverterFactory;
 import com.simple.entity.Article;
 import com.simple.entity.LoginInfo;
 import com.simple.entity.WXArticle;
 import com.xcheng.retrofit.AndroidLifecycle;
 import com.xcheng.retrofit.Call;
-import com.xcheng.retrofit.DefaultCallback;
+import com.xcheng.retrofit.DownloadCall;
+import com.xcheng.retrofit.DownloadCallback;
 import com.xcheng.retrofit.HttpError;
 import com.xcheng.retrofit.LifecycleProvider;
 import com.xcheng.retrofit.RetrofitFactory;
-import com.xcheng.retrofit.progress.ProgressInterceptor;
-import com.xcheng.retrofit.progress.ProgressListener;
-import com.xcheng.view.EasyView;
+import com.xcheng.retrofit.Utils;
 import com.xcheng.view.controller.EasyActivity;
 import com.xcheng.view.widget.ProgressView;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import retrofit2.Retrofit;
+import okhttp3.ResponseBody;
 
 public class MainActivity extends EasyActivity {
     ProgressView progressView;
@@ -52,6 +50,7 @@ public class MainActivity extends EasyActivity {
                 return String.valueOf(value) + "%";
             }
         });
+
     }
 
     public void login(View view) {
@@ -71,46 +70,6 @@ public class MainActivity extends EasyActivity {
                         }
                     });
         }
-
-//
-//        NetTaskExecutor.getInstance().executeOnDiskIO(new Runnable() {
-//            @Override
-//            public void run() {
-//                for (int index = 0; index < 10; index++) {
-//                    try {
-//
-//                        LoginInfo loginInfo = RetrofitFactory.create(ApiService.class)
-//                                .getLogin("singleman", "123456").bindToLifecycle(provider, Lifecycle.Event.ON_RESUME).execute();
-//
-//
-//                        //Log.e("print", "loginInfo:" + loginInfo);
-//                    } catch (Throwable throwable) {
-//                        throwable.printStackTrace();
-//                    }
-//                }
-//            }
-//        });
-
-
-//        } catch (Throwable e) {
-//
-//        }
-
-
-//        NetTaskExecutor.getInstance().executeOnDiskIO(new Runnable() {
-//            @Override
-//            public void run() {
-//                try {
-//                    Response<LoginInfo> info = RetrofitFactory.create(ApiService.class)
-//                            .getLogin("singleman", "123456").execute(provider);
-//                    Log.e("print",info.body().toString()) ;
-//
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        });
-
     }
 
 
@@ -166,7 +125,7 @@ public class MainActivity extends EasyActivity {
                 });
     }
 
-    static final String TAG_LOAD_APK = "loadApk";
+    int count;
 
     public void download(View view) {
         final Button button = (Button) view;
@@ -174,71 +133,34 @@ public class MainActivity extends EasyActivity {
             // CallManager.getInstance().cancel(TAG_LOAD_APK);
             return;
         }
+        final String filePath = new File(getContext().getExternalCacheDir(), "test_douyin.apk").getPath();
 
-        String filePath = new File(getContext().getExternalCacheDir(), "test_douyin.apk").getPath();
-        //构建可以监听进度的client
-        OkHttpClient client = new OkHttpClient().newBuilder()
-                .addNetworkInterceptor(getProgressInterceptor()).build();
-        //构建可以下载文件的client
-        Retrofit retrofit = RetrofitFactory.DEFAULT
-                .newBuilder()
-                .callFactory(client)
-                .addConverterFactory(new FileConverterFactory(filePath))
-                .build();
-        retrofit.create(ApiService.class)
+        RetrofitFactory.create(ApiService.class)
                 .loadDouYinApk()
-                .bindUntilDestroy(provider)
-                .enqueue(new DefaultCallback<File>() {
+                .enqueue(new DownloadCallback<File>() {
+                    @Nullable
                     @Override
-                    public void onStart(Call<File> call2) {
-                        button.setText("取消下载");
+                    public File convert(DownloadCall<File> call, ResponseBody value) throws IOException {
+                        return Utils.writeToFile(value, filePath);
                     }
 
                     @Override
-                    public void onError(Call<File> call2, HttpError error) {
-                        progressView.setProgress(0);
-                        Toast.makeText(MainActivity.this, error.msg, Toast.LENGTH_SHORT).show();
-                    }
-
-                    @Override
-                    public void onSuccess(Call<File> call2, File response) {
-
-                    }
-
-                    @Override
-                    public void onCompleted(Call<File> call2, @Nullable Throwable t) {
-                        if (call2.isCanceled()) {
-                            progressView.setProgress(0);
-                            button.setText("下载抖音apk文件");
-                        } else {
-                            button.setText("下载完成");
-                        }
-                    }
-                });
-    }
-
-    private ProgressInterceptor getProgressInterceptor() {
-        return new ProgressInterceptor(new ProgressListener() {
-            @Override
-            public void onUpload(Request request, long progress, long contentLength, boolean done) {
-
-            }
-
-            @Override
-            public void onDownload(Request request, final long progress, final long contentLength, boolean done) {
-                EasyView.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
+                    public void onDownload(DownloadCall<File> call, long progress, long contentLength, boolean done) {
+                        count++;
+                        Log.e("print", "onDownLoad:" + count);
                         progressView.setProgress((int) (progress * 100f / contentLength), false);
                     }
-                });
-            }
-        });
-    }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        login(null);
+                    @Override
+                    public void onError(DownloadCall<File> call, Throwable t) {
+                        progressView.setProgress(0);
+                        Toast.makeText(MainActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onSuccess(DownloadCall<File> call, File file) {
+                        button.setText("下载完成");
+                    }
+                });
     }
 }
