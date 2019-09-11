@@ -1,7 +1,5 @@
 package com.xcheng.retrofit;
 
-import android.support.annotation.NonNull;
-
 import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -15,13 +13,6 @@ public final class CallAdapterFactory extends CallAdapter.Factory {
     private static final String RETURN_TYPE = Call.class.getSimpleName();
 
     public static final CallAdapter.Factory INSTANCE = new CallAdapterFactory();
-
-    private static final Executor OPTIONAL_NULL_EXECUTOR = new Executor() {
-        @Override
-        public void execute(@NonNull Runnable command) {
-            command.run();
-        }
-    };
 
     private CallAdapterFactory() {
     }
@@ -59,7 +50,7 @@ public final class CallAdapterFactory extends CallAdapter.Factory {
                 if (executor != null) {
                     return new RealCall<>(executor, call);
                 }
-                return new RealCall<>(OPTIONAL_NULL_EXECUTOR, call);
+                return new RealCall<>(OptionalExecutor.get(), call);
             }
         };
     }
