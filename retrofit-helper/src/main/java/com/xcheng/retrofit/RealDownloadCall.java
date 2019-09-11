@@ -19,7 +19,7 @@ final class RealDownloadCall<T> implements DownloadCall<T> {
     }
 
     @Override
-    public void enqueue(final Callback<T> callback) {
+    public void enqueue(final DownloadCallback<T> callback) {
         Utils.checkNotNull(callback, "callback==null");
         delegate.enqueue(new retrofit2.Callback<ResponseBody>() {
             @Override

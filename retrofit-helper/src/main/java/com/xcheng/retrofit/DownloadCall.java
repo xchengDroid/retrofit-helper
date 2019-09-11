@@ -1,12 +1,6 @@
 package com.xcheng.retrofit;
 
-import android.support.annotation.Nullable;
-import android.support.annotation.WorkerThread;
-
-import java.io.IOException;
-
 import okhttp3.Request;
-import okhttp3.ResponseBody;
 
 /**
  * 创建时间：2018/4/8
@@ -18,7 +12,8 @@ import okhttp3.ResponseBody;
  * @param <T> Successful response body type.
  */
 public interface DownloadCall<T> extends Cloneable {
-    void enqueue(Callback<T> callback);
+
+    void enqueue(DownloadCallback<T> callback);
 
     boolean isExecuted();
 
@@ -29,16 +24,4 @@ public interface DownloadCall<T> extends Cloneable {
     DownloadCall<T> clone();
 
     Request request();
-
-    interface Callback<T> {
-        @Nullable
-        @WorkerThread
-        T convert(DownloadCall<T> call, ResponseBody value) throws IOException;
-
-        void onDownload(DownloadCall<T> call, long progress, long contentLength, boolean done);
-
-        void onError(DownloadCall<T> call, Throwable t);
-
-        void onSuccess(DownloadCall<T> call, T t);
-    }
 }
