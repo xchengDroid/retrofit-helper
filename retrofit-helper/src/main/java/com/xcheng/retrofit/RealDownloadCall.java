@@ -23,7 +23,7 @@ final class RealDownloadCall<T> implements DownloadCall<T> {
         Utils.checkNotNull(callback, "callback==null");
         delegate.enqueue(new retrofit2.Callback<ResponseBody>() {
             @Override
-            public void onResponse(retrofit2.Call<ResponseBody> call, final Response<ResponseBody> response) {
+            public void onResponse(retrofit2.Call<ResponseBody> call, Response<ResponseBody> response) {
                 if (response.body() == null) {
                     callFailure(new HttpException(response));
                     return;
@@ -60,7 +60,7 @@ final class RealDownloadCall<T> implements DownloadCall<T> {
             }
 
             @Override
-            public void onFailure(retrofit2.Call<ResponseBody> call, final Throwable t) {
+            public void onFailure(retrofit2.Call<ResponseBody> call, Throwable t) {
                 callFailure(t);
             }
 
