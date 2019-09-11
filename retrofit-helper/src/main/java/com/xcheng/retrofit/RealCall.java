@@ -2,7 +2,6 @@ package com.xcheng.retrofit;
 
 import android.arch.lifecycle.Lifecycle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
 
 import java.util.concurrent.Executor;
@@ -48,44 +47,38 @@ final class RealCall<T> implements Call<T> {
         delegate.enqueue(new retrofit2.Callback<T>() {
             @Override
             public void onResponse(retrofit2.Call<T> call, final Response<T> response) {
-                callbackExecutor.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        callResult(response, null);
-                    }
-                });
+                final Result<T> result;
+                if (response.body() != null) {
+                    result = Result.success(response.body());
+                } else {
+                    result = Result.error(new HttpException(response));
+                }
+                callResult(result);
             }
 
             @Override
             public void onFailure(retrofit2.Call<T> call, final Throwable t) {
-                callbackExecutor.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        callResult(null, t);
-                    }
-                });
+                callResult(Result.<T>error(t));
             }
 
             @SuppressWarnings("ConstantConditions")
             @UiThread
-            private void callResult(@Nullable Response<T> response, @Nullable Throwable t) {
-                if (response != null) {
-                    T body = response.body();
-                    if (body != null) {
-                        T transformer = callback.transform(RealCall.this, body);
-                        Utils.checkNotNull(transformer == null, "transformer==null");
-                        callback.onSuccess(RealCall.this, transformer);
-                    } else {
-                        t = new HttpException(response);
+            private void callResult(final Result<T> result) {
+                callbackExecutor.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (result.isSuccess()) {
+                            T transformer = callback.transform(RealCall.this, result.body());
+                            Utils.checkNotNull(transformer == null, "transformer==null");
+                            callback.onSuccess(RealCall.this, transformer);
+                        } else {
+                            HttpError error = callback.parseThrowable(RealCall.this, result.error());
+                            Utils.checkNotNull(error == null, "httpError==null");
+                            callback.onError(RealCall.this, error);
+                            RetrofitFactory.getOnEventListener().onThrowable(RealCall.this, result.error());
+                        }
                     }
-                }
-                if (t != null) {
-                    RetrofitFactory.getOnEventListener().onThrowable(RealCall.this, t);
-                    HttpError error = callback.parseThrowable(RealCall.this, t);
-                    Utils.checkNotNull(error == null, "error==null");
-                    callback.onError(RealCall.this, error);
-                }
-                callback.onCompleted(RealCall.this, t);
+                });
             }
         });
     }

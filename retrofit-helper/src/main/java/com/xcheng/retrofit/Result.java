@@ -5,7 +5,7 @@ import android.support.annotation.Nullable;
 import static com.xcheng.retrofit.Utils.checkNotNull;
 
 /**
- * An HTTP Result. like Retrofit
+ * An HTTP Result. like Retrofit,retrofit2.adapter.rxjava2.Result
  */
 public final class Result<T> {
 
@@ -22,23 +22,23 @@ public final class Result<T> {
      * @param error 请求失败返回的错误信息
      * @throws NullPointerException if error==null
      */
-    public static <T> Result<T> error(HttpError error) {
+    public static <T> Result<T> error(Throwable error) {
         checkNotNull(error, "error==null");
         return new Result<>(null, error);
     }
 
     @Nullable
-    private final HttpError error;
+    private final Throwable error;
     @Nullable
     private final T body;
 
-    private Result(@Nullable T body, @Nullable HttpError error) {
+    private Result(@Nullable T body, @Nullable Throwable error) {
         this.error = error;
         this.body = body;
     }
 
     @Nullable
-    public HttpError error() {
+    public Throwable error() {
         return error;
     }
 
