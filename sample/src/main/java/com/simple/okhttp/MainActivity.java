@@ -145,6 +145,11 @@ public class MainActivity extends EasyActivity {
                     }
 
                     @Override
+                    public float eachDownloadIncrease() {
+                        return 0.02f;
+                    }
+
+                    @Override
                     public void onDownload(DownloadCall<File> call, long progress, long contentLength, boolean done) {
                         count++;
                         Log.e("print", "onDownLoad:" + count);
