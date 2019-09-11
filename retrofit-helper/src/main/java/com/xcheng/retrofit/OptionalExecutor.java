@@ -11,7 +11,7 @@ import java.util.concurrent.Executor;
  */
 final class OptionalExecutor implements Executor {
 
-    private static OptionalExecutor EXECUTOR = new OptionalExecutor();
+    private static final OptionalExecutor EXECUTOR = new OptionalExecutor();
 
     static OptionalExecutor get() {
         return EXECUTOR;
