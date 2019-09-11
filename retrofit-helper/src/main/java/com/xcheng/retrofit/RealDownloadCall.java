@@ -29,10 +29,22 @@ final class RealDownloadCall<T> implements DownloadCall<T> {
                     return;
                 }
                 try {
+                    float percent = callback.eachDownloadIncrease();
+                    final float increasePercent;
+                    if (percent > 0 && percent < 1) {
+                        increasePercent = percent;
+                    } else {
+                        increasePercent = 0.01f;
+                    }
                     ResponseBody responseBody = new ProgressResponseBody(response.body()) {
+                        long lastProgress;
+
                         @Override
                         protected void onDownload(long progress, long contentLength, boolean done) {
-                            callProgress(progress, contentLength, done);
+                            if (progress - lastProgress > increasePercent * contentLength || done) {
+                                lastProgress = progress;
+                                callProgress(progress, contentLength, done);
+                            }
                         }
                     };
                     @Nullable
