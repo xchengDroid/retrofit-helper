@@ -23,7 +23,7 @@ public interface DownloadCallback<T> {
      * @return increase percent
      */
     @WorkerThread
-    float eachDownloadIncrease();
+    float eachDownloadIncrease(DownloadCall<T> call);
 
     void onDownload(DownloadCall<T> call, long progress, long contentLength, boolean done);
 

@@ -126,13 +126,17 @@ public class MainActivity extends EasyActivity {
     }
 
     int count;
+    DownloadCall<File> call;
 
     public void download(View view) {
         final Button button = (Button) view;
-        if (button.getText().equals("取消下载")) {
-            // CallManager.getInstance().cancel(TAG_LOAD_APK);
+        if (call != null) {
+            call.cancel();
+            call = null;
+            button.setText("下载抖音apk");
             return;
         }
+        button.setText("取消下载");
         final String filePath = new File(getContext().getExternalCacheDir(), "test_douyin.apk").getPath();
 
         RetrofitFactory.create(ApiService.class)
@@ -141,11 +145,12 @@ public class MainActivity extends EasyActivity {
                     @Nullable
                     @Override
                     public File convert(DownloadCall<File> call, ResponseBody value) throws IOException {
+                        MainActivity.this.call = call;
                         return Utils.writeToFile(value, filePath);
                     }
 
                     @Override
-                    public float eachDownloadIncrease() {
+                    public float eachDownloadIncrease(DownloadCall<File> call) {
                         return 0.02f;
                     }
 
@@ -159,6 +164,7 @@ public class MainActivity extends EasyActivity {
                     @Override
                     public void onError(DownloadCall<File> call, Throwable t) {
                         progressView.setProgress(0);
+                        Log.e("print", "", t);
                         Toast.makeText(MainActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
                     }
 

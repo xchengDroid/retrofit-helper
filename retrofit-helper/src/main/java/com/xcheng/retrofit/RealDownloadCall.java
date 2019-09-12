@@ -29,7 +29,7 @@ final class RealDownloadCall<T> implements DownloadCall<T> {
                         callFailure(new HttpException(response));
                         return;
                     }
-                    float percent = callback.eachDownloadIncrease();
+                    float percent = callback.eachDownloadIncrease(RealDownloadCall.this);
                     final float increasePercent;
                     if (percent > 0 && percent < 1) {
                         increasePercent = percent;
@@ -82,11 +82,11 @@ final class RealDownloadCall<T> implements DownloadCall<T> {
                 });
             }
 
-            private void callFailure(final Throwable e) {
+            private void callFailure(final Throwable t) {
                 callbackExecutor.execute(new Runnable() {
                     @Override
                     public void run() {
-                        callback.onError(RealDownloadCall.this, e);
+                        callback.onError(RealDownloadCall.this, t);
                     }
                 });
             }
