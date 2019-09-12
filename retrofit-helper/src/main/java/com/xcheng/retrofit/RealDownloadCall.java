@@ -24,11 +24,14 @@ final class RealDownloadCall<T> implements DownloadCall<T> {
         delegate.enqueue(new retrofit2.Callback<ResponseBody>() {
             @Override
             public void onResponse(retrofit2.Call<ResponseBody> call, Response<ResponseBody> response) {
-                if (response.body() == null) {
-                    callFailure(new HttpException(response));
-                    return;
-                }
+                //保证回调只执行一次
+                boolean signalledCallback = false;
                 try {
+                    if (response.body() == null) {
+                        signalledCallback = true;
+                        callFailure(new HttpException(response));
+                        return;
+                    }
                     float percent = callback.eachDownloadIncrease();
                     final float increasePercent;
                     if (percent > 0 && percent < 1) {
@@ -49,13 +52,16 @@ final class RealDownloadCall<T> implements DownloadCall<T> {
                     };
                     @Nullable
                     T body = callback.convert(RealDownloadCall.this, responseBody);
+                    signalledCallback = true;
                     if (body != null) {
                         callSuccess(body);
                         return;
                     }
                     callFailure(new NullPointerException("callback.convert return null"));
                 } catch (Throwable t) {
-                    callFailure(t);
+                    if (!signalledCallback) {
+                        callFailure(t);
+                    }
                 }
             }
 
