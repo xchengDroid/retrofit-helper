@@ -24,11 +24,8 @@ final class RealDownloadCall<T> implements DownloadCall<T> {
         delegate.enqueue(new retrofit2.Callback<ResponseBody>() {
             @Override
             public void onResponse(retrofit2.Call<ResponseBody> call, Response<ResponseBody> response) {
-                //保证回调只执行一次
-                boolean signalledCallback = false;
                 try {
                     if (response.body() == null) {
-                        signalledCallback = true;
                         callFailure(new HttpException(response));
                         return;
                     }
@@ -52,16 +49,13 @@ final class RealDownloadCall<T> implements DownloadCall<T> {
                     };
                     @Nullable
                     T body = callback.convert(RealDownloadCall.this, responseBody);
-                    signalledCallback = true;
                     if (body != null) {
                         callSuccess(body);
                         return;
                     }
                     callFailure(new NullPointerException("callback.convert return null"));
                 } catch (Throwable t) {
-                    if (!signalledCallback) {
-                        callFailure(t);
-                    }
+                    callFailure(t);
                 }
             }
 
