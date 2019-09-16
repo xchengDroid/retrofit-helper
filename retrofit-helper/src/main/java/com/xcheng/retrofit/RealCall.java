@@ -59,7 +59,7 @@ final class RealCall<T> implements Call<T> {
                 callFailure(t);
             }
 
-            private void callSuccess(final T body) {
+            private void callSuccess(@NonNull final T body) {
                 callbackExecutor.execute(new Runnable() {
                     @Override
                     public void run() {
@@ -72,7 +72,7 @@ final class RealCall<T> implements Call<T> {
                 });
             }
 
-            private void callFailure(final Throwable t) {
+            private void callFailure(@NonNull final Throwable t) {
                 callbackExecutor.execute(new Runnable() {
                     @Override
                     public void run() {
