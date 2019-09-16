@@ -15,12 +15,16 @@ import okhttp3.Request;
  */
 public interface DownloadCall<T> extends Cloneable {
 
+    /**
+     * The default implementation delegates to {@link #enqueue(float, DownloadCallback)}.
+     **/
     void enqueue(DownloadCallback<T> callback);
 
     /**
-     * @param increaseOfProgress 每次调用必须增加多少,范围为（0-1）
+     * @param increaseOfProgress 每次调用{@link DownloadCallback#onProgress(DownloadCall, long, long, boolean)}
+     *                           progress必须增加 {@code contentLength*increaseOfProgress},范围为（0-1).
      */
-    void enqueue(@FloatRange(from = 0, to = 1, toInclusive = false, fromInclusive = false) float increaseOfProgress,
+    void enqueue(@FloatRange(from = 0, to = 1, fromInclusive = false, toInclusive = false) float increaseOfProgress,
                  DownloadCallback<T> callback);
 
 
