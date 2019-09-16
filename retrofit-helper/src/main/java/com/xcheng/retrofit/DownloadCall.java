@@ -18,10 +18,12 @@ public interface DownloadCall<T> extends Cloneable {
     boolean isExecuted();
 
     /**
-     * 是否调用显示进度{@link DownloadCallback#onProgress(DownloadCall, long, long, boolean)}
+     * 暂停显示进度{@link DownloadCallback#onProgress(DownloadCall, long, long, boolean)}
      * 默认为true,可以用于暂停显示进度，比如当Activity调用了onPause()方法等
      */
-    void callProgress(boolean callProgress);
+    void pauseProgress();
+
+    void resumeProgress();
 
     void cancel();
 

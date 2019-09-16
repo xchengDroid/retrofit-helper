@@ -12,7 +12,7 @@ import retrofit2.Response;
 final class RealDownloadCall<T> implements DownloadCall<T> {
     private final Executor callbackExecutor;
     private final retrofit2.Call<ResponseBody> delegate;
-    private volatile boolean callProgress = true;
+    private volatile boolean pauseProgress;//default false
 
     RealDownloadCall(Executor callbackExecutor, retrofit2.Call<ResponseBody> delegate) {
         this.callbackExecutor = callbackExecutor;
@@ -42,7 +42,7 @@ final class RealDownloadCall<T> implements DownloadCall<T> {
 
                         @Override
                         protected void onDownload(long progress, long contentLength, boolean done) {
-                            if (!callProgress)
+                            if (pauseProgress)
                                 return;
                             if (progress - lastProgress > increasePercent * contentLength || done) {
                                 lastProgress = progress;
@@ -97,8 +97,13 @@ final class RealDownloadCall<T> implements DownloadCall<T> {
     }
 
     @Override
-    public void callProgress(boolean callProgress) {
-        this.callProgress = callProgress;
+    public void pauseProgress() {
+        pauseProgress = true;
+    }
+
+    @Override
+    public void resumeProgress() {
+        pauseProgress = false;
     }
 
     @Override
