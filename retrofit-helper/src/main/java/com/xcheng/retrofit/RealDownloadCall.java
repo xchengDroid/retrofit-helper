@@ -1,6 +1,6 @@
 package com.xcheng.retrofit;
 
-import android.support.annotation.Nullable;
+import android.support.annotation.NonNull;
 
 import java.util.concurrent.Executor;
 
@@ -12,6 +12,7 @@ import retrofit2.Response;
 final class RealDownloadCall<T> implements DownloadCall<T> {
     private final Executor callbackExecutor;
     private final retrofit2.Call<ResponseBody> delegate;
+    private volatile boolean callProgress = true;
 
     RealDownloadCall(Executor callbackExecutor, retrofit2.Call<ResponseBody> delegate) {
         this.callbackExecutor = callbackExecutor;
@@ -29,7 +30,7 @@ final class RealDownloadCall<T> implements DownloadCall<T> {
                         callFailure(new HttpException(response));
                         return;
                     }
-                    float percent = callback.eachDownloadIncrease(RealDownloadCall.this);
+                    float percent = callback.eachProgressIncrease(RealDownloadCall.this);
                     final float increasePercent;
                     if (percent > 0 && percent < 1) {
                         increasePercent = percent;
@@ -41,13 +42,15 @@ final class RealDownloadCall<T> implements DownloadCall<T> {
 
                         @Override
                         protected void onDownload(long progress, long contentLength, boolean done) {
+                            if (!callProgress)
+                                return;
                             if (progress - lastProgress > increasePercent * contentLength || done) {
                                 lastProgress = progress;
                                 callProgress(progress, contentLength, done);
                             }
                         }
                     };
-                    @Nullable
+
                     T body = callback.convert(RealDownloadCall.this, responseBody);
                     if (body != null) {
                         callSuccess(body);
@@ -68,12 +71,12 @@ final class RealDownloadCall<T> implements DownloadCall<T> {
                 callbackExecutor.execute(new Runnable() {
                     @Override
                     public void run() {
-                        callback.onDownload(RealDownloadCall.this, progress, contentLength, done);
+                        callback.onProgress(RealDownloadCall.this, progress, contentLength, done);
                     }
                 });
             }
 
-            private void callSuccess(final T body) {
+            private void callSuccess(@NonNull final T body) {
                 callbackExecutor.execute(new Runnable() {
                     @Override
                     public void run() {
@@ -82,7 +85,7 @@ final class RealDownloadCall<T> implements DownloadCall<T> {
                 });
             }
 
-            private void callFailure(final Throwable t) {
+            private void callFailure(@NonNull final Throwable t) {
                 callbackExecutor.execute(new Runnable() {
                     @Override
                     public void run() {
@@ -91,6 +94,11 @@ final class RealDownloadCall<T> implements DownloadCall<T> {
                 });
             }
         });
+    }
+
+    @Override
+    public void callProgress(boolean callProgress) {
+        this.callProgress = callProgress;
     }
 
     @Override

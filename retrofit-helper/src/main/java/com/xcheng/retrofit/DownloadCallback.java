@@ -18,14 +18,14 @@ public interface DownloadCallback<T> {
     T convert(DownloadCall<T> call, ResponseBody value) throws IOException;
 
     /**
-     * 防止频繁调用{@link #onDownload},每次下载增加多少(0-1),否则默认使用0.01
+     * 防止频繁调用{@link #onProgress},每次下载增加多少(0-1),否则默认使用0.01
      *
      * @return increase percent
      */
     @WorkerThread
-    float eachDownloadIncrease(DownloadCall<T> call);
+    float eachProgressIncrease(DownloadCall<T> call);
 
-    void onDownload(DownloadCall<T> call, long progress, long contentLength, boolean done);
+    void onProgress(DownloadCall<T> call, long progress, long contentLength, boolean done);
 
     void onError(DownloadCall<T> call, Throwable t);
 
