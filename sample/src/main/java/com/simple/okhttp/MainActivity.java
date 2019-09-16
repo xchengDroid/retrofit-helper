@@ -150,11 +150,6 @@ public class MainActivity extends EasyActivity {
                     }
 
                     @Override
-                    public float eachProgressIncrease(DownloadCall<File> call) {
-                        return 0.02f;
-                    }
-
-                    @Override
                     public void onProgress(DownloadCall<File> call, long progress, long contentLength, boolean done) {
                         count++;
                         Log.e("print", "onDownLoad:" + count);

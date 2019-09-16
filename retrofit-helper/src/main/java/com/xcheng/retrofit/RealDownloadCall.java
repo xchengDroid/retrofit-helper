@@ -30,13 +30,6 @@ final class RealDownloadCall<T> implements DownloadCall<T> {
                         callFailure(new HttpException(response));
                         return;
                     }
-                    float percent = callback.eachProgressIncrease(RealDownloadCall.this);
-                    final float increasePercent;
-                    if (percent > 0 && percent < 1) {
-                        increasePercent = percent;
-                    } else {
-                        increasePercent = 0.01f;
-                    }
                     ResponseBody responseBody = new ProgressResponseBody(response.body()) {
                         long lastProgress;
 
@@ -44,7 +37,7 @@ final class RealDownloadCall<T> implements DownloadCall<T> {
                         protected void onDownload(long progress, long contentLength, boolean done) {
                             if (pauseProgress)
                                 return;
-                            if (progress - lastProgress > increasePercent * contentLength || done) {
+                            if (progress - lastProgress > 0.01f * contentLength || done) {
                                 lastProgress = progress;
                                 callProgress(progress, contentLength, done);
                             }
