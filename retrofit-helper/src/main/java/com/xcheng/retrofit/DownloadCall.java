@@ -1,5 +1,7 @@
 package com.xcheng.retrofit;
 
+import android.support.annotation.FloatRange;
+
 import okhttp3.Request;
 
 /**
@@ -14,6 +16,13 @@ import okhttp3.Request;
 public interface DownloadCall<T> extends Cloneable {
 
     void enqueue(DownloadCallback<T> callback);
+
+    /**
+     * @param increaseOfProgress 每次调用必须增加多少,范围为（0-1）
+     */
+    void enqueue(@FloatRange(from = 0, to = 1, toInclusive = false, fromInclusive = false) float increaseOfProgress,
+                 DownloadCallback<T> callback);
+
 
     boolean isExecuted();
 

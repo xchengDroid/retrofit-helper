@@ -20,7 +20,12 @@ final class RealDownloadCall<T> implements DownloadCall<T> {
     }
 
     @Override
-    public void enqueue(final DownloadCallback<T> callback) {
+    public void enqueue(DownloadCallback<T> callback) {
+        enqueue(0.01f, callback);
+    }
+
+    @Override
+    public void enqueue(final float increase, final DownloadCallback<T> callback) {
         Utils.checkNotNull(callback, "callback==null");
         delegate.enqueue(new retrofit2.Callback<ResponseBody>() {
             @Override
@@ -37,7 +42,7 @@ final class RealDownloadCall<T> implements DownloadCall<T> {
                         protected void onDownload(long progress, long contentLength, boolean done) {
                             if (pauseProgress)
                                 return;
-                            if (progress - lastProgress > 0.01f * contentLength || done) {
+                            if (progress - lastProgress > increase * contentLength || done) {
                                 lastProgress = progress;
                                 callProgress(progress, contentLength, done);
                             }

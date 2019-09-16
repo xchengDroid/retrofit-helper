@@ -141,7 +141,7 @@ public class MainActivity extends EasyActivity {
 
         RetrofitFactory.create(ApiService.class)
                 .loadDouYinApk()
-                .enqueue(new DownloadCallback<File>() {
+                .enqueue(-10.05f, new DownloadCallback<File>() {
                     @Nullable
                     @Override
                     public File convert(DownloadCall<File> call, ResponseBody value) throws IOException {
