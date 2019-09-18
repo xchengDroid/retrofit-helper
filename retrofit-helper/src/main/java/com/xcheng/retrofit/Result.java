@@ -1,5 +1,6 @@
 package com.xcheng.retrofit;
 
+import android.support.annotation.CheckResult;
 import android.support.annotation.Nullable;
 
 import static com.xcheng.retrofit.Utils.checkNotNull;
@@ -13,6 +14,7 @@ public final class Result<T> {
      * @param body 请求成功返回的body
      * @throws NullPointerException if body==null
      */
+    @CheckResult
     public static <T> Result<T> success(T body) {
         checkNotNull(body, "body==null");
         return new Result<>(body, null);
@@ -22,6 +24,7 @@ public final class Result<T> {
      * @param error 请求失败返回的错误信息
      * @throws NullPointerException if error==null
      */
+    @CheckResult
     public static <T> Result<T> error(Throwable error) {
         checkNotNull(error, "error==null");
         return new Result<>(null, error);
