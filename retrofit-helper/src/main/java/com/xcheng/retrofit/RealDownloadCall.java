@@ -30,8 +30,6 @@ final class RealDownloadCall<T> implements DownloadCall<T> {
         delegate.enqueue(new retrofit2.Callback<ResponseBody>() {
             @Override
             public void onResponse(retrofit2.Call<ResponseBody> call, Response<ResponseBody> response) {
-                //如果为OptionalExecutor，不存在线程调度的情况下callXXX方法可能会在当前线程抛出异常
-                //会导致callFailure方法调用两次
                 boolean signalledCallback = false;
                 try {
                     if (response.body() == null) {
@@ -60,6 +58,8 @@ final class RealDownloadCall<T> implements DownloadCall<T> {
                         callFailure(new NullPointerException("callback.convert return null"));
                     }
                 } catch (Throwable t) {
+                    //如果为OptionalExecutor，不存在线程调度的情况下callXXX方法可能会在当前线程抛出异常
+                    //会导致callFailure方法调用两次
                     if (!signalledCallback) {
                         callFailure(t);
                     }
