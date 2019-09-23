@@ -1,6 +1,7 @@
 package com.xcheng.retrofit;
 
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import java.util.concurrent.Executor;
 
@@ -60,8 +61,11 @@ final class RealDownloadCall<T> implements DownloadCall<T> {
                 } catch (Throwable t) {
                     //如果为OptionalExecutor，不存在线程调度的情况下callXXX方法可能会在当前线程抛出异常
                     //会导致callFailure方法调用两次
+                    //参考okhttp3.RealCall
                     if (!signalledCallback) {
                         callFailure(t);
+                    } else {
+                        Log.w(RetrofitFactory.TAG, "Callback failure", t);
                     }
                 }
             }
