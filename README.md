@@ -18,7 +18,7 @@ retrofit-helper
 
   - 2.1  丰富回调接口
 
-     监听开始、成功、失败、结束等
+     监听开始、成功、失败、结束等。[点击查看详解](https://www.jianshu.com/p/aeea4fe91102)
 
     ```java
     public interface Callback<T> {
