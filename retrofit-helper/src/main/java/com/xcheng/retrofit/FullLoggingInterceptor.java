@@ -90,6 +90,6 @@ public final class FullLoggingInterceptor implements Interceptor {
             }
         } catch (JSONException ignore) {
         }
-        builder.append(message).append("\n");
+        builder.append(message).append('\n');
     }
 }
