@@ -34,7 +34,7 @@ import okhttp3.logging.HttpLoggingInterceptor.Logger;
 /**
  * 创建时间：2019/9/25
  * 编写人： chengxin
- * 功能描述：打印完整的日志，防止多线程情况下导致的日志分散的问题
+ * 功能描述：打印完整的日志，防止多线程情况下导致的日志分散错乱的问题
  */
 public final class FullLoggingInterceptor implements Interceptor {
     private static final int JSON_INDENT = 2;
