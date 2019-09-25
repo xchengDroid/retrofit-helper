@@ -245,7 +245,7 @@ retrofit-helper
 
     效果图
 
-    <img src="/Users/chengxin/Library/Application Support/typora-user-images/image-20190925180447009.png" alt="image-20190925180447009" style="zoom:50%;" />
+    ![日志](https://github.com/xchengDroid/retrofit-helper/blob/master/screenshots/logstyle.png)
 
     
 
