@@ -20,7 +20,7 @@ public interface OnEventListener {
 
         @Override
         public void onThrowable(Call<?> call, Throwable t) {
-            Log.w(RetrofitFactory.TAG, "onThrowable", t);
+            Log.w(RetrofitFactory.TAG, "onThrowable-->\n" + Utils.getStackTraceString(t));
         }
     };
 
