@@ -15,6 +15,7 @@
  */
 package com.xcheng.retrofit;
 
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import org.json.JSONArray;
@@ -24,6 +25,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 
 import okhttp3.Interceptor;
+import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.logging.HttpLoggingInterceptor;
 import okhttp3.logging.HttpLoggingInterceptor.Level;
@@ -36,6 +38,7 @@ import okhttp3.logging.HttpLoggingInterceptor.Logger;
  */
 public final class FullLoggingInterceptor implements Interceptor {
     private static final int JSON_INDENT = 2;
+    public static final String LOG_LEVEL = "LogLevel";
     private final Logger logger;
     private volatile Level level = Level.NONE;
 
@@ -69,18 +72,37 @@ public final class FullLoggingInterceptor implements Interceptor {
                 append(builder, message);
             }
         });
-        httpLoggingInterceptor.setLevel(level);
+        //可以单独为某个请求设置日志的级别，避免全局设置的局限性
+        httpLoggingInterceptor.setLevel(findLevel(chain.request()));
         Response response = httpLoggingInterceptor.intercept(chain);
         logger.log(builder.toString());
         return response;
     }
 
-    private void append(StringBuilder builder, String message) {
-        // 以{}或者[]形式的说明是响应结果的json数据，需要进行格式化
+    @NonNull
+    private Level findLevel(Request request) {
+        //可以单独为某个请求设置日志的级别，避免全局设置的局限性
+        String logLevel = request.header(LOG_LEVEL);
+        if (logLevel != null) {
+            if (logLevel.equalsIgnoreCase("NONE")) {
+                return Level.NONE;
+            } else if (logLevel.equalsIgnoreCase("BASIC")) {
+                return Level.BASIC;
+            } else if (logLevel.equalsIgnoreCase("HEADERS")) {
+                return Level.HEADERS;
+            } else if (logLevel.equalsIgnoreCase("BODY")) {
+                return Level.BODY;
+            }
+        }
+        return level;
+    }
+
+    private static void append(StringBuilder builder, String message) {
         if (TextUtils.isEmpty(message)) {
             return;
         }
         try {
+            // 以{}或者[]形式的说明是响应结果的json数据，需要进行格式化
             if (message.startsWith("{") && message.endsWith("}")) {
                 JSONObject jsonObject = new JSONObject(message);
                 message = jsonObject.toString(JSON_INDENT);
