@@ -38,7 +38,7 @@ import okhttp3.logging.HttpLoggingInterceptor.Logger;
  */
 public final class FullLoggingInterceptor implements Interceptor {
     private static final int JSON_INDENT = 2;
-    public static final String LOG_LEVEL = "LogLevel";
+    private static final String LOG_LEVEL = "LogLevel";
     private final Logger logger;
     private volatile Level level = Level.NONE;
 
@@ -110,7 +110,7 @@ public final class FullLoggingInterceptor implements Interceptor {
                 JSONArray jsonArray = new JSONArray(message);
                 message = jsonArray.toString(JSON_INDENT);
             }
-        } catch (JSONException ignore) {
+        } catch (JSONException ignored) {
         }
         builder.append(message).append('\n');
     }
