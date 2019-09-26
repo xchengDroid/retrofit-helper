@@ -154,6 +154,15 @@ retrofit-helper
     ​       在回调函数处监听下载进度，避免通过Interceptor监听影响灵活性。注意需要在构建retrofit是添加 `DownloadCallAdapterFactory.INSTANCE`
 
     ```java
+    //日志框架，可支持单独设置某个请求的日志级别，下文有详解
+    FullLoggingInterceptor fullLoggingInterceptor = new FullLoggingInterceptor(new HttpLoggingInterceptor.Logger() {
+        @Override
+        public void log(String message) {
+            Logger.d(message);
+        }
+    });
+    
+    fullLoggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
     OkHttpClient client = new OkHttpClient.Builder()
             .addNetworkInterceptor(fullLoggingInterceptor)
             .build();
@@ -167,8 +176,9 @@ retrofit-helper
     ```
 
     ```java
-    //下载文件
+    //下载文件,大文件下防止内存溢出添加此注解
     @Streaming
+    //防止打印文件导致内存溢出，单独设置日志级别
     @Headers("LogLevel:BASIC")
     @GET("http://shouji.360tpcdn.com/181115/4dc46bd86bef036da927bc59680f514f/com.ss.android.ugc.aweme_330.apk")
     DownloadCall<File> loadDouYinApk();
@@ -234,10 +244,10 @@ retrofit-helper
     单独指定某个请求的日志级别 @Headers("LogLevel:NONE") 或 @Headers("LogLevel:BASIC") 或 @Headers("LogLevel:HEADERS") 或@Headers("LogLevel:BODY")
 
     ```
-    //    @Headers("LogLevel:NONE")
-    //    @Headers("LogLevel:HEADERS")
-    //    @Headers("LogLevel:BODY")
-        @Headers("LogLevel:BASIC")
+    //  @Headers("LogLevel:NONE")
+    //  @Headers("LogLevel:HEADERS")
+    //  @Headers("LogLevel:BASIC")
+        @Headers("LogLevel:BODY")
         @FormUrlEncoded
         @POST("user/login")
         Call<LoginInfo> getLogin(@Field("username") String username, @Field("password") String password);
