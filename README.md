@@ -71,7 +71,7 @@ retrofit-helper
     
     请求接口
     
-    ```
+    ```java
     @FormUrlEncoded
     @POST("user/login")
     Call<LoginInfo> getLogin(@Field("username") String username, @Field("password") String password);
@@ -243,7 +243,7 @@ retrofit-helper
 
     单独指定某个请求的日志级别 @Headers("LogLevel:NONE") 或 @Headers("LogLevel:BASIC") 或 @Headers("LogLevel:HEADERS") 或@Headers("LogLevel:BODY")
 
-    ```
+    ```java
     //  @Headers("LogLevel:NONE")
     //  @Headers("LogLevel:HEADERS")
     //  @Headers("LogLevel:BASIC")
