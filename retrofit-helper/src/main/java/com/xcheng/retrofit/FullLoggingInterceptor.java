@@ -53,6 +53,7 @@ public final class FullLoggingInterceptor implements Interceptor {
     /**
      * Change the level at which this interceptor logs.
      */
+    @SuppressWarnings("UnusedReturnValue")
     public FullLoggingInterceptor setLevel(Level level) {
         if (level == null) throw new NullPointerException("level == null. Use Level.NONE instead.");
         this.level = level;
