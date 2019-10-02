@@ -1,6 +1,8 @@
 package com.xcheng.retrofit;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.util.Log;
 
 import java.net.ConnectException;
 import java.net.SocketException;
@@ -52,5 +54,12 @@ public abstract class DefaultCallback<T> implements Callback<T> {
     @Override
     public T transform(Call<T> call, T t) {
         return t;
+    }
+
+    @Override
+    public void onCompleted(Call<T> call, @Nullable Throwable t) {
+        if (t != null) {
+            Log.w(RetrofitFactory.TAG, "onCompleted-->\n" + Utils.getStackTraceString(t));
+        }
     }
 }

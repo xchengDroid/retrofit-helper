@@ -3,6 +3,7 @@ package com.xcheng.retrofit;
 import android.arch.lifecycle.Lifecycle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -117,7 +118,7 @@ final class RealLifeCall<T> implements LifeCall<T> {
                 || event == Lifecycle.Event.ON_ANY) {
             if (once.compareAndSet(false, true)/*保证原子性*/) {
                 delegate.cancel();
-                RetrofitFactory.getOnEventListener().onDisposed(delegate, event);
+                Log.d(RetrofitFactory.TAG, "disposed by-->" + event + ", " + delegate.request());
             }
         }
     }

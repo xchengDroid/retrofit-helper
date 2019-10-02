@@ -27,6 +27,7 @@ public abstract class AnimCallback<T> extends DefaultCallback<T> {
 
     @Override
     public void onCompleted(Call<T> call, @Nullable Throwable t) {
+        super.onCompleted(call, t);
         if (mLoadingView != null)
             mLoadingView.hideLoading();
     }

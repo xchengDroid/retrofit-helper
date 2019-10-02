@@ -21,17 +21,12 @@ final class RealCall<T> implements Call<T> {
     @NonNull
     @Override
     public T execute() throws Throwable {
-        try {
-            Response<T> response = delegate.execute();
-            T body = response.body();
-            if (body != null) {
-                return body;
-            }
-            throw new HttpException(response);
-        } catch (Throwable t) {
-            RetrofitFactory.getOnEventListener().onThrowable(RealCall.this, t);
-            throw t;
+        Response<T> response = delegate.execute();
+        T body = response.body();
+        if (body != null) {
+            return body;
         }
+        throw new HttpException(response);
     }
 
     @Override
@@ -83,7 +78,6 @@ final class RealCall<T> implements Call<T> {
                         callback.onCompleted(RealCall.this, t);
                     }
                 });
-                RetrofitFactory.getOnEventListener().onThrowable(RealCall.this, t);
             }
         });
     }
