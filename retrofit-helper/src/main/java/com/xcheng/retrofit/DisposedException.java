@@ -27,6 +27,6 @@ public class DisposedException extends IOException {
     }
 
     private static String getMessage(Lifecycle.Event lastEvent) {
-        return "Already disposed, lastEvent is " + lastEvent + ".";
+        return "Already disposed, lastEvent is " + lastEvent;
     }
 }
