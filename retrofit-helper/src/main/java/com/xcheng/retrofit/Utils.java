@@ -3,7 +3,6 @@ package com.xcheng.retrofit;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import java.io.Closeable;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -17,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 import okhttp3.ResponseBody;
+import okhttp3.internal.Util;
 
 /**
  * 创建时间：2018/4/8
@@ -61,21 +61,6 @@ public class Utils {
      */
     public static <T> List<T> immutableList(List<T> list) {
         return Collections.unmodifiableList(new ArrayList<>(list));
-    }
-
-    /**
-     * Closes {@code closeable}, ignoring any checked exceptions. Does nothing if {@code closeable} is
-     * null.
-     */
-    public static void closeQuietly(Closeable closeable) {
-        if (closeable != null) {
-            try {
-                closeable.close();
-            } catch (RuntimeException rethrown) {
-                throw rethrown;
-            } catch (Exception ignored) {
-            }
-        }
     }
 
     public static String getStackTraceString(Throwable tr) {
@@ -149,7 +134,7 @@ public class Utils {
         } catch (IOException e) {
             throw new IOException(e.getMessage());
         } finally {
-            closeQuietly(fos);
+            Util.closeQuietly(fos);
         }
     }
 }
