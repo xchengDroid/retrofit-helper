@@ -15,6 +15,10 @@ final class RealLifeCall<T> implements LifeCall<T> {
      * like rxAndroid MainThreadDisposable or rxJava ObservableUnsubscribeOn, IoScheduler
      */
     private final AtomicBoolean once = new AtomicBoolean();
+    /**
+     * 保存最后一次生命周期事件
+     */
+    private volatile Lifecycle.Event lastEvent;
 
     RealLifeCall(Call<T> delegate, Lifecycle.Event event, LifecycleProvider provider) {
         this.delegate = delegate;
@@ -68,10 +72,8 @@ final class RealLifeCall<T> implements LifeCall<T> {
 
             @Override
             public void onCompleted(Call<T> call, @Nullable Throwable t) {
-                if (!isDisposed()) {
-                    callback.onCompleted(call, t);
-                    provider.removeObserver(RealLifeCall.this);
-                }
+                callback.onCompleted(call, isDisposed() ? disposedException(t) : t);
+                provider.removeObserver(RealLifeCall.this);
             }
         });
     }
@@ -81,27 +83,33 @@ final class RealLifeCall<T> implements LifeCall<T> {
     public T execute() throws Throwable {
         try {
             if (isDisposed()) {
-                throw new DisposedException("Already disposed.");
+                throw disposedException(null);
             }
             T body = delegate.execute();
             if (isDisposed()) {
-                throw new DisposedException("Already disposed.");
+                throw disposedException(null);
             }
             return body;
         } catch (Throwable t) {
             if (isDisposed() && !(t instanceof DisposedException)) {
-                throw new DisposedException("Already disposed.", t);
+                throw disposedException(t);
             }
             throw t;
         } finally {
-            if (!isDisposed()) {
-                provider.removeObserver(this);
-            }
+            provider.removeObserver(this);
         }
+    }
+
+    private DisposedException disposedException(@Nullable Throwable th) {
+        //like okhttp RealCall#timeoutExit
+        return new DisposedException("Already disposed.", lastEvent, th);
     }
 
     @Override
     public void onChanged(@NonNull Lifecycle.Event event) {
+        if (event != Lifecycle.Event.ON_ANY) {
+            lastEvent = event;
+        }
         if (this.event == event
                 || event == Lifecycle.Event.ON_DESTROY
                 //Activity和Fragment的生命周期是不会传入 {@code Lifecycle.Event.ON_ANY},
@@ -110,7 +118,6 @@ final class RealLifeCall<T> implements LifeCall<T> {
             if (once.compareAndSet(false, true)/*保证原子性*/) {
                 delegate.cancel();
                 RetrofitFactory.getOnEventListener().onDisposed(delegate, event);
-                provider.removeObserver(this);
             }
         }
     }

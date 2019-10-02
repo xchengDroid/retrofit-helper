@@ -14,7 +14,7 @@ public class DisposedException extends IOException {
     /**
      * 保存抛出异常前的最后一次生命周期事件
      */
-    private final Lifecycle.Event lastEvent;
+    public final Lifecycle.Event lastEvent;
 
     DisposedException(String message, Lifecycle.Event lastEvent) {
         super(message);
