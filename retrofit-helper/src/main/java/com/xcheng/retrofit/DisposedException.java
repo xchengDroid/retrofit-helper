@@ -16,13 +16,17 @@ public class DisposedException extends IOException {
      */
     public final Lifecycle.Event lastEvent;
 
-    DisposedException(String message, Lifecycle.Event lastEvent) {
-        super(message);
+    DisposedException(Lifecycle.Event lastEvent) {
+        super(getMessage(lastEvent));
         this.lastEvent = lastEvent;
     }
 
-    DisposedException(String message, Lifecycle.Event lastEvent, Throwable cause) {
-        super(message, cause);
+    DisposedException(Lifecycle.Event lastEvent, Throwable cause) {
+        super(getMessage(lastEvent), cause);
         this.lastEvent = lastEvent;
+    }
+
+    private static String getMessage(Lifecycle.Event lastEvent) {
+        return "Already disposed, lastEvent is " + lastEvent + ".";
     }
 }

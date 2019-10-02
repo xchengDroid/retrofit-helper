@@ -101,9 +101,9 @@ final class RealLifeCall<T> implements LifeCall<T> {
         }
     }
 
-    private DisposedException disposedException(@Nullable Throwable th) {
+    private DisposedException disposedException(@Nullable Throwable cause) {
         //like okhttp RealCall#timeoutExit
-        return new DisposedException("Already disposed.", lastEvent, th);
+        return new DisposedException(lastEvent, cause);
     }
 
     @Override
