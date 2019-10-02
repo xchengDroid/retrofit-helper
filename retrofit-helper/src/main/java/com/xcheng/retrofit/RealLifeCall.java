@@ -73,7 +73,8 @@ final class RealLifeCall<T> implements LifeCall<T> {
 
             @Override
             public void onCompleted(Call<T> call, @Nullable Throwable t) {
-                callback.onCompleted(call, isDisposed() ? disposedException(t) : t);
+                //like okhttp RealCall#timeoutExit
+                callback.onCompleted(call, isDisposed() ? new DisposedException(lastEvent, t) : t);
                 provider.removeObserver(RealLifeCall.this);
             }
         });
@@ -84,26 +85,21 @@ final class RealLifeCall<T> implements LifeCall<T> {
     public T execute() throws Throwable {
         try {
             if (isDisposed()) {
-                throw disposedException(null);
+                throw new DisposedException(lastEvent);
             }
             T body = delegate.execute();
             if (isDisposed()) {
-                throw disposedException(null);
+                throw new DisposedException(lastEvent);
             }
             return body;
         } catch (Throwable t) {
             if (isDisposed() && !(t instanceof DisposedException)) {
-                throw disposedException(t);
+                throw new DisposedException(lastEvent, t);
             }
             throw t;
         } finally {
             provider.removeObserver(this);
         }
-    }
-
-    private DisposedException disposedException(@Nullable Throwable cause) {
-        //like okhttp RealCall#timeoutExit
-        return new DisposedException(lastEvent, cause);
     }
 
     @Override
