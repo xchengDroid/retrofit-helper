@@ -1,5 +1,7 @@
 package com.xcheng.retrofit;
 
+import android.arch.lifecycle.Lifecycle;
+
 import java.io.IOException;
 
 /**
@@ -9,12 +11,18 @@ import java.io.IOException;
  */
 public class DisposedException extends IOException {
     private static final long serialVersionUID = 7699927425836702496L;
+    /**
+     * 保存抛出异常前的最后一次生命周期事件
+     */
+    private final Lifecycle.Event lastEvent;
 
-    DisposedException(String message) {
+    DisposedException(String message, Lifecycle.Event lastEvent) {
         super(message);
+        this.lastEvent = lastEvent;
     }
 
-    DisposedException(String message, Throwable cause) {
+    DisposedException(String message, Lifecycle.Event lastEvent, Throwable cause) {
         super(message, cause);
+        this.lastEvent = lastEvent;
     }
 }
