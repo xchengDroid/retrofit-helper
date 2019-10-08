@@ -29,4 +29,8 @@ public class DisposedException extends IOException {
     private static String getMessage(Lifecycle.Event lastEvent) {
         return "Already disposed, lastEvent is " + lastEvent;
     }
+
+    public boolean isDestroyed() {
+        return lastEvent == Lifecycle.Event.ON_DESTROY;
+    }
 }
