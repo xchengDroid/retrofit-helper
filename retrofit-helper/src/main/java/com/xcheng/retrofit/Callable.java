@@ -20,6 +20,7 @@ public interface Callable<T> {
      * @throws retrofit2.HttpException if {@link Response#body()} is null
      * @throws java.io.IOException     if a problem occurred talking to the server.
      * @throws RuntimeException        (and subclasses) if an unexpected error occurs creating the request
+     *                                 or decoding the response.
      */
     @NonNull
     T execute() throws Throwable;
