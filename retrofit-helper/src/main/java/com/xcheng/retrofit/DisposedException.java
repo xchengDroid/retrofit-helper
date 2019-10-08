@@ -1,6 +1,7 @@
 package com.xcheng.retrofit;
 
 import android.arch.lifecycle.Lifecycle;
+import android.support.annotation.Nullable;
 
 import java.io.IOException;
 
@@ -30,7 +31,10 @@ public class DisposedException extends IOException {
         return "Already disposed, lastEvent is " + lastEvent;
     }
 
-    public boolean isDestroyed() {
-        return lastEvent == Lifecycle.Event.ON_DESTROY;
+    public static boolean isDestroyed(@Nullable Throwable t) {
+        if (t instanceof DisposedException) {
+            return ((DisposedException) t).lastEvent == Lifecycle.Event.ON_DESTROY;
+        }
+        return false;
     }
 }
