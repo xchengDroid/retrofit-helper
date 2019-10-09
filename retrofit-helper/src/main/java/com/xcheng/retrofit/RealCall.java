@@ -115,7 +115,7 @@ final class RealCall<T> implements Call<T> {
         if (event == Lifecycle.Event.ON_ANY) {
             throw new IllegalArgumentException("ON_ANY event is not allowed.");
         }
-        return new RealLifeCall<>(clone(), event, provider);
+        return new RealLifeCall<>(clone(),callbackExecutor, event, provider);
     }
 
     @Override

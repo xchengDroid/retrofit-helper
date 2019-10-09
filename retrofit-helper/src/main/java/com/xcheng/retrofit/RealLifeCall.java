@@ -5,10 +5,12 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 final class RealLifeCall<T> implements LifeCall<T> {
     private final Call<T> delegate;
+    private final Executor callbackExecutor;
     private final Lifecycle.Event event;
     private final LifecycleProvider provider;
     /**
@@ -21,8 +23,10 @@ final class RealLifeCall<T> implements LifeCall<T> {
      */
     private volatile Lifecycle.Event lastEvent;
 
-    RealLifeCall(Call<T> delegate, Lifecycle.Event event, LifecycleProvider provider) {
+    RealLifeCall(Call<T> delegate, Executor callbackExecutor,
+                 Lifecycle.Event event, LifecycleProvider provider) {
         this.delegate = delegate;
+        this.callbackExecutor = callbackExecutor;
         this.event = event;
         this.provider = provider;
         provider.observe(this);
@@ -31,6 +35,17 @@ final class RealLifeCall<T> implements LifeCall<T> {
     @Override
     public void enqueue(final Callback<T> callback) {
         Utils.checkNotNull(callback, "callback==null");
+        if (isDisposed()) {
+            //如果释放了请求直接回调onCompleted方法，保持和execute方法一致
+            callbackExecutor.execute(new Runnable() {
+                @Override
+                public void run() {
+                    callback.onCompleted(delegate, new DisposedException(lastEvent));
+                    provider.removeObserver(RealLifeCall.this);
+                }
+            });
+            return;
+        }
         delegate.enqueue(new Callback<T>() {
             @Override
             public void onStart(Call<T> call) {
