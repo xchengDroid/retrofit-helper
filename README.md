@@ -356,15 +356,14 @@ retrofit-helper
 
   - 4.2 `Callback`的回调函数均在主线程执行，如果Call绑定了生命周期触发了`cancel()`方法
 
-    UI回调方法均不会执行，如果要监听那些请求被取消了，可以设置`RetrofitFactory.LISTENER`属性，其为一个全局的监听器`OnEventListener`。
+    UI回调方法均不会执行，如果要监听那些请求被取消了，可以通过`onCompleted(Call<T> call, @Nullable Throwable t)` 回调中 t是否为 `DisposedException`来判断
     
-    
-
+  
 - #### 4.下载
 
   ```groovy
   dependencies {
-       implementation 'com.xcheng:retrofit-helper:1.6.0'
+       implementation 'com.xcheng:retrofit-helper:1.6.1'
   }
   ```
   
