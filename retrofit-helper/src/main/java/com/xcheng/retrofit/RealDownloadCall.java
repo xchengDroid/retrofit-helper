@@ -62,6 +62,7 @@ final class RealDownloadCall<T> implements DownloadCall<T> {
                     //如果为OptionalExecutor，不存在线程调度的情况下callXXX方法可能会在当前线程抛出异常
                     //会导致callFailure方法调用两次
                     //参考okhttp3.RealCall
+                    //参考 FutureTask#run方法ran标记
                     if (!signalledCallback) {
                         callFailure(t);
                     } else {
