@@ -52,7 +52,10 @@ public class MainActivity extends EasyActivity {
     }
 
     public void login(View view) {
-        //多个版本导致debug乱跳
+        //多个版本依赖冲突，debug源码引入导致乱跳
+        //2.1.0才有的有参构造 这样api不一致可以看出打包到底是引入哪个依赖
+        //  MutableLiveData<String> liveData = new MutableLiveData<>("123213");
+        //2.0.0
         MutableLiveData<String> liveData = new MutableLiveData<>();
         liveData.setValue("1212");
         for (int index = 0; index < 1; index++) {
