@@ -36,8 +36,8 @@ android {
 dependencies {
     api fileTree(dir: 'libs', include: ['*.jar'])
     //noinspection GradleDependency
-    compileOnly 'androidx.annotation:annotation:1.0.0'
-    compileOnly 'androidx.lifecycle:lifecycle-common:2.0.0'
+    compileOnly 'androidx.annotation:annotation:1.1.0'
+    compileOnly 'androidx.lifecycle:lifecycle-common:2.1.0'
     api 'com.squareup.retrofit2:retrofit:2.9.0'
     api 'com.squareup.okhttp3:logging-interceptor:3.14.9'
 
