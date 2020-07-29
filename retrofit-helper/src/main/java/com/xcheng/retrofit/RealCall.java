@@ -88,6 +88,7 @@ final class RealCall<T> implements Call<T> {
     public void enqueue(LifecycleOwner owner, Lifecycle.Event event, Callback<T> callback) {
         Utils.checkNotNull(owner, "owner==null");
         Utils.checkNotNull(event, "event==null");
+        Utils.checkNotNull(callback, "callback==null");
         enqueue(new LifecycleCallback<>(this, callback, owner, event));
     }
 
