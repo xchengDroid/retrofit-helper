@@ -11,8 +11,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * 编写人： chengxin
  * 功能描述：生命周期回调
  */
-class LifecycleCallback<T> implements Callback<T>, LifecycleProvider.Observer {
-
+final class LifecycleCallback<T> implements Callback<T>, LifecycleProvider.Observer {
+    private final Call<T> call;
     private final Callback<T> delegate;
     private final LifecycleProvider provider;
     private final Lifecycle.Event event;
@@ -22,7 +22,8 @@ class LifecycleCallback<T> implements Callback<T>, LifecycleProvider.Observer {
      */
     private final AtomicBoolean once = new AtomicBoolean();
 
-    LifecycleCallback(@NonNull Callback<T> delegate, @NonNull LifecycleProvider provider, @NonNull Lifecycle.Event event) {
+    LifecycleCallback(Call<T> call, @NonNull Callback<T> delegate, @NonNull LifecycleProvider provider, @NonNull Lifecycle.Event event) {
+        this.call = call;
         this.delegate = delegate;
         this.provider = provider;
         this.event = event;
@@ -70,6 +71,7 @@ class LifecycleCallback<T> implements Callback<T>, LifecycleProvider.Observer {
 
     @Override
     public void onDispose(Lifecycle.Event event) {
+        call.cancel();
         delegate.onDispose(event);
         this.provider.removeObserver(this);
     }

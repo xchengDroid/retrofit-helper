@@ -6,7 +6,6 @@ import androidx.annotation.Nullable;
 import com.google.gson.JsonSyntaxException;
 import com.xcheng.retrofit.Call;
 import com.xcheng.retrofit.DefaultCallback;
-import com.xcheng.retrofit.DisposedException;
 import com.xcheng.retrofit.HttpError;
 import com.xcheng.view.controller.ILoadingView;
 
@@ -29,9 +28,6 @@ public abstract class AnimCallback<T> extends DefaultCallback<T> {
     @Override
     public void onCompleted(Call<T> call, @Nullable Throwable t) {
         super.onCompleted(call, t);
-        if (DisposedException.isDestroyed(t)) {
-            return;
-        }
         if (mLoadingView != null)
             mLoadingView.hideLoading();
     }

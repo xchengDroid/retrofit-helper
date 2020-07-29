@@ -15,7 +15,6 @@ import retrofit2.Response;
  * <li>JVM: Callbacks are executed on the background thread which performed the request.</li>
  * </ul>
  * <p>
- * if {@link LifeCall#isDisposed()} return true, all methods will not call exclude {@link #onCompleted(Call, Throwable)}
  *
  * @param <T> Successful response body type.
  */
@@ -49,8 +48,7 @@ public interface Callback<T> {
     void onDispose(Lifecycle.Event event);
 
     /**
-     * @param t 请求失败的错误信息，如果是 {@link DisposedException}代表请求被生命周期事件取消了，
-     *          {@link LifeCall#isDisposed()} 返回true
+     * @param t 请求失败的错误信息
      */
     void onCompleted(Call<T> call, @Nullable Throwable t);
 }

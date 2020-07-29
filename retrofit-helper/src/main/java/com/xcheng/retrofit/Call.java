@@ -28,7 +28,6 @@ public interface Call<T> extends Cloneable {
     /**
      * Synchronously send the request and return its response body.
      *
-     * @throws DisposedException       if {@link LifeCall} has been dispose
      * @throws retrofit2.HttpException if {@link Response#body()} is null
      * @throws java.io.IOException     if a problem occurred talking to the server.
      * @throws RuntimeException        (and subclasses) if an unexpected error occurs creating the request
