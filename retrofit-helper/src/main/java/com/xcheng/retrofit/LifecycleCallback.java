@@ -21,7 +21,6 @@ final class LifecycleCallback<T> implements Callback<T>, LifecycleObserver {
     private final LifecycleOwner owner;
     private final Lifecycle.Event event;
 
-
     /**
      * LifeCall是否被释放了
      * like rxAndroid MainThreadDisposable or rxJava ObservableUnsubscribeOn, IoScheduler
