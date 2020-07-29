@@ -29,6 +29,8 @@ android {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'androidx.appcompat:appcompat:1.1.0'
+    //解决appcompat导致的版本不一致的问题，高版本覆盖低版本
+    implementation "androidx.lifecycle:lifecycle-extensions:2.1.0"
     implementation project(':retrofit-helper')
     implementation 'com.google.code.gson:gson:2.8.5'
     implementation "com.xcheng:easyview:2.5.8"
