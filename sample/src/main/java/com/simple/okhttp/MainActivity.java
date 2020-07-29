@@ -56,7 +56,8 @@ public class MainActivity extends EasyActivity {
     public void login(View view) {
         for (int index = 0; index < 1; index++) {
             RetrofitFactory.create(ApiService.class)
-                    .getLogin("singleman", "123456")
+                    // .getLogin("singleman", "123456")
+                    .getLogin("user/login", "singleman", "123456")
                     .bindToLifecycle(provider, Lifecycle.Event.ON_DESTROY)
                     .enqueue(new AnimCallback<LoginInfo>(this) {
                         @Override

@@ -1,8 +1,14 @@
 apply plugin: 'com.android.library'
-apply plugin: 'com.novoda.bintray-release'
+apply plugin: 'com.github.dcendents.android-maven'
+group = 'com.github.xchengDroid'//必加，com.github.<用户名>(也就是你GtiHub上的地址)
 android {
-    compileSdkVersion 27
-    buildToolsVersion "27.0.3"
+    compileSdkVersion 28
+// INFO: The specified Android SDK Build Tools version (27.0.3) is ignored, as it is below the minimum supported version (28.0.3) for Android Gradle Plugin 3.5.4.
+//Android SDK Build Tools 28.0.3 will be used.
+//To suppress this warning, remove "buildToolsVersion '27.0.3'" from your build.gradle file, as each version of the Android Gradle Plugin now has a default version of the build tools.
+//Remove Build Tools version and sync project
+//Affected Modules: sample
+    buildToolsVersion "28.0.3"
     android {
         lintOptions {
             abortOnError false
@@ -10,7 +16,7 @@ android {
     }
     defaultConfig {
         minSdkVersion 14
-        targetSdkVersion 27
+        targetSdkVersion 28
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -21,6 +27,10 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 }
 
 dependencies {
@@ -28,17 +38,37 @@ dependencies {
     //noinspection GradleDependency
     compileOnly 'com.android.support:support-annotations:27.1.1'
     compileOnly 'android.arch.lifecycle:common:1.1.1'
-    api 'com.squareup.retrofit2:retrofit:2.6.1'
-    api 'com.squareup.okhttp3:logging-interceptor:3.12.0'
+    api 'com.squareup.retrofit2:retrofit:2.9.0'
+    api 'com.squareup.okhttp3:logging-interceptor:3.14.9'
 
 }
-//添加
-publish {
-    repoName = 'xcDroid'
-    userOrg = 'xcheng'//bintray.com用户名
-    groupId = 'com.xcheng'//jcenter上的路径
-    artifactId = 'retrofit-helper'//项目名称
-    publishVersion = '1.6.1'//版本号
-    desc = 'make retrofit more simple'//描述，不重要
-    website = 'https://github.com/xchengDroid/retrofit-helper'
+
+//---------------------------------------------下面的必加，加上下面的作用是在上传后会带上注释，不然会发现没有注释
+// 指定编码
+tasks.withType(JavaCompile) {
+    options.encoding = "UTF-8"
+}
+
+// 打包源码
+task sourcesJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier = 'sources'
+}
+
+task javadoc(type: Javadoc) {
+    failOnError false
+    source = android.sourceSets.main.java.sourceFiles
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+    classpath += configurations.compile
+}
+
+// 制作文档(Javadoc)
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives sourcesJar
+    archives javadocJar
 }

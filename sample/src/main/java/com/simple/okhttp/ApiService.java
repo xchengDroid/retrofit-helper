@@ -17,6 +17,7 @@ import retrofit2.http.GET;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
 import retrofit2.http.Streaming;
+import retrofit2.http.Url;
 
 /**
  * 创建时间：2018/4/8
@@ -31,6 +32,9 @@ public interface ApiService {
     // @Headers("BaseUrlName:baidu")
     @POST("user/login")
     Call<LoginInfo> getLogin(@Field("username") String username, @Field("password") String password);
+    @FormUrlEncoded
+    @POST
+    Call<LoginInfo> getLogin(@Url String url, @Field("username") String username, @Field("password") String password);
 
     //@FormUrlEncoded
     @POST("user/login")
