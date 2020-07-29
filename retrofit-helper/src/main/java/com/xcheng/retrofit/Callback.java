@@ -39,6 +39,12 @@ public interface Callback<T> {
     @NonNull
     T transform(Call<T> call, T t);
 
+    /**
+     * 过滤一次数据,如剔除List中的null等,默认可以返回t
+     */
+    @Nullable
+    T onFilter(Call<T> call, T t);
+
     void onError(Call<T> call, HttpError error);
 
     void onSuccess(Call<T> call, T t);
