@@ -2,6 +2,7 @@ package com.xcheng.retrofit;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
 
 import retrofit2.Response;
 
@@ -42,6 +43,7 @@ public interface Callback<T> {
     /**
      * 过滤一次数据,如剔除List中的null等,默认可以返回t
      */
+    @WorkerThread
     @Nullable
     T onFilter(Call<T> call, T t);
 
