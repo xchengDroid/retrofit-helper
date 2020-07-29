@@ -51,7 +51,6 @@ public class MainActivity extends EasyActivity {
                 return String.valueOf(value) + "%";
             }
         });
-
     }
 
     public void login(View view) {
@@ -59,8 +58,7 @@ public class MainActivity extends EasyActivity {
             RetrofitFactory.create(ApiService.class)
                     // .getLogin("singleman", "123456")
                     .getLogin("user/login", "singleman", "123456")
-                    .bindToLifecycle(provider, Lifecycle.Event.ON_DESTROY)
-                    .enqueue(new AnimCallback<LoginInfo>(this) {
+                    .enqueue(provider, Lifecycle.Event.ON_PAUSE, new AnimCallback<LoginInfo>(this) {
                         @Override
                         public void onError(Call<LoginInfo> call2, HttpError error) {
                             Toast.makeText(MainActivity.this, error.msg, Toast.LENGTH_SHORT).show();
@@ -78,8 +76,7 @@ public class MainActivity extends EasyActivity {
     public void wxarticle(View view) {
         RetrofitFactory.create(ApiService.class)
                 .getWXarticle()
-                .bindUntilDestroy(provider)
-                .enqueue(new AnimCallback<List<WXArticle>>(this) {
+                .enqueue(provider, new AnimCallback<List<WXArticle>>(this) {
                     @Override
                     public void onError(Call<List<WXArticle>> call, HttpError error) {
                         Toast.makeText(MainActivity.this, error.msg, Toast.LENGTH_SHORT).show();
@@ -96,8 +93,7 @@ public class MainActivity extends EasyActivity {
     public void article0(View view) {
         RetrofitFactory.create(ApiService.class)
                 .getArticle0()
-                .bindUntilDestroy(provider)
-                .enqueue(new AnimCallback<List<Article>>(this) {
+                .enqueue(provider, new AnimCallback<List<Article>>(this) {
                     @Override
                     public void onError(Call<List<Article>> call, HttpError error) {
                         Toast.makeText(MainActivity.this, error.msg, Toast.LENGTH_SHORT).show();
@@ -113,8 +109,7 @@ public class MainActivity extends EasyActivity {
     public void progress(View view) {
         RetrofitFactory.create(ApiService.class)
                 .getArticle0()
-                .bindUntilDestroy(provider)
-                .enqueue(new AnimCallback<List<Article>>(this) {
+                .enqueue(provider, new AnimCallback<List<Article>>(this) {
                     @Override
                     public void onError(Call<List<Article>> call2, HttpError error) {
                         Toast.makeText(MainActivity.this, error.msg, Toast.LENGTH_SHORT).show();

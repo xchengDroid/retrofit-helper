@@ -2,6 +2,7 @@ package com.xcheng.retrofit;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleOwner;
 
 import java.util.concurrent.Executor;
 
@@ -85,15 +86,15 @@ final class RealCall<T> implements Call<T> {
     }
 
     @Override
-    public void enqueue(LifecycleProvider provider, Lifecycle.Event event, Callback<T> callback) {
-        Utils.checkNotNull(provider, "provider==null");
+    public void enqueue(LifecycleOwner owner, Lifecycle.Event event, Callback<T> callback) {
+        Utils.checkNotNull(owner, "owner==null");
         Utils.checkNotNull(event, "event==null");
-        enqueue(new LifecycleCallback<>(this, callback, provider, event));
+        enqueue(new LifecycleCallback<>(this, callback, owner, event));
     }
 
     @Override
-    public void enqueue(LifecycleProvider provider, Callback<T> callback) {
-        enqueue(provider, Lifecycle.Event.ON_DESTROY, callback);
+    public void enqueue(LifecycleOwner owner, Callback<T> callback) {
+        enqueue(owner, Lifecycle.Event.ON_DESTROY, callback);
     }
 
     @Override

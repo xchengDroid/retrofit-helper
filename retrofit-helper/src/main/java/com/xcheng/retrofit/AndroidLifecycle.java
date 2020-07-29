@@ -18,6 +18,7 @@ import java.util.ArrayList;
  *
  * @see android.database.Observable
  */
+@Deprecated
 public final class AndroidLifecycle implements LifecycleProvider, LifecycleObserver {
     private final Object mLock = new Object();
 

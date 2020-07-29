@@ -3,6 +3,9 @@ package com.xcheng.retrofit;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleObserver;
+import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.OnLifecycleEvent;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -11,10 +14,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * 编写人： chengxin
  * 功能描述：生命周期回调
  */
-final class LifecycleCallback<T> implements Callback<T>, LifecycleProvider.Observer {
+final class LifecycleCallback<T> implements Callback<T>, LifecycleObserver {
     private final Call<T> call;
     private final Callback<T> delegate;
-    private final LifecycleProvider provider;
+    private final LifecycleOwner owner;
     private final Lifecycle.Event event;
     /**
      * LifeCall是否被释放了
@@ -22,12 +25,12 @@ final class LifecycleCallback<T> implements Callback<T>, LifecycleProvider.Obser
      */
     private final AtomicBoolean once = new AtomicBoolean();
 
-    LifecycleCallback(Call<T> call, @NonNull Callback<T> delegate, @NonNull LifecycleProvider provider, @NonNull Lifecycle.Event event) {
+    LifecycleCallback(Call<T> call, @NonNull Callback<T> delegate, @NonNull LifecycleOwner owner, @NonNull Lifecycle.Event event) {
         this.call = call;
         this.delegate = delegate;
-        this.provider = provider;
+        this.owner = owner;
         this.event = event;
-        this.provider.observe(this);
+        this.owner.getLifecycle().addObserver(this);
     }
 
     @Override
@@ -73,19 +76,19 @@ final class LifecycleCallback<T> implements Callback<T>, LifecycleProvider.Obser
     public void onDispose(Lifecycle.Event event) {
         call.cancel();
         delegate.onDispose(event);
-        this.provider.removeObserver(this);
+        this.owner.getLifecycle().removeObserver(this);
     }
 
     @Override
     public void onCompleted(Call<T> call, @Nullable Throwable t) {
         if (!once.get()) {
             delegate.onCompleted(call, t);
-            this.provider.removeObserver(this);
+            this.owner.getLifecycle().removeObserver(this);
         }
     }
 
-    @Override
-    public void onChanged(@NonNull Lifecycle.Event event) {
+    @OnLifecycleEvent(Lifecycle.Event.ON_ANY)
+    void onChanged(@NonNull Lifecycle.Event event) {
         // 事件ordinal小于等于当前均 调用onDispose方法
         if (this.event.compareTo(event) <= 0 && once.compareAndSet(false, true)) {
             onDispose(event);
