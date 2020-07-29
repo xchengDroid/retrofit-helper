@@ -86,12 +86,14 @@ final class RealCall<T> implements Call<T> {
 
     @Override
     public void enqueue(LifecycleProvider provider, Lifecycle.Event event, Callback<T> callback) {
-
+        Utils.checkNotNull(provider, "provider==null");
+        Utils.checkNotNull(event, "event==null");
+        enqueue(new LifecycleCallback<>(callback, provider, event));
     }
 
     @Override
     public void enqueue(LifecycleProvider provider, Callback<T> callback) {
-
+        enqueue(provider, Lifecycle.Event.ON_DESTROY, callback);
     }
 
     @Override
@@ -118,20 +120,5 @@ final class RealCall<T> implements Call<T> {
     @Override
     public Request request() {
         return delegate.request();
-    }
-
-    @Override
-    public LifeCall<T> bindToLifecycle(LifecycleProvider provider, Lifecycle.Event event) {
-        Utils.checkNotNull(provider, "provider==null");
-        Utils.checkNotNull(event, "event==null");
-        if (event == Lifecycle.Event.ON_ANY) {
-            throw new IllegalArgumentException("ON_ANY event is not allowed.");
-        }
-        return new RealLifeCall<>(clone(), event, provider);
-    }
-
-    @Override
-    public LifeCall<T> bindUntilDestroy(LifecycleProvider provider) {
-        return bindToLifecycle(provider, Lifecycle.Event.ON_DESTROY);
     }
 }

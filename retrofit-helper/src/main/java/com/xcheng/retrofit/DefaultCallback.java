@@ -51,9 +51,9 @@ public abstract class DefaultCallback<T> implements Callback<T> {
         }
     }
 
-    @NonNull
+    @Nullable
     @Override
-    public T transform(Call<T> call, T t) {
+    public T onFilter(Call<T> call, T t) {
         return t;
     }
 
