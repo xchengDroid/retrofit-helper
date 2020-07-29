@@ -87,7 +87,7 @@ public abstract class BaseGsonConverter<T> implements Converter<ResponseBody, T>
     @Nullable
     @SuppressWarnings("unchecked")
     protected static <V> V convertBaseType(@Nullable Object data, Class<?> baseType) {
-        Utils.checkNotNull(baseType == null, "baseType==null");
+        Utils.checkNotNull(baseType, "baseType==null");
         if (data == null) {
             return null;
         }

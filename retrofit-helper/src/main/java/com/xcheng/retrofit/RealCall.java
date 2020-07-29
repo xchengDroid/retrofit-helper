@@ -75,8 +75,7 @@ final class RealCall<T> implements Call<T> {
                     @Override
                     public void run() {
                         HttpError error = callback.parseThrowable(RealCall.this, t);
-                        //noinspection ConstantConditions
-                        Utils.checkNotNull(error == null, "error==null");
+                        Utils.checkNotNull(error, "error==null");
                         callback.onError(RealCall.this, error);
                         callback.onCompleted(RealCall.this, t);
                     }
