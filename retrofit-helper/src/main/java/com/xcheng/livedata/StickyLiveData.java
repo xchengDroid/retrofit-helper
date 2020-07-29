@@ -1,4 +1,4 @@
-package com.xcheng.retrofit.livedata;
+package com.xcheng.livedata;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;

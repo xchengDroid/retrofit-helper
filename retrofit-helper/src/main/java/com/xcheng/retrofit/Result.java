@@ -8,8 +8,8 @@ import static com.xcheng.retrofit.Utils.checkNotNull;
 /**
  * An HTTP Result. like Retrofit,retrofit2.adapter.rxjava2.Result
  */
-public final class Result<T> {
-
+@Deprecated
+final class Result<T> {
     /**
      * @param body 请求成功返回的body
      * @throws NullPointerException if body==null
