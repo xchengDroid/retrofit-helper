@@ -9,6 +9,7 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.MutableLiveData;
 
 import com.simple.entity.Article;
 import com.simple.entity.LoginInfo;
@@ -51,6 +52,9 @@ public class MainActivity extends EasyActivity {
     }
 
     public void login(View view) {
+        //多个版本导致debug乱跳
+        MutableLiveData<String> liveData = new MutableLiveData<>();
+        liveData.setValue("1212");
         for (int index = 0; index < 1; index++) {
             RetrofitFactory.create(ApiService.class)
                     // .getLogin("singleman", "123456")
