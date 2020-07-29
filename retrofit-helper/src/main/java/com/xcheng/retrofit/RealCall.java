@@ -1,7 +1,7 @@
 package com.xcheng.retrofit;
 
-import androidx.lifecycle.Lifecycle;
 import androidx.annotation.NonNull;
+import androidx.lifecycle.Lifecycle;
 
 import java.util.concurrent.Executor;
 
@@ -42,8 +42,13 @@ final class RealCall<T> implements Call<T> {
             @Override
             public void onResponse(retrofit2.Call<T> call, Response<T> response) {
                 //response.isSuccessful() 不能保证 response.body() != null,反之可以
-                if (response.body() != null) {
-                    callSuccess(response.body());
+                T body = response.body();
+                if (body != null) {
+                    //过滤数据
+                    body = callback.onFilter(RealCall.this, body);
+                }
+                if (body != null) {
+                    callSuccess(body);
                 } else {
                     callFailure(new HttpException(response));
                 }
@@ -58,10 +63,7 @@ final class RealCall<T> implements Call<T> {
                 callbackExecutor.execute(new Runnable() {
                     @Override
                     public void run() {
-                        T transformer = callback.transform(RealCall.this, body);
-                        //noinspection ConstantConditions
-                        Utils.checkNotNull(transformer == null, "transformer==null");
-                        callback.onSuccess(RealCall.this, transformer);
+                        callback.onSuccess(RealCall.this, body);
                         callback.onCompleted(RealCall.this, null);
                     }
                 });
@@ -80,6 +82,16 @@ final class RealCall<T> implements Call<T> {
                 });
             }
         });
+    }
+
+    @Override
+    public void enqueue(LifecycleProvider provider, Lifecycle.Event event, Callback<T> callback) {
+
+    }
+
+    @Override
+    public void enqueue(LifecycleProvider provider, Callback<T> callback) {
+
     }
 
     @Override

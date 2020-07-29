@@ -3,6 +3,7 @@ package com.xcheng.retrofit;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
+import androidx.lifecycle.Lifecycle;
 
 import retrofit2.Response;
 
@@ -37,12 +38,6 @@ public interface Callback<T> {
     /**
      * 过滤一次数据,如剔除List中的null等,默认可以返回t
      */
-    @NonNull
-    T transform(Call<T> call, T t);
-
-    /**
-     * 过滤一次数据,如剔除List中的null等,默认可以返回t
-     */
     @WorkerThread
     @Nullable
     T onFilter(Call<T> call, T t);
@@ -50,6 +45,8 @@ public interface Callback<T> {
     void onError(Call<T> call, HttpError error);
 
     void onSuccess(Call<T> call, T t);
+
+    void onDispose(Lifecycle.Event event);
 
     /**
      * @param t 请求失败的错误信息，如果是 {@link DisposedException}代表请求被生命周期事件取消了，
