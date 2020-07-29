@@ -7,6 +7,8 @@ import androidx.annotation.CheckResult;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.xcheng.retrofit.Utils;
+
 /**
  * 创建时间：2020-05-19
  * 编写人： chengxin
@@ -30,10 +32,8 @@ public final class Result<T> {
      */
     @CheckResult
     public static <T> Result<T> body(@NonNull T body, @NonNull String msg) {
-        //noinspection ConstantConditions
-        if (body == null) { //二次检测防止为空
-            throw new NullPointerException("body==null");
-        }
+        //二次检测防止为空
+        Utils.checkNotNull(body, "body==null");
         return new Result<>(body, msg);
     }
 
