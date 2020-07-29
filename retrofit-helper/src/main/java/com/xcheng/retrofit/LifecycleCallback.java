@@ -86,7 +86,8 @@ final class LifecycleCallback<T> implements Callback<T>, LifecycleProvider.Obser
 
     @Override
     public void onChanged(@NonNull Lifecycle.Event event) {
-        if (this.event == event && once.compareAndSet(false, true)) {
+        // 事件ordinal小于等于当前均 调用onDispose方法
+        if (this.event.compareTo(event) <= 0 && once.compareAndSet(false, true)) {
             onDispose(event);
         }
     }
