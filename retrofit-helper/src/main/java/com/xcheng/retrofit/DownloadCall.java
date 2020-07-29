@@ -1,6 +1,6 @@
 package com.xcheng.retrofit;
 
-import android.support.annotation.FloatRange;
+import androidx.annotation.FloatRange;
 
 import okhttp3.Request;
 

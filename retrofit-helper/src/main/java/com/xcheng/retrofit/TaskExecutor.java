@@ -16,7 +16,7 @@
 
 package com.xcheng.retrofit;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 /**
  * A task executor that can divide tasks into logical groups.

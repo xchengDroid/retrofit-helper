@@ -1,6 +1,6 @@
 package com.xcheng.retrofit;
 
-import android.arch.lifecycle.Lifecycle;
+import androidx.lifecycle.Lifecycle;
 
 import okhttp3.Request;
 

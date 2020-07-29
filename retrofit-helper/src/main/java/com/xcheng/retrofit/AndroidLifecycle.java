@@ -1,13 +1,14 @@
 package com.xcheng.retrofit;
 
-import android.arch.lifecycle.Lifecycle;
-import android.arch.lifecycle.LifecycleObserver;
-import android.arch.lifecycle.LifecycleOwner;
-import android.arch.lifecycle.OnLifecycleEvent;
-import android.support.annotation.GuardedBy;
-import android.support.annotation.MainThread;
-import android.support.annotation.Nullable;
 import android.util.Log;
+
+import androidx.annotation.GuardedBy;
+import androidx.annotation.MainThread;
+import androidx.annotation.Nullable;
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleObserver;
+import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.OnLifecycleEvent;
 
 import java.util.ArrayList;
 

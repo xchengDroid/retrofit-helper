@@ -1,7 +1,7 @@
 package com.xcheng.retrofit;
 
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import retrofit2.Response;
 

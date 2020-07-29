@@ -1,8 +1,8 @@
 package com.xcheng.retrofit;
 
-import android.arch.lifecycle.Lifecycle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.lifecycle.Lifecycle;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 /**
  * 创建时间：2019-08-29

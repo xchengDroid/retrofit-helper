@@ -3,7 +3,7 @@ package com.xcheng.retrofit;
 import android.annotation.SuppressLint;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;

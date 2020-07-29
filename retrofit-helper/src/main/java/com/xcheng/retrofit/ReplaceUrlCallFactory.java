@@ -1,8 +1,9 @@
 package com.xcheng.retrofit;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.util.Log;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import okhttp3.Call;
 import okhttp3.HttpUrl;

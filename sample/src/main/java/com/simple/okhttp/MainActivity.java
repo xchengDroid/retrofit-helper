@@ -1,13 +1,14 @@
 package com.simple.okhttp;
 
-import android.arch.lifecycle.Lifecycle;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
+
+import androidx.annotation.Nullable;
+import androidx.lifecycle.Lifecycle;
 
 import com.simple.entity.Article;
 import com.simple.entity.LoginInfo;

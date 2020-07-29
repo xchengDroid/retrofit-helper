@@ -1,7 +1,7 @@
 package com.xcheng.retrofit;
 
-import android.support.annotation.CheckResult;
-import android.support.annotation.Nullable;
+import androidx.annotation.CheckResult;
+import androidx.annotation.Nullable;
 
 import static com.xcheng.retrofit.Utils.checkNotNull;
 

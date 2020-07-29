@@ -1,7 +1,7 @@
 package com.xcheng.retrofit;
 
-import android.arch.lifecycle.Lifecycle;
-import android.support.annotation.NonNull;
+import androidx.lifecycle.Lifecycle;
+import androidx.annotation.NonNull;
 
 import java.util.concurrent.Executor;
 

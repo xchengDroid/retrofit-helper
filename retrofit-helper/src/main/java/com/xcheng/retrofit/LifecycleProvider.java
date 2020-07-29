@@ -1,7 +1,7 @@
 package com.xcheng.retrofit;
 
-import android.arch.lifecycle.Lifecycle;
-import android.support.annotation.NonNull;
+import androidx.lifecycle.Lifecycle;
+import androidx.annotation.NonNull;
 
 /**
  * 统一分发Activity和 Fragment的生命周期时间.
@@ -26,7 +26,7 @@ public interface LifecycleProvider {
     void removeObserver(Observer observer);
 
     /**
-     * A simple callback that can receive from {@link android.arch.lifecycle.Lifecycle}
+     * A simple callback that can receive from {@link androidx.lifecycle.Lifecycle}
      */
     interface Observer {
         /**
