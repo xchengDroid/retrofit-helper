@@ -45,6 +45,11 @@ public interface Callback<T> {
 
     void onSuccess(Call<T> call, T t);
 
+    /**
+     * 因为生命周期取消订阅了
+     *
+     * @param event 生命周期事件
+     */
     void onDispose(Lifecycle.Event event);
 
     /**
