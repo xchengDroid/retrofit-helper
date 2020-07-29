@@ -88,7 +88,7 @@ final class LifecycleCallback<T> implements Callback<T>, LifecycleObserver {
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_ANY)
-    void onChanged(@NonNull Lifecycle.Event event) {
+    void onChanged(LifecycleOwner owner, @NonNull Lifecycle.Event event) {
         // 事件ordinal小于等于当前均 调用onDispose方法
         if (this.event.compareTo(event) <= 0 && once.compareAndSet(false, true)) {
             onDispose(event);
