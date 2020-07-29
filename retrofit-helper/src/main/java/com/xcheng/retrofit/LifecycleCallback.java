@@ -4,6 +4,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.Lifecycle;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 /**
  * 创建时间：2020-07-29
  * 编写人： chengxin
@@ -14,47 +16,76 @@ class LifecycleCallback<T> implements Callback<T>, LifecycleProvider.Observer {
     private final Callback<T> delegate;
     private final LifecycleProvider provider;
     private final Lifecycle.Event event;
+    /**
+     * LifeCall是否被释放了
+     * like rxAndroid MainThreadDisposable or rxJava ObservableUnsubscribeOn, IoScheduler
+     */
+    private final AtomicBoolean once = new AtomicBoolean();
 
-    public LifecycleCallback(Callback<T> delegate, LifecycleProvider provider, Lifecycle.Event event) {
+    LifecycleCallback(@NonNull Callback<T> delegate, @NonNull LifecycleProvider provider, @NonNull Lifecycle.Event event) {
         this.delegate = delegate;
         this.provider = provider;
         this.event = event;
+        this.provider.observe(this);
     }
 
     @Override
     public void onStart(Call<T> call) {
-        delegate.onStart(call);
+        if (!once.get()) {
+            delegate.onStart(call);
+        }
     }
 
     @NonNull
     @Override
     public HttpError parseThrowable(Call<T> call, Throwable t) {
-        return delegate.parseThrowable(call, t);
+        if (!once.get()) {
+            return delegate.parseThrowable(call, t);
+        }
+        return new HttpError("Already disposed.", t);
     }
 
-    @NonNull
+    @Nullable
     @Override
-    public T transform(Call<T> call, T t) {
-        return delegate.transform(call, t);
+    public T onFilter(Call<T> call, T t) {
+        if (!once.get()) {
+            return delegate.onFilter(call, t);
+        }
+        return t;
     }
 
     @Override
     public void onError(Call<T> call, HttpError error) {
-        delegate.onError(call, error);
+        if (!once.get()) {
+            delegate.onError(call, error);
+        }
     }
 
     @Override
     public void onSuccess(Call<T> call, T t) {
-        delegate.onSuccess(call, t);
+        if (!once.get()) {
+            delegate.onSuccess(call, t);
+        }
+    }
+
+    @Override
+    public void onDispose(Lifecycle.Event event) {
+        delegate.onDispose(event);
+        this.provider.removeObserver(this);
     }
 
     @Override
     public void onCompleted(Call<T> call, @Nullable Throwable t) {
-        delegate.onCompleted(call, t);
+        if (!once.get()) {
+            delegate.onCompleted(call, t);
+            this.provider.removeObserver(this);
+        }
     }
 
     @Override
     public void onChanged(@NonNull Lifecycle.Event event) {
-        
+        if (this.event == event && once.compareAndSet(false, true)) {
+            onDispose(event);
+        }
     }
 }
