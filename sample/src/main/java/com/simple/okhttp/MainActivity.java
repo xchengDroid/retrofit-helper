@@ -13,12 +13,10 @@ import androidx.lifecycle.Lifecycle;
 import com.simple.entity.Article;
 import com.simple.entity.LoginInfo;
 import com.simple.entity.WXArticle;
-import com.xcheng.retrofit.AndroidLifecycle;
 import com.xcheng.retrofit.Call;
 import com.xcheng.retrofit.DownloadCall;
 import com.xcheng.retrofit.DownloadCallback;
 import com.xcheng.retrofit.HttpError;
-import com.xcheng.retrofit.LifecycleProvider;
 import com.xcheng.retrofit.RetrofitFactory;
 import com.xcheng.retrofit.Utils;
 import com.xcheng.view.controller.EasyActivity;
@@ -32,7 +30,6 @@ import okhttp3.ResponseBody;
 
 public class MainActivity extends EasyActivity {
     ProgressView progressView;
-    LifecycleProvider provider = AndroidLifecycle.createLifecycleProvider(this);
 
     @Override
     public int getLayoutId() {
@@ -58,7 +55,7 @@ public class MainActivity extends EasyActivity {
             RetrofitFactory.create(ApiService.class)
                     // .getLogin("singleman", "123456")
                     .getLogin("user/login", "singleman", "123456")
-                    .enqueue(provider, Lifecycle.Event.ON_PAUSE, new AnimCallback<LoginInfo>(this) {
+                    .enqueue(this, Lifecycle.Event.ON_PAUSE, new AnimCallback<LoginInfo>(this) {
                         @Override
                         public void onError(Call<LoginInfo> call2, HttpError error) {
                             Toast.makeText(MainActivity.this, error.msg, Toast.LENGTH_SHORT).show();
@@ -76,7 +73,7 @@ public class MainActivity extends EasyActivity {
     public void wxarticle(View view) {
         RetrofitFactory.create(ApiService.class)
                 .getWXarticle()
-                .enqueue(provider, new AnimCallback<List<WXArticle>>(this) {
+                .enqueue(this, new AnimCallback<List<WXArticle>>(this) {
                     @Override
                     public void onError(Call<List<WXArticle>> call, HttpError error) {
                         Toast.makeText(MainActivity.this, error.msg, Toast.LENGTH_SHORT).show();
@@ -93,7 +90,7 @@ public class MainActivity extends EasyActivity {
     public void article0(View view) {
         RetrofitFactory.create(ApiService.class)
                 .getArticle0()
-                .enqueue(provider, new AnimCallback<List<Article>>(this) {
+                .enqueue(this, new AnimCallback<List<Article>>(this) {
                     @Override
                     public void onError(Call<List<Article>> call, HttpError error) {
                         Toast.makeText(MainActivity.this, error.msg, Toast.LENGTH_SHORT).show();
@@ -109,7 +106,7 @@ public class MainActivity extends EasyActivity {
     public void progress(View view) {
         RetrofitFactory.create(ApiService.class)
                 .getArticle0()
-                .enqueue(provider, new AnimCallback<List<Article>>(this) {
+                .enqueue(this, new AnimCallback<List<Article>>(this) {
                     @Override
                     public void onError(Call<List<Article>> call2, HttpError error) {
                         Toast.makeText(MainActivity.this, error.msg, Toast.LENGTH_SHORT).show();
@@ -165,5 +162,11 @@ public class MainActivity extends EasyActivity {
                         button.setText("下载完成");
                     }
                 });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        login(null);
     }
 }

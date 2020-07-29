@@ -1,5 +1,6 @@
 package com.xcheng.retrofit;
 
+import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.Lifecycle;
@@ -19,18 +20,28 @@ final class LifecycleCallback<T> implements Callback<T>, LifecycleObserver {
     private final Callback<T> delegate;
     private final LifecycleOwner owner;
     private final Lifecycle.Event event;
+
+
     /**
      * LifeCall是否被释放了
      * like rxAndroid MainThreadDisposable or rxJava ObservableUnsubscribeOn, IoScheduler
      */
     private final AtomicBoolean once = new AtomicBoolean();
 
+    @MainThread
     LifecycleCallback(Call<T> call, @NonNull Callback<T> delegate, @NonNull LifecycleOwner owner, @NonNull Lifecycle.Event event) {
         this.call = call;
         this.delegate = delegate;
         this.owner = owner;
         this.event = event;
-        this.owner.getLifecycle().addObserver(this);
+        if (owner.getLifecycle().getCurrentState() == Lifecycle.State.DESTROYED) {
+            //发起请求的时候Owner是否已经销毁了
+            //此时注册生命周期监听不会回调了onDestroy Event
+            once.set(true);
+            call.cancel();
+        } else {
+            owner.getLifecycle().addObserver(this);
+        }
     }
 
     @Override
