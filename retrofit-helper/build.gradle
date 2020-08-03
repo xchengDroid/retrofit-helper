@@ -1,4 +1,6 @@
 apply plugin: 'com.android.library'
+apply plugin: 'com.github.dcendents.android-maven'
+group = 'com.github.xchengDroid'//必加，com.github.<用户名>(也就是你GtiHub上的地址)
 android {
     compileSdkVersion 28
 // INFO: The specified Android SDK Build Tools version (27.0.3) is ignored, as it is below the minimum supported version (28.0.3) for Android Gradle Plugin 3.5.4.
