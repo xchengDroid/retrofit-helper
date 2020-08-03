@@ -24,19 +24,6 @@ import okhttp3.internal.Util;
  * 功能描述：retrofit2工具类
  */
 public class Utils {
-    public static <T> T checkNotNull(@Nullable T object, String message) {
-        if (object == null) {
-            throw new NullPointerException(message);
-        }
-        return object;
-    }
-
-    public static void checkState(final boolean expression, String message) {
-        if (!expression) {
-            throw new IllegalStateException(message);
-        }
-    }
-
     public static boolean isEmpty(Map<?, ?> map) {
         //因为它不能够确信加入到list中的值具有正确的类型。
         //意思是使用了一个未经处理的类型，它不能验证代码是类型安全的。

@@ -1,5 +1,7 @@
 package com.xcheng.retrofit;
 
+import java.util.Objects;
+
 import okhttp3.Call;
 import okhttp3.Request;
 
@@ -13,7 +15,7 @@ public abstract class CallFactoryProxy implements Call.Factory {
     protected final Call.Factory delegate;
 
     public CallFactoryProxy(Call.Factory delegate) {
-        Utils.checkNotNull(delegate, "delegate==null");
+        Objects.requireNonNull(delegate, "delegate==null");
         this.delegate = delegate;
     }
 }

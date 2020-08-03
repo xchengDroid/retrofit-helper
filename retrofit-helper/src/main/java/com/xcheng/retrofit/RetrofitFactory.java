@@ -1,6 +1,7 @@
 package com.xcheng.retrofit;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 import retrofit2.Retrofit;
@@ -29,7 +30,9 @@ public final class RetrofitFactory {
     public static <T> T create(Class<T> service) {
         //确保多线程的情况下retrofit不为空或者被修改了
         Retrofit retrofit = DEFAULT;
-        Utils.checkState(retrofit != null, "DEFAULT == null");
+        if (retrofit == null) {
+            throw new IllegalStateException("DEFAULT == null");
+        }
         return retrofit.create(service);
     }
 
@@ -37,10 +40,11 @@ public final class RetrofitFactory {
      * @param name 获取 OTHERS 中指定名字的retrofit
      */
     public static <T> T create(String name, Class<T> service) {
-        Utils.checkNotNull(name, "name == null");
+        Objects.requireNonNull(name, "name == null");
         Retrofit retrofit = OTHERS.get(name);
-        Utils.checkState(retrofit != null,
-                String.format("retrofit named with '%s' was not found , have you put it in OTHERS ?", name));
+        if (retrofit == null) {
+            throw new IllegalStateException(String.format("retrofit named with '%s' was not found , have you put it in OTHERS ?", name));
+        }
         return retrofit.create(service);
     }
 }

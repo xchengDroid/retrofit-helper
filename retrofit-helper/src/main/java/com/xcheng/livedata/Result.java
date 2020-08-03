@@ -7,7 +7,7 @@ import androidx.annotation.CheckResult;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.xcheng.retrofit.Utils;
+import java.util.Objects;
 
 /**
  * 创建时间：2020-05-19
@@ -32,8 +32,8 @@ public final class Result<T> {
      */
     @CheckResult
     public static <T> Result<T> body(@NonNull T body, @NonNull String msg) {
-        //二次检测防止为空
-        Utils.checkNotNull(body, "body==null");
+        //二次检测防止为空 like retrofit check
+        Objects.requireNonNull(body, "body==null");
         return new Result<>(body, msg);
     }
 

@@ -1,6 +1,7 @@
 package com.xcheng.retrofit;
 
 import java.io.IOException;
+import java.util.Objects;
 
 import okhttp3.MediaType;
 import okhttp3.ResponseBody;
@@ -18,7 +19,7 @@ public abstract class ProgressResponseBody extends ResponseBody {
     private BufferedSource bufferedSource;
 
     public ProgressResponseBody(ResponseBody delegate) {
-        Utils.checkNotNull(delegate, "delegate==null");
+        Objects.requireNonNull(delegate, "delegate==null");
         this.delegate = delegate;
     }
 

@@ -4,6 +4,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import java.util.Objects;
 import java.util.concurrent.Executor;
 
 import okhttp3.Request;
@@ -28,7 +29,7 @@ final class RealDownloadCall<T> implements DownloadCall<T> {
 
     @Override
     public void enqueue(final float increaseOfProgress, final DownloadCallback<T> callback) {
-        Utils.checkNotNull(callback, "callback==null");
+        Objects.requireNonNull(callback, "callback==null");
         delegate.enqueue(new retrofit2.Callback<ResponseBody>() {
             @Override
             public void onResponse(retrofit2.Call<ResponseBody> call, Response<ResponseBody> response) {

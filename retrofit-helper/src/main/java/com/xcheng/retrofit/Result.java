@@ -3,7 +3,7 @@ package com.xcheng.retrofit;
 import androidx.annotation.CheckResult;
 import androidx.annotation.Nullable;
 
-import static com.xcheng.retrofit.Utils.checkNotNull;
+import java.util.Objects;
 
 /**
  * An HTTP Result. like Retrofit,retrofit2.adapter.rxjava2.Result
@@ -16,7 +16,7 @@ final class Result<T> {
      */
     @CheckResult
     public static <T> Result<T> success(T body) {
-        checkNotNull(body, "body==null");
+        Objects.requireNonNull(body, "body==null");
         return new Result<>(body, null);
     }
 
@@ -26,7 +26,7 @@ final class Result<T> {
      */
     @CheckResult
     public static <T> Result<T> error(Throwable error) {
-        checkNotNull(error, "error==null");
+        Objects.requireNonNull(error, "error==null");
         return new Result<>(null, error);
     }
 

@@ -5,6 +5,7 @@ import androidx.annotation.Nullable;
 import org.json.JSONObject;
 
 import java.lang.reflect.Type;
+import java.util.Objects;
 
 import okhttp3.ResponseBody;
 import retrofit2.Converter;
@@ -87,7 +88,7 @@ public abstract class BaseGsonConverter<T> implements Converter<ResponseBody, T>
     @Nullable
     @SuppressWarnings("unchecked")
     protected static <V> V convertBaseType(@Nullable Object data, Class<?> baseType) {
-        Utils.checkNotNull(baseType, "baseType==null");
+        Objects.requireNonNull(baseType, "baseType==null");
         if (data == null) {
             return null;
         }

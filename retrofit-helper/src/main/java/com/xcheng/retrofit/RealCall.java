@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleOwner;
 
+import java.util.Objects;
 import java.util.concurrent.Executor;
 
 import okhttp3.Request;
@@ -32,7 +33,7 @@ final class RealCall<T> implements Call<T> {
 
     @Override
     public void enqueue(final Callback<T> callback) {
-        Utils.checkNotNull(callback, "callback==null");
+        Objects.requireNonNull(callback, "callback==null");
         callbackExecutor.execute(new Runnable() {
             @Override
             public void run() {
@@ -75,7 +76,7 @@ final class RealCall<T> implements Call<T> {
                     @Override
                     public void run() {
                         HttpError error = callback.parseThrowable(RealCall.this, t);
-                        Utils.checkNotNull(error, "error==null");
+                        Objects.requireNonNull(error, "error==null");
                         callback.onError(RealCall.this, error);
                         callback.onCompleted(RealCall.this, t);
                     }
@@ -86,9 +87,9 @@ final class RealCall<T> implements Call<T> {
 
     @Override
     public void enqueue(LifecycleOwner owner, Lifecycle.Event event, Callback<T> callback) {
-        Utils.checkNotNull(owner, "owner==null");
-        Utils.checkNotNull(event, "event==null");
-        Utils.checkNotNull(callback, "callback==null");
+        Objects.requireNonNull(owner, "owner==null");
+        Objects.requireNonNull(event, "event==null");
+        Objects.requireNonNull(callback, "callback==null");
         enqueue(new LifecycleCallback<>(this, callback, owner, event));
     }
 
