@@ -4,6 +4,7 @@ android {
     compileSdkVersion 28
     buildToolsVersion "28.0.3"
     lintOptions {
+        //静态代码检查
         abortOnError false
     }
     defaultConfig {

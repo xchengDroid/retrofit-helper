@@ -9,10 +9,9 @@ android {
 //Remove Build Tools version and sync project
 //Affected Modules: sample
     buildToolsVersion "28.0.3"
-    android {
-        lintOptions {
-            abortOnError false
-        }
+    lintOptions {
+        //静态代码检查
+        abortOnError false
     }
     defaultConfig {
         minSdkVersion 21
