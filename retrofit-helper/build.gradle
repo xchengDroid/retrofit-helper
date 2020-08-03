@@ -43,3 +43,39 @@ dependencies {
     api 'com.squareup.retrofit2:retrofit:2.9.0'
     api 'com.squareup.okhttp3:logging-interceptor:3.14.9'
 }
+
+
+//---------------------------------------------下面的必加，加上下面的作用是在上传后会带上注释，不然会发现没有注释
+// 指定编码
+tasks.withType(JavaCompile) {
+    options.encoding = "UTF-8"
+}
+
+// 打包源码
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from android.sourceSets.main.java.srcDirs
+}
+
+task javadoc(type: Javadoc) {
+    failOnError false
+    source = android.sourceSets.main.java.sourceFiles
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+}
+
+// 制作文档(Javadoc)
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+task classesJar(type: Jar) {
+    from "$buildDir/intermediates/classes/release"
+}
+
+artifacts {
+    archives classesJar
+    archives sourcesJar
+    archives javadocJar
+}
+
