@@ -8,7 +8,6 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
-import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.MutableLiveData;
 
 import com.simple.entity.Article;
@@ -62,7 +61,7 @@ public class MainActivity extends EasyActivity {
             RetrofitFactory.create(ApiService.class)
                     // .getLogin("singleman", "123456")
                     .getLogin("user/login", "singleman", "123456")
-                    .enqueue(this, Lifecycle.Event.ON_PAUSE, new AnimCallback<LoginInfo>(this) {
+                    .enqueue(new AnimCallback<LoginInfo>(this) {
                         @Override
                         public void onError(Call<LoginInfo> call2, HttpError error) {
                             Toast.makeText(MainActivity.this, error.msg, Toast.LENGTH_SHORT).show();
@@ -76,11 +75,10 @@ public class MainActivity extends EasyActivity {
         }
     }
 
-
     public void wxarticle(View view) {
         RetrofitFactory.create(ApiService.class)
                 .getWXarticle()
-                .enqueue(this, new AnimCallback<List<WXArticle>>(this) {
+                .enqueue(new AnimCallback<List<WXArticle>>(this) {
                     @Override
                     public void onError(Call<List<WXArticle>> call, HttpError error) {
                         Toast.makeText(MainActivity.this, error.msg, Toast.LENGTH_SHORT).show();
@@ -97,7 +95,7 @@ public class MainActivity extends EasyActivity {
     public void article0(View view) {
         RetrofitFactory.create(ApiService.class)
                 .getArticle0()
-                .enqueue(this, new AnimCallback<List<Article>>(this) {
+                .enqueue(new AnimCallback<List<Article>>(this) {
                     @Override
                     public void onError(Call<List<Article>> call, HttpError error) {
                         Toast.makeText(MainActivity.this, error.msg, Toast.LENGTH_SHORT).show();
@@ -113,7 +111,7 @@ public class MainActivity extends EasyActivity {
     public void progress(View view) {
         RetrofitFactory.create(ApiService.class)
                 .getArticle0()
-                .enqueue(this, new AnimCallback<List<Article>>(this) {
+                .enqueue(new AnimCallback<List<Article>>(this) {
                     @Override
                     public void onError(Call<List<Article>> call2, HttpError error) {
                         Toast.makeText(MainActivity.this, error.msg, Toast.LENGTH_SHORT).show();
@@ -169,11 +167,5 @@ public class MainActivity extends EasyActivity {
                         button.setText("下载完成");
                     }
                 });
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        login(null);
     }
 }

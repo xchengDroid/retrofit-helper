@@ -15,6 +15,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * 编写人： chengxin
  * 功能描述：生命周期回调
  */
+@Deprecated
 final class LifecycleCallback<T> implements Callback<T>, LifecycleObserver {
     private final Call<T> call;
     private final Callback<T> delegate;
