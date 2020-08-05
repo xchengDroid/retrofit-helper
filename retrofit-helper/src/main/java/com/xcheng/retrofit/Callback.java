@@ -3,7 +3,6 @@ package com.xcheng.retrofit;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
-import androidx.lifecycle.Lifecycle;
 
 import retrofit2.Response;
 
@@ -44,13 +43,6 @@ public interface Callback<T> {
     void onError(Call<T> call, HttpError error);
 
     void onSuccess(Call<T> call, T t);
-
-    /**
-     * 因为生命周期取消订阅了
-     *
-     * @param event 生命周期事件
-     */
-    void onDispose(Lifecycle.Event event);
 
     /**
      * @param t 请求失败的错误信息

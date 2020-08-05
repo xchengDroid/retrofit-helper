@@ -1,9 +1,6 @@
 package com.xcheng.retrofit;
 
-import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
-import androidx.lifecycle.Lifecycle;
-import androidx.lifecycle.LifecycleOwner;
 
 import okhttp3.Request;
 import retrofit2.Response;
@@ -44,22 +41,4 @@ public interface Call<T> extends Cloneable {
      */
     void enqueue(Callback<T> callback);
 
-    /**
-     * 绑定生命周期
-     *
-     * @param owner LifecycleOwner
-     * @param event {@link Lifecycle.Event}, {@link Lifecycle.Event#ON_ANY} is not allowed
-     */
-    @MainThread
-    void enqueue(LifecycleOwner owner, Lifecycle.Event event, Callback<T> callback);
-
-    /**
-     * default event is {@link Lifecycle.Event#ON_DESTROY}
-     *
-     * @param owner LifecycleOwner
-     * @return LifeCall
-     * @see #enqueue(LifecycleOwner, Lifecycle.Event, Callback)
-     */
-    @MainThread
-    void enqueue(LifecycleOwner owner, Callback<T> callback);
 }

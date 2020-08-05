@@ -4,7 +4,6 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.lifecycle.Lifecycle;
 
 import java.net.ConnectException;
 import java.net.SocketException;
@@ -56,11 +55,6 @@ public abstract class DefaultCallback<T> implements Callback<T> {
     @Override
     public T onFilter(Call<T> call, T t) {
         return t;
-    }
-
-    @Override
-    public void onDispose(Lifecycle.Event event) {
-        Log.w(RetrofitFactory.TAG, "onDispose-->" + event);
     }
 
     @Override
