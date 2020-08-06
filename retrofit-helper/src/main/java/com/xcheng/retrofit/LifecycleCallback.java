@@ -15,13 +15,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * 编写人： chengxin
  * 功能描述：生命周期回调
  */
-@Deprecated
 final class LifecycleCallback<T> implements Callback<T>, LifecycleObserver {
     private final Call<T> call;
     private final Callback<T> delegate;
     private final LifecycleOwner owner;
-    private final Lifecycle.Event event;
-
     /**
      * LifeCall是否被释放了
      * like rxAndroid MainThreadDisposable or rxJava ObservableUnsubscribeOn, IoScheduler
@@ -29,11 +26,10 @@ final class LifecycleCallback<T> implements Callback<T>, LifecycleObserver {
     private final AtomicBoolean once = new AtomicBoolean();
 
     @MainThread
-    LifecycleCallback(Call<T> call, @NonNull Callback<T> delegate, @NonNull LifecycleOwner owner, @NonNull Lifecycle.Event event) {
+    LifecycleCallback(Call<T> call, Callback<T> delegate, LifecycleOwner owner) {
         this.call = call;
         this.delegate = delegate;
         this.owner = owner;
-        this.event = event;
         if (owner.getLifecycle().getCurrentState() == Lifecycle.State.DESTROYED) {
             //发起请求的时候Owner是否已经销毁了
             //此时注册生命周期监听不会回调了onDestroy Event
@@ -87,15 +83,15 @@ final class LifecycleCallback<T> implements Callback<T>, LifecycleObserver {
     public void onCompleted(Call<T> call, @Nullable Throwable t) {
         if (!once.get()) {
             delegate.onCompleted(call, t);
-            this.owner.getLifecycle().removeObserver(this);
+            owner.getLifecycle().removeObserver(this);
         }
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_ANY)
     void onChanged(LifecycleOwner owner, @NonNull Lifecycle.Event event) {
         // 事件ordinal小于等于当前均 调用onDispose方法
-        if (this.event.compareTo(event) <= 0 && once.compareAndSet(false, true)) {
-            delegate.onCompleted(call, new HttpError("Already disposed.", event));
+        if (event == Lifecycle.Event.ON_DESTROY && once.compareAndSet(false, true)) {
+            call.cancel();
             owner.getLifecycle().removeObserver(this);
         }
     }
