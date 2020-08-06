@@ -1,6 +1,10 @@
 package com.xcheng.retrofit;
 
+import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
+import androidx.lifecycle.LifecycleOwner;
+
+import java.util.Objects;
 
 import okhttp3.Request;
 import retrofit2.Response;
@@ -41,4 +45,17 @@ public interface Call<T> extends Cloneable {
      */
     void enqueue(Callback<T> callback);
 
+    /**
+     * default event is {@link androidx.lifecycle.Lifecycle.Event#ON_DESTROY}
+     *
+     * @param callback 回调函数
+     * @param owner    LifecycleOwner ,当owner当前的状态为{@link androidx.lifecycle.Lifecycle.State#DESTROYED}
+     *                 不会调用任何回调函数
+     */
+    @MainThread
+    default void enqueue(LifecycleOwner owner, Callback<T> callback) {
+        Objects.requireNonNull(owner, "owner==null");
+        Objects.requireNonNull(callback, "callback==null");
+        enqueue(new LifecycleCallback<>(this, callback, owner));
+    }
 }

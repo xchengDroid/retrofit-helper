@@ -89,7 +89,8 @@ final class LifecycleCallback<T> implements Callback<T>, LifecycleObserver {
 
     @OnLifecycleEvent(Lifecycle.Event.ON_ANY)
     void onChanged(LifecycleOwner owner, @NonNull Lifecycle.Event event) {
-        // 事件ordinal小于等于当前调用？
+        //事件ordinal小于等于当前调用？
+        //liveData 也会在onDestroy时释放所有的Observer
         if (event == Lifecycle.Event.ON_DESTROY && once.compareAndSet(false, true)) {
             call.cancel();
             owner.getLifecycle().removeObserver(this);

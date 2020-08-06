@@ -61,7 +61,7 @@ public class MainActivity extends EasyActivity {
             RetrofitFactory.create(ApiService.class)
                     // .getLogin("singleman", "123456")
                     .getLogin("user/login", "singleman", "123456")
-                    .enqueue(new AnimCallback<LoginInfo>(this) {
+                    .enqueue(this, new AnimCallback<LoginInfo>(this) {
                         @Override
                         public void onError(Call<LoginInfo> call2, HttpError error) {
                             Toast.makeText(MainActivity.this, error.msg, Toast.LENGTH_SHORT).show();
@@ -167,5 +167,17 @@ public class MainActivity extends EasyActivity {
                         button.setText("下载完成");
                     }
                 });
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        login(null);
     }
 }
