@@ -37,7 +37,7 @@ public class Utils {
     /**
      * 如果checkValue 为null返回defValue
      * like {@link org.json.JSONObject#optString(String, String)},{@link android.os.Bundle#getString(String, String)}
-     * {@link android.util.SparseIntArray#get(int, int)}
+     * {@link android.util.SparseIntArray#get(int, int)},{@link android.content.res.TypedArray#getResourceId(int, int)}
      *
      * @return 不为空的对象
      */
