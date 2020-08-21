@@ -81,6 +81,7 @@ public class StickyLiveData<T> extends MutableLiveData<T> {
      * 代理Observer，拦截第一次注册时接收旧的事件
      * 静态内部类 T在 StickyLiveData已定义
      * like  java.util.ArrayList#SubList Map#EntrySet...
+     * or ArrayList#ArrayListSpliterato-->static
      */
     private class ObserverWrapper implements Observer<T> {
         private int mLastVersion;
