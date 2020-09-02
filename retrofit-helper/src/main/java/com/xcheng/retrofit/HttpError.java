@@ -44,12 +44,13 @@ public final class HttpError extends RuntimeException {
 
     /**
      * {@link okhttp3.Request#tag(Class)}
+     * 转换body为想要的类型，如果类型不匹配，则返回null
      *
      * @param clazz 类型对象class
      * @param <T>   泛型用于指定类型
      */
     @Nullable
-    public <T> T bodyConvert(@NonNull Class<? extends T> clazz) {
+    public <T> T castBody(@NonNull Class<? extends T> clazz) {
         if (clazz.isInstance(body)) {
             return clazz.cast(body);
         }
