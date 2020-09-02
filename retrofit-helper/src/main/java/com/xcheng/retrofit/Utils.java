@@ -58,6 +58,7 @@ public class Utils {
         if (tr == null) {
             return "tr==null";
         }
+        //like https://github.com/JakeWharton/timber/blob/master/timber/src/main/java/timber/log/Timber.kt
         // Don't replace this with Log.getStackTraceString() - it hides
         // UnknownHostException, which is not what we want.
         StringWriter sw = new StringWriter(256);
