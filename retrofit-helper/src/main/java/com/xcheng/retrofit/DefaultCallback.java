@@ -1,7 +1,5 @@
 package com.xcheng.retrofit;
 
-import android.util.Log;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -59,8 +57,8 @@ public abstract class DefaultCallback<T> implements Callback<T> {
 
     @Override
     public void onCompleted(Call<T> call, @Nullable Throwable t) {
-        if (t != null) {
-            Log.w(RetrofitFactory.TAG, "onCompleted-->\n" + Utils.getStackTraceString(t));
-        }
+//        if (t != null) {
+//            Log.w(RetrofitFactory.TAG, "onCompleted-->\n" + Utils.getStackTraceString(t));
+//        }
     }
 }

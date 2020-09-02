@@ -37,21 +37,20 @@ final class GsonResponseBodyConverter<T> extends BaseGsonConverter<T> {
             JSONObject jsonObject = new JSONObject(cacheStr);
             final int code = jsonObject.getInt("errorCode");
             final String msg = jsonObject.getString("errorMsg");
-            Tip tip = new Tip(code, msg);
             if (code != 0) {
-                throw new HttpError(msg, tip);
+                throw new HttpError(msg, cacheStr);
             }
             if (Tip.class == rawType) {
-                return (T) tip;
+                return (T) new Tip(code, msg);
             }
             //这样判断能防止服务端忽略data字段导致jsonObject.get("data")方法奔溃
             //且能判断为null或JSONObject#NULL的情况
             if (jsonObject.isNull("data")) {
-                throw new HttpError("数据为空", tip);
+                throw new HttpError("数据为空", cacheStr);
             }
             Object data = jsonObject.get("data");
             if (isEmptyJSON(data)) {
-                throw new HttpError("暂无数据", tip);
+                throw new HttpError("暂无数据", cacheStr);
             }
             //data 基础类型 如{"msg": "xxx","code": xxx,"data": xxx}
             T t = convertBaseType(data, rawType);
@@ -63,7 +62,7 @@ final class GsonResponseBodyConverter<T> extends BaseGsonConverter<T> {
                 //防止线上接口修改导致反序列化失败奔溃
                 return t;
             }
-            throw new HttpError("数据异常", tip);
+            throw new HttpError("数据异常", cacheStr);
         } catch (JSONException e) {
             throw new HttpError("解析异常", cacheStr);
         }
