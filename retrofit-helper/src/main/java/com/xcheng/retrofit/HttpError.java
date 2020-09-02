@@ -14,6 +14,7 @@ public final class HttpError extends RuntimeException {
     /**
      * 展示在前端的错误描述信息
      */
+    @NonNull
     public String msg;
 
     /**
