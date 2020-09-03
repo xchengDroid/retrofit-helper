@@ -63,18 +63,23 @@ public final class FullLoggingInterceptor implements Interceptor {
         return level;
     }
 
+    @NonNull
     @Override
     public Response intercept(Chain chain) throws IOException {
+        Level level = findLevel(chain.request());
+        if (level == Level.NONE)
+            return chain.proceed(chain.request());
+
         final StringBuilder builder = new StringBuilder();
-        HttpLoggingInterceptor httpLoggingInterceptor = new HttpLoggingInterceptor(new Logger() {
+        HttpLoggingInterceptor httpInterceptor = new HttpLoggingInterceptor(new Logger() {
             @Override
-            public void log(String message) {
+            public void log(@NonNull String message) {
                 append(builder, message);
             }
         });
         //可以单独为某个请求设置日志的级别，避免全局设置的局限性
-        httpLoggingInterceptor.setLevel(findLevel(chain.request()));
-        Response response = httpLoggingInterceptor.intercept(chain);
+        httpInterceptor.setLevel(level);
+        Response response = httpInterceptor.intercept(chain);
         logger.log(builder.toString());
         return response;
     }
