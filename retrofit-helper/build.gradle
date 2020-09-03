@@ -8,7 +8,7 @@ android {
 //To suppress this warning, remove "buildToolsVersion '27.0.3'" from your build.gradle file, as each version of the Android Gradle Plugin now has a default version of the build tools.
 //Remove Build Tools version and sync project
 //Affected Modules: sample
-//    buildToolsVersion "29.0.3"
+    buildToolsVersion "29.0.3"
     lintOptions {
         //静态代码检查
         abortOnError false
