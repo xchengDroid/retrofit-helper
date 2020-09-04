@@ -137,7 +137,7 @@ final class RealDownloadCall<T> implements DownloadCall<T> {
         return delegate.request();
     }
 
-    @SuppressWarnings("CloneDoesntCallSuperClone") // Performing deep clone.
+    @SuppressWarnings("MethodDoesntCallSuperMethod") // Performing deep clone.
     @Override
     public DownloadCall<T> clone() {
         return new RealDownloadCall<>(callbackExecutor, delegate.clone());
