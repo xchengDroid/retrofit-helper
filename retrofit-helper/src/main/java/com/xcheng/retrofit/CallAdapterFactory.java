@@ -47,10 +47,7 @@ public final class CallAdapterFactory extends CallAdapter.Factory {
 
             @Override
             public Call<Object> adapt(retrofit2.Call<Object> call) {
-                if (executor != null) {
-                    return new RealCall<>(executor, call);
-                }
-                return new RealCall<>(OptionalExecutor.get(), call);
+                return new RealCall<>(executor != null ? executor : OptionalExecutor.get(), call);
             }
         };
     }
