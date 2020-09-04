@@ -11,7 +11,7 @@ import com.orhanobut.logger.PrettyFormatStrategy;
 import com.simple.converter.GsonConverterFactory;
 import com.xcheng.retrofit.CallAdapterFactory;
 import com.xcheng.retrofit.DownloadCallAdapterFactory;
-import com.xcheng.retrofit.FullLoggingInterceptor;
+import com.xcheng.retrofit.LogInterceptor;
 import com.xcheng.retrofit.ReplaceUrlCallFactory;
 import com.xcheng.retrofit.RetrofitFactory;
 import com.xcheng.view.EasyView;
@@ -42,15 +42,15 @@ public class OKApplication extends Application {
             }
         });
 
-        FullLoggingInterceptor fullLoggingInterceptor = new FullLoggingInterceptor(new HttpLoggingInterceptor.Logger() {
+        LogInterceptor logInterceptor = new LogInterceptor(new HttpLoggingInterceptor.Logger() {
             @Override
             public void log(String message) {
                 Logger.d(message);
             }
         });
-        fullLoggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+        logInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
         OkHttpClient client = new OkHttpClient.Builder()
-                .addNetworkInterceptor(fullLoggingInterceptor)
+                .addNetworkInterceptor(logInterceptor)
                 .build();
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("https://wanandroid.com/")

@@ -37,17 +37,17 @@ import okhttp3.logging.HttpLoggingInterceptor.Logger;
  * 编写人： chengxin
  * 功能描述：打印完整的日志，防止多线程情况下导致的日志分散错乱的问题
  */
-public final class FullLoggingInterceptor implements Interceptor {
+public final class LogInterceptor implements Interceptor {
     private static final int JSON_INDENT = 2;
     private static final String LOG_LEVEL = "LogLevel";
     private final Logger logger;
     private volatile Level level = Level.NONE;
 
-    public FullLoggingInterceptor() {
+    public LogInterceptor() {
         this(Logger.DEFAULT);
     }
 
-    public FullLoggingInterceptor(Logger logger) {
+    public LogInterceptor(Logger logger) {
         this.logger = logger;
     }
 
