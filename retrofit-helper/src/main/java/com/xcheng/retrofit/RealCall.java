@@ -98,7 +98,7 @@ final class RealCall<T> implements Call<T> {
         return delegate.isCanceled();
     }
 
-    @SuppressWarnings("CloneDoesntCallSuperClone") // Performing deep clone.
+    @SuppressWarnings("MethodDoesntCallSuperMethod") // Performing deep clone.
     @Override
     public Call<T> clone() {
         return new RealCall<>(callbackExecutor, delegate.clone());

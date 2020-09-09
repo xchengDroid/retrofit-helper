@@ -2,6 +2,7 @@ package com.xcheng.retrofit;
 
 import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.lifecycle.LifecycleOwner;
 
 import java.util.Objects;
@@ -53,9 +54,8 @@ public interface Call<T> extends Cloneable {
      *                 不会调用任何回调函数
      */
     @MainThread
-    default void enqueue(LifecycleOwner owner, Callback<T> callback) {
-        Objects.requireNonNull(owner, "owner==null");
+    default void enqueue(@Nullable LifecycleOwner owner, Callback<T> callback) {
         Objects.requireNonNull(callback, "callback==null");
-        enqueue(new LifecycleCallback<>(this, callback, owner));
+        enqueue(owner != null ? new LifecycleCallback<>(this, callback, owner) : callback);
     }
 }
