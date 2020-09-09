@@ -5,9 +5,9 @@ import androidx.annotation.NonNull;
 /**
  * 创建时间：2020/9/9
  * 编写人： chengxin
- * 功能描述：通用简单的回调接口类
+ * 功能描述：通用简单的异步回调接口类
  */
-public interface SimpleCallback<T, E> {
+public interface AsyncCallback<T, E> {
     /**
      * 成功回调
      */
