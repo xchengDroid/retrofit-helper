@@ -46,10 +46,7 @@ public final class DownloadCallAdapterFactory extends CallAdapter.Factory {
 
             @Override
             public DownloadCall<ResponseBody> adapt(retrofit2.Call<ResponseBody> call) {
-                if (executor != null) {
-                    return new RealDownloadCall<>(executor, call);
-                }
-                return new RealDownloadCall<>(OptionalExecutor.get(), call);
+                return new RealDownloadCall<>(executor != null ? executor : OptionalExecutor.get(), call);
             }
         };
     }
