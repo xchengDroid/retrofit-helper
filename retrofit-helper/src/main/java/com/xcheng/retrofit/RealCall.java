@@ -40,7 +40,7 @@ final class RealCall<T> implements Call<T> {
         });
         delegate.enqueue(new retrofit2.Callback<T>() {
             @Override
-            public void onResponse(retrofit2.Call<T> call, Response<T> response) {
+            public void onResponse(@NonNull retrofit2.Call<T> call, @NonNull Response<T> response) {
                 //response.isSuccessful() 不能保证 response.body() != null,反之可以
                 T body = response.body();
                 if (body != null) {
@@ -55,7 +55,7 @@ final class RealCall<T> implements Call<T> {
             }
 
             @Override
-            public void onFailure(retrofit2.Call<T> call, Throwable t) {
+            public void onFailure(@NonNull retrofit2.Call<T> call, @NonNull Throwable t) {
                 callFailure(t);
             }
 
