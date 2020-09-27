@@ -17,4 +17,14 @@ public interface AsyncCallback<T, E> {
      * 失败回调
      */
     void onFailure(@NonNull E e);
+
+    /**
+     * 线程调度，发送成功到主线程
+     */
+    void postGet(@NonNull T t);
+
+    /**
+     * 线程调度，发送失败到的主线程
+     */
+    void postFailure(@NonNull E e);
 }
