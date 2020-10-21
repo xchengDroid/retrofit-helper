@@ -44,17 +44,19 @@ public final class HttpError extends RuntimeException {
 
     /**
      * {@link okhttp3.Request#tag(Class)}
+     * {@link android.os.Bundle#getInt(String)}
      * 转换body为想要的类型，如果类型不匹配，则返回null
      *
-     * @param clazz 类型对象class
-     * @param <T>   泛型用于指定类型
+     * @param <T> 泛型用于指定类型
      */
+    @SuppressWarnings("unchecked")
     @Nullable
-    public <T> T castBody(@NonNull Class<? extends T> clazz) {
-        if (clazz.isInstance(body)) {
-            return clazz.cast(body);
+    public <T> T castBody() {
+        try {
+            return (T) body;
+        } catch (ClassCastException e) {
+            return null;
         }
-        return null;
     }
 
     /**
