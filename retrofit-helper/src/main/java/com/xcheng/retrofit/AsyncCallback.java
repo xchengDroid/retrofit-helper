@@ -1,6 +1,7 @@
 package com.xcheng.retrofit;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.UiThread;
 
 /**
  * 创建时间：2020/9/9
@@ -11,11 +12,13 @@ public interface AsyncCallback<T, E> {
     /**
      * 成功回调
      */
+    @UiThread
     void onGet(@NonNull T t);
 
     /**
      * 失败回调
      */
+    @UiThread
     void onFailure(@NonNull E e);
 
     /**
