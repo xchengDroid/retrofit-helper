@@ -1,5 +1,7 @@
 package com.xcheng.retrofit;
 
+import androidx.annotation.WorkerThread;
+
 import java.io.IOException;
 import java.util.Objects;
 
@@ -43,6 +45,7 @@ public abstract class ProgressRequestBody extends RequestBody {
         bufferedSink.flush();
     }
 
+    @WorkerThread
     protected abstract void onUpload(long progress, long contentLength, boolean done);
 
     private Sink sink(Sink sink) {

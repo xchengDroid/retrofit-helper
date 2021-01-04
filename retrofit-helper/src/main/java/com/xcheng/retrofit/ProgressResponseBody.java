@@ -1,5 +1,7 @@
 package com.xcheng.retrofit;
 
+import androidx.annotation.WorkerThread;
+
 import java.io.IOException;
 import java.util.Objects;
 
@@ -41,6 +43,7 @@ public abstract class ProgressResponseBody extends ResponseBody {
         return bufferedSource;
     }
 
+    @WorkerThread
     protected abstract void onDownload(long progress, long contentLength, boolean done);
 
     private Source source(Source source) {
