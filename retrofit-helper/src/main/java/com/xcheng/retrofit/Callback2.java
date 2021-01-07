@@ -30,7 +30,7 @@ public interface Callback2<T> {
     /**
      * 请求成功
      */
-    void onGet(Call<T> call, T t);
+    void onSuccess(Call<T> call, T t);
 
     /**
      * @param t 请求失败的错误信息，如果为null表示请求成功了.
@@ -43,6 +43,7 @@ public interface Callback2<T> {
      *             <li>则为{@link retrofit2.Converter#convert(Object)}内抛出的异常</li>
      *             如果为{@link retrofit2.HttpException}
      *             <li>则为{@link Response#body()}为null的时候抛出的</li>
+     * @see #onCompleted(Call, Throwable)
      */
     default HttpError parseThrowable(Call<T> call, Throwable t) {
         if (t instanceof HttpError) {
