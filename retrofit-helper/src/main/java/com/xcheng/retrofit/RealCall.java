@@ -2,6 +2,7 @@ package com.xcheng.retrofit;
 
 import androidx.annotation.NonNull;
 
+import java.io.IOException;
 import java.util.Objects;
 import java.util.concurrent.Executor;
 
@@ -41,41 +42,30 @@ final class RealCall<T> implements Call<T> {
         delegate.enqueue(new retrofit2.Callback<T>() {
             @Override
             public void onResponse(@NonNull retrofit2.Call<T> call, @NonNull Response<T> response) {
-                //response.isSuccessful() 不能保证 response.body() != null,反之可以
-                T body = response.body();
-                if (body != null) {
-                    //过滤数据
-                    body = callback.onFilter(RealCall.this, body);
-                }
-                if (body != null) {
-                    callSuccess(body);
-                } else {
-                    callFailure(new HttpException(response));
-                }
-            }
-
-            @Override
-            public void onFailure(@NonNull retrofit2.Call<T> call, @NonNull Throwable t) {
-                callFailure(t);
-            }
-
-            private void callSuccess(@NonNull final T body) {
                 callbackExecutor.execute(new Runnable() {
                     @Override
                     public void run() {
-                        callback.onSuccess(RealCall.this, body);
-                        callback.onCompleted(RealCall.this, null);
+                        if (delegate.isCanceled()) {
+                            callback.onCompleted(RealCall.this, new IOException("Canceled"));
+                            return;
+                        }
+                        //response.isSuccessful() 不能保证 response.body() != null,反之可以
+                        T body = response.body();
+                        if (body != null) {
+                            callback.onSuccess(RealCall.this, body);
+                            callback.onCompleted(RealCall.this, null);
+                        } else {
+                            callback.onCompleted(RealCall.this, new HttpException(response));
+                        }
                     }
                 });
             }
 
-            private void callFailure(@NonNull final Throwable t) {
+            @Override
+            public void onFailure(@NonNull retrofit2.Call<T> call, @NonNull Throwable t) {
                 callbackExecutor.execute(new Runnable() {
                     @Override
                     public void run() {
-                        HttpError error = callback.parseThrowable(RealCall.this, t);
-                        Objects.requireNonNull(error, "error==null");
-                        callback.onError(RealCall.this, error);
                         callback.onCompleted(RealCall.this, t);
                     }
                 });
