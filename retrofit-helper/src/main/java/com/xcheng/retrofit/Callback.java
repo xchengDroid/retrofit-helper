@@ -2,8 +2,13 @@ package com.xcheng.retrofit;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.WorkerThread;
 
+import java.net.ConnectException;
+import java.net.SocketException;
+import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
+
+import retrofit2.HttpException;
 import retrofit2.Response;
 
 /**
@@ -24,28 +29,59 @@ public interface Callback<T> {
     void onStart(Call<T> call);
 
     /**
-     * @param call The {@code Call} that has thrown exception
-     * @param t    统一解析throwable对象转换为HttpError对象，如果throwable为{@link HttpError}
-     *             <li>则为{@link retrofit2.Converter#convert(Object)}内抛出的异常</li>
-     *             如果为{@link retrofit2.HttpException}
-     *             <li>则为{@link Response#body()}为null的时候抛出的</li>
+     * 请求成功
      */
-    @NonNull
-    HttpError parseThrowable(Call<T> call, Throwable t);
-
-    /**
-     * 过滤一次数据,如剔除List中的null等,默认可以返回t
-     */
-    @WorkerThread
-    @Nullable
-    T onFilter(Call<T> call, T t);
-
-    void onError(Call<T> call, HttpError error);
-
     void onSuccess(Call<T> call, T t);
 
     /**
-     * @param t 请求失败的错误信息
+     * Log.w(RetrofitFactory.TAG, "onCompleted-->\n" + call.request() + '\n' + Utils.getStackTraceString(t));
+     *
+     * @param t 请求失败的错误信息，如果为null表示请求成功了.
      */
     void onCompleted(Call<T> call, @Nullable Throwable t);
+
+    /**
+     * @param t 统一解析throwable对象转换为HttpError对象，
+     *          <ul>
+     *          <li>如果throwable为{@link HttpError}则为{@link retrofit2.Converter#convert(Object)}内抛出的异常</li>
+     *          <li>如果为{@link retrofit2.HttpException}则为{@link Response#body()}为null的时候抛出的</li>
+     *          <ui/>
+     * @see #onCompleted(Call, Throwable)
+     */
+    @NonNull
+    static HttpError defaultConvert(Throwable t) {
+        if (t instanceof HttpError) {
+            return (HttpError) t;
+        } else if (t instanceof HttpException) {
+            HttpException httpException = (HttpException) t;
+            final String msg;
+            switch (httpException.code()) {
+                case 400:
+                    msg = "参数错误";
+                    break;
+                case 401:
+                    msg = "身份未授权";
+                    break;
+                case 403:
+                    msg = "禁止访问";
+                    break;
+                case 404:
+                    msg = "地址未找到";
+                    break;
+                default:
+                    msg = "服务异常";
+            }
+            return new HttpError(msg, httpException);
+        } else if (t instanceof UnknownHostException) {
+            return new HttpError("网络异常", t);
+        } else if (t instanceof ConnectException) {
+            return new HttpError("网络异常", t);
+        } else if (t instanceof SocketException) {
+            return new HttpError("服务异常", t);
+        } else if (t instanceof SocketTimeoutException) {
+            return new HttpError("响应超时", t);
+        } else {
+            return new HttpError("请求失败", t);
+        }
+    }
 }

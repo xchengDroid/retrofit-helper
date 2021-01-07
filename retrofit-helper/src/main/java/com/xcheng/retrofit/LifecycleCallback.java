@@ -47,31 +47,6 @@ final class LifecycleCallback<T> implements Callback<T>, LifecycleObserver {
         }
     }
 
-    @NonNull
-    @Override
-    public HttpError parseThrowable(Call<T> call, Throwable t) {
-        if (!once.get()) {
-            return delegate.parseThrowable(call, t);
-        }
-        return new HttpError("Already disposed.", t);
-    }
-
-    @Nullable
-    @Override
-    public T onFilter(Call<T> call, T t) {
-        if (!once.get()) {
-            return delegate.onFilter(call, t);
-        }
-        return t;
-    }
-
-    @Override
-    public void onError(Call<T> call, HttpError error) {
-        if (!once.get()) {
-            delegate.onError(call, error);
-        }
-    }
-
     @Override
     public void onSuccess(Call<T> call, T t) {
         if (!once.get()) {
