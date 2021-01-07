@@ -10,8 +10,6 @@ import retrofit2.Retrofit;
 import retrofit2.SkipCallbackExecutor;
 
 public final class CallAdapterFactory extends CallAdapter.Factory {
-    private static final String RETURN_TYPE = Call.class.getSimpleName();
-
     public static final CallAdapter.Factory INSTANCE = new CallAdapterFactory();
 
     private CallAdapterFactory() {
@@ -31,8 +29,7 @@ public final class CallAdapterFactory extends CallAdapter.Factory {
             return null;
         }
         if (!(returnType instanceof ParameterizedType)) {
-            throw new IllegalArgumentException(
-                    String.format("%s return type must be parameterized as %s<Foo> or %s<? extends Foo>", RETURN_TYPE, RETURN_TYPE, RETURN_TYPE));
+            throw new IllegalArgumentException("Call return type must be parameterized as Call<Foo> or Call<? extends Foo>");
         }
         final Type responseType = getParameterUpperBound(0, (ParameterizedType) returnType);
         //支持SkipCallbackExecutor

@@ -11,7 +11,6 @@ import retrofit2.Retrofit;
 import retrofit2.SkipCallbackExecutor;
 
 public final class DownloadCallAdapterFactory extends CallAdapter.Factory {
-    private static final String RETURN_TYPE = DownloadCall.class.getSimpleName();
     public static final CallAdapter.Factory INSTANCE = new DownloadCallAdapterFactory();
 
     private DownloadCallAdapterFactory() {
@@ -31,8 +30,7 @@ public final class DownloadCallAdapterFactory extends CallAdapter.Factory {
             return null;
         }
         if (!(returnType instanceof ParameterizedType)) {
-            throw new IllegalArgumentException(
-                    String.format("%s return type must be parameterized as %s<Foo> or %s<? extends Foo>", RETURN_TYPE, RETURN_TYPE, RETURN_TYPE));
+            throw new IllegalArgumentException("DownloadCall return type must be parameterized as DownloadCall<Foo> or DownloadCall<? extends Foo>");
         }
         //支持SkipCallbackExecutor
         final Executor executor = Utils.isAnnotationPresent(annotations, SkipCallbackExecutor.class)
