@@ -1,5 +1,6 @@
 package com.xcheng.retrofit;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.net.ConnectException;
@@ -38,14 +39,15 @@ public interface Callback2<T> {
     void onCompleted(Call<T> call, @Nullable Throwable t);
 
     /**
-     * @param call The {@code Call} that has thrown exception
-     * @param t    统一解析throwable对象转换为HttpError对象，如果throwable为{@link HttpError}
-     *             <li>则为{@link retrofit2.Converter#convert(Object)}内抛出的异常</li>
-     *             如果为{@link retrofit2.HttpException}
-     *             <li>则为{@link Response#body()}为null的时候抛出的</li>
+     * @param t 统一解析throwable对象转换为HttpError对象，
+     *          <ul>
+     *          <li>如果throwable为{@link HttpError}则为{@link retrofit2.Converter#convert(Object)}内抛出的异常</li>
+     *          <li>如果为{@link retrofit2.HttpException}则为{@link Response#body()}为null的时候抛出的</li>
+     *          <ui/>
      * @see #onCompleted(Call, Throwable)
      */
-    default HttpError parseThrowable(Call<T> call, Throwable t) {
+    @NonNull
+    static HttpError defaultConvert(Throwable t) {
         if (t instanceof HttpError) {
             return (HttpError) t;
         } else if (t instanceof HttpException) {
