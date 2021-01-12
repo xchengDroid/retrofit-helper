@@ -5,7 +5,6 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.LifecycleOwner;
 
 import java.util.Objects;
-import java.util.concurrent.Executor;
 
 import retrofit2.Call;
 
@@ -19,8 +18,6 @@ import retrofit2.Call;
 public interface HttpQueue<T> {
 
     Call<T> delegate();
-
-    Executor callbackExecutor();
 
     /**
      * Asynchronously send the request and notify {@code callback} of its response or if an error

@@ -9,8 +9,7 @@ import com.orhanobut.logger.AndroidLogAdapter;
 import com.orhanobut.logger.Logger;
 import com.orhanobut.logger.PrettyFormatStrategy;
 import com.simple.converter.GsonConverterFactory;
-import com.xcheng.retrofit.CallAdapterFactory;
-import com.xcheng.retrofit.DownloadCallAdapterFactory;
+import com.xcheng.retrofit.HttpQueueAdapterFactory;
 import com.xcheng.retrofit.LogInterceptor;
 import com.xcheng.retrofit.ReplaceUrlCallFactory;
 import com.xcheng.retrofit.RetrofitFactory;
@@ -67,8 +66,7 @@ public class OKApplication extends Application {
                         return null;
                     }
                 })
-                .addCallAdapterFactory(CallAdapterFactory.INSTANCE)
-                .addCallAdapterFactory(DownloadCallAdapterFactory.INSTANCE)
+                .addCallAdapterFactory(HttpQueueAdapterFactory.INSTANCE)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         //RetrofitManager.init(retrofit);

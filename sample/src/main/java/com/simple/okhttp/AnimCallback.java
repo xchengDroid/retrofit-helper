@@ -3,10 +3,12 @@ package com.simple.okhttp;
 import androidx.annotation.Nullable;
 
 import com.google.gson.JsonSyntaxException;
-import com.xcheng.retrofit.Call;
+import com.xcheng.retrofit.HttpQueue;
 import com.xcheng.retrofit.Callback;
 import com.xcheng.retrofit.HttpError;
 import com.xcheng.view.controller.ILoadingView;
+
+import retrofit2.Call;
 
 /**
  * Created by chengxin on 2017/9/24.

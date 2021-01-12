@@ -63,11 +63,6 @@ final class RealHttpQueue<T> implements HttpQueue<T> {
     }
 
     @Override
-    public Executor callbackExecutor() {
-        return callbackExecutor;
-    }
-
-    @Override
     public Call<T> delegate() {
         return delegate;
     }
