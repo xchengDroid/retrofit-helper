@@ -55,7 +55,7 @@ final class RealHttpQueue<T> implements HttpQueue<T> {
                 callbackExecutor.execute(new Runnable() {
                     @Override
                     public void run() {
-                        callback.onCompleted(call, t);
+                        callback.onCompleted(delegate, t);
                     }
                 });
             }
