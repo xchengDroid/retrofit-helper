@@ -34,7 +34,7 @@ final class RealHttpQueue<T> implements HttpQueue<T> {
                 callbackExecutor.execute(new Runnable() {
                     @Override
                     public void run() {
-                        if (delegate.isCanceled()) {  //call==delegate 局部变量访问快
+                        if (delegate.isCanceled()) {
                             callback.onCompleted(delegate, new IOException("Canceled"));
                             return;
                         }
