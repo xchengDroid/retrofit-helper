@@ -123,8 +123,6 @@ public class Utils {
                 throw new IOException("failed to rename file:" + tmp.getPath());
             }
             return file;
-        } catch (IOException e) {
-            throw new IOException(e.getMessage());
         } finally {
             Util.closeQuietly(fos);
         }
