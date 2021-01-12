@@ -1,14 +1,13 @@
 package com.xcheng.retrofit;
 
 import androidx.annotation.MainThread;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LifecycleOwner;
 
 import java.util.Objects;
+import java.util.concurrent.Executor;
 
-import okhttp3.Request;
-import retrofit2.Response;
+import retrofit2.Call;
 
 /**
  * 创建时间：2018/4/8
@@ -17,28 +16,11 @@ import retrofit2.Response;
  *
  * @param <T> Successful response body type.
  */
-public interface Call<T> extends Cloneable {
+public interface HttpQueue<T> {
 
-    boolean isExecuted();
+    Call<T> delegate();
 
-    void cancel();
-
-    boolean isCanceled();
-
-    Call<T> clone();
-
-    Request request();
-
-    /**
-     * Synchronously send the request and return its response body.
-     *
-     * @throws retrofit2.HttpException if {@link Response#body()} is null
-     * @throws java.io.IOException     if a problem occurred talking to the server.
-     * @throws RuntimeException        (and subclasses) if an unexpected error occurs creating the request
-     *                                 or decoding the response.
-     */
-    @NonNull
-    T execute() throws Throwable;
+    Executor callbackExecutor();
 
     /**
      * Asynchronously send the request and notify {@code callback} of its response or if an error

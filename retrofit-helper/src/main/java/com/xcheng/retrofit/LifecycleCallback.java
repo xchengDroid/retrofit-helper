@@ -10,13 +10,15 @@ import androidx.lifecycle.OnLifecycleEvent;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import retrofit2.Call;
+
 /**
  * 创建时间：2020-07-29
  * 编写人： chengxin
  * 功能描述：生命周期回调
  */
 final class LifecycleCallback<T> implements Callback<T>, LifecycleObserver {
-    private final Call<T> call;
+    private final HttpQueue<T> httpQueue;
     private final Callback<T> delegate;
     private final LifecycleOwner owner;
     /**
@@ -26,15 +28,15 @@ final class LifecycleCallback<T> implements Callback<T>, LifecycleObserver {
     private final AtomicBoolean once = new AtomicBoolean();
 
     @MainThread
-    LifecycleCallback(Call<T> call, Callback<T> delegate, LifecycleOwner owner) {
-        this.call = call;
+    LifecycleCallback(HttpQueue<T> httpQueue, Callback<T> delegate, LifecycleOwner owner) {
+        this.httpQueue = httpQueue;
         this.delegate = delegate;
         this.owner = owner;
         if (owner.getLifecycle().getCurrentState() == Lifecycle.State.DESTROYED) {
             //发起请求的时候Owner是否已经销毁了
             //此时注册生命周期监听不会回调了onDestroy Event
             once.set(true);
-            call.cancel();
+            httpQueue.delegate().cancel();
         } else {
             owner.getLifecycle().addObserver(this);
         }
@@ -67,7 +69,7 @@ final class LifecycleCallback<T> implements Callback<T>, LifecycleObserver {
         //事件ordinal小于等于当前调用？
         //liveData 也会在onDestroy时释放所有的Observer
         if (event == Lifecycle.Event.ON_DESTROY && once.compareAndSet(false, true)) {
-            call.cancel();
+            httpQueue.delegate().cancel();
             owner.getLifecycle().removeObserver(this);
         }
     }

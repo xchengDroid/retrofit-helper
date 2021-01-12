@@ -6,28 +6,17 @@ import java.io.IOException;
 import java.util.Objects;
 import java.util.concurrent.Executor;
 
-import okhttp3.Request;
+import retrofit2.Call;
 import retrofit2.HttpException;
 import retrofit2.Response;
 
-final class RealCall<T> implements Call<T> {
+final class RealHttpQueue<T> implements HttpQueue<T> {
     private final Executor callbackExecutor;
     private final retrofit2.Call<T> delegate;
 
-    RealCall(Executor callbackExecutor, retrofit2.Call<T> delegate) {
+    RealHttpQueue(Executor callbackExecutor, retrofit2.Call<T> delegate) {
         this.callbackExecutor = callbackExecutor;
         this.delegate = delegate;
-    }
-
-    @NonNull
-    @Override
-    public T execute() throws Throwable {
-        Response<T> response = delegate.execute();
-        T body = response.body();
-        if (body != null) {
-            return body;
-        }
-        throw new HttpException(response);
     }
 
     @Override
@@ -36,7 +25,7 @@ final class RealCall<T> implements Call<T> {
         callbackExecutor.execute(new Runnable() {
             @Override
             public void run() {
-                callback.onStart(RealCall.this);
+                callback.onStart(delegate);
             }
         });
         delegate.enqueue(new retrofit2.Callback<T>() {
@@ -45,17 +34,17 @@ final class RealCall<T> implements Call<T> {
                 callbackExecutor.execute(new Runnable() {
                     @Override
                     public void run() {
-                        if (delegate.isCanceled()) {
-                            callback.onCompleted(RealCall.this, new IOException("Canceled"));
+                        if (delegate.isCanceled()) {  //call==delegate 局部变量访问快
+                            callback.onCompleted(delegate, new IOException("Canceled"));
                             return;
                         }
                         //response.isSuccessful() 不能保证 response.body() != null,反之可以
                         T body = response.body();
                         if (body != null) {
-                            callback.onSuccess(RealCall.this, body);
-                            callback.onCompleted(RealCall.this, null);
+                            callback.onSuccess(delegate, body);
+                            callback.onCompleted(delegate, null);
                         } else {
-                            callback.onCompleted(RealCall.this, new HttpException(response));
+                            callback.onCompleted(delegate, new HttpException(response));
                         }
                     }
                 });
@@ -66,7 +55,7 @@ final class RealCall<T> implements Call<T> {
                 callbackExecutor.execute(new Runnable() {
                     @Override
                     public void run() {
-                        callback.onCompleted(RealCall.this, t);
+                        callback.onCompleted(call, t);
                     }
                 });
             }
@@ -74,28 +63,12 @@ final class RealCall<T> implements Call<T> {
     }
 
     @Override
-    public boolean isExecuted() {
-        return delegate.isExecuted();
+    public Executor callbackExecutor() {
+        return callbackExecutor;
     }
 
     @Override
-    public void cancel() {
-        delegate.cancel();
-    }
-
-    @Override
-    public boolean isCanceled() {
-        return delegate.isCanceled();
-    }
-
-    @SuppressWarnings("MethodDoesntCallSuperMethod") // Performing deep clone.
-    @Override
-    public Call<T> clone() {
-        return new RealCall<>(callbackExecutor, delegate.clone());
-    }
-
-    @Override
-    public Request request() {
-        return delegate.request();
+    public Call<T> delegate() {
+        return delegate;
     }
 }

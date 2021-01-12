@@ -5,15 +5,14 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.concurrent.Executor;
 
-import okhttp3.ResponseBody;
 import retrofit2.CallAdapter;
 import retrofit2.Retrofit;
 import retrofit2.SkipCallbackExecutor;
 
-public final class DownloadCallAdapterFactory extends CallAdapter.Factory {
-    public static final CallAdapter.Factory INSTANCE = new DownloadCallAdapterFactory();
+public final class HttpQueueAdapterFactory extends CallAdapter.Factory {
+    public static final CallAdapter.Factory INSTANCE = new HttpQueueAdapterFactory();
 
-    private DownloadCallAdapterFactory() {
+    private HttpQueueAdapterFactory() {
     }
 
     /**
@@ -26,25 +25,27 @@ public final class DownloadCallAdapterFactory extends CallAdapter.Factory {
 
     @Override
     public CallAdapter<?, ?> get(Type returnType, Annotation[] annotations, Retrofit retrofit) {
-        if (getRawType(returnType) != DownloadCall.class) {
+        if (getRawType(returnType) != HttpQueue.class) {
             return null;
         }
         if (!(returnType instanceof ParameterizedType)) {
-            throw new IllegalArgumentException("DownloadCall return type must be parameterized as DownloadCall<Foo> or DownloadCall<? extends Foo>");
+            throw new IllegalArgumentException("HttpQueue return type must be parameterized " +
+                    "as HttpQueue<Foo> or HttpQueue<? extends Foo>");
         }
+        final Type responseType = getParameterUpperBound(0, (ParameterizedType) returnType);
         //支持SkipCallbackExecutor
         final Executor executor = Utils.isAnnotationPresent(annotations, SkipCallbackExecutor.class)
                 ? null
                 : retrofit.callbackExecutor();
-        return new CallAdapter<ResponseBody, DownloadCall<?>>() {
+        return new CallAdapter<Object, HttpQueue<?>>() {
             @Override
             public Type responseType() {
-                return ResponseBody.class;
+                return responseType;
             }
 
             @Override
-            public DownloadCall<ResponseBody> adapt(retrofit2.Call<ResponseBody> call) {
-                return new RealDownloadCall<>(executor != null ? executor : OptionalExecutor.get(), call);
+            public HttpQueue<Object> adapt(retrofit2.Call<Object> call) {
+                return new RealHttpQueue<>(executor != null ? executor : OptionalExecutor.get(), call);
             }
         };
     }
