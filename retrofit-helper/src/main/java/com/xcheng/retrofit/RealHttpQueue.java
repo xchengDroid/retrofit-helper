@@ -7,7 +7,6 @@ import java.util.Objects;
 import java.util.concurrent.Executor;
 
 import retrofit2.Call;
-import retrofit2.HttpException;
 import retrofit2.Response;
 
 final class RealHttpQueue<T> implements HttpQueue<T> {
@@ -22,41 +21,28 @@ final class RealHttpQueue<T> implements HttpQueue<T> {
     @Override
     public void enqueue(final Callback<T> callback) {
         Objects.requireNonNull(callback, "callback==null");
-        callbackExecutor.execute(new Runnable() {
-            @Override
-            public void run() {
-                callback.onStart(delegate);
-            }
-        });
+        callbackExecutor.execute(() -> callback.onStart(delegate));
         delegate.enqueue(new retrofit2.Callback<T>() {
             @Override
             public void onResponse(@NonNull retrofit2.Call<T> call, @NonNull Response<T> response) {
-                callbackExecutor.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (delegate.isCanceled()) {
-                            callback.onCompleted(delegate, new IOException("Canceled"));
-                            return;
-                        }
-                        //response.isSuccessful() 不能保证 response.body() != null,反之可以
-                        T body = response.body();
-                        if (body != null) {
-                            callback.onSuccess(delegate, body);
-                            callback.onCompleted(delegate, null);
-                        } else {
-                            callback.onCompleted(delegate, new HttpException(response));
-                        }
+                //大道至简
+                callbackExecutor.execute(() -> {
+                    if (delegate.isCanceled()) {
+                        // Emulate OkHttp's behavior of throwing/delivering an IOException on
+                        // cancellation.
+                        callback.onFailure(delegate, new IOException("Canceled"));
+                    } else {
+                        callback.onResponse(delegate, response);
                     }
+                    callback.onCompleted(delegate);
                 });
             }
 
             @Override
             public void onFailure(@NonNull retrofit2.Call<T> call, @NonNull Throwable t) {
-                callbackExecutor.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        callback.onCompleted(delegate, t);
-                    }
+                callbackExecutor.execute(() -> {
+                    callback.onFailure(delegate, t);
+                    callback.onCompleted(delegate);
                 });
             }
         });

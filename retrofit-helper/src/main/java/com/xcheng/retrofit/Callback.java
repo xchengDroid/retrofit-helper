@@ -1,7 +1,6 @@
 package com.xcheng.retrofit;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import java.net.ConnectException;
 import java.net.SocketException;
@@ -23,23 +22,16 @@ import retrofit2.Response;
  *
  * @param <T> Successful response body type.
  */
-public interface Callback<T> {
+public interface Callback<T> extends retrofit2.Callback<T> {
     /**
      * @param call The {@code Call} that was started
      */
     void onStart(Call<T> call);
 
     /**
-     * 请求成功
+     * @param call The {@code Call} that was completed
      */
-    void onSuccess(Call<T> call, T t);
-
-    /**
-     * Log.w(RetrofitFactory.TAG, "onCompleted-->\n" + call.request() + '\n' + Utils.getStackTraceString(t));
-     *
-     * @param t 请求失败的错误信息，如果为{@code null},则表示请求成功，且调用了{@link #onSuccess(Call, Object)}方法，否则不调用。
-     */
-    void onCompleted(Call<T> call, @Nullable Throwable t);
+    void onCompleted(Call<T> call);
 
     /**
      * @param t 统一解析throwable对象转换为HttpError对象，
@@ -47,7 +39,7 @@ public interface Callback<T> {
      *          <li>如果throwable为{@link HttpError}则为{@link retrofit2.Converter#convert(Object)}内抛出的异常</li>
      *          <li>如果为{@link retrofit2.HttpException}则为{@link Response#body()}为null的时候抛出的</li>
      *          <ui/>
-     * @see #onCompleted(Call, Throwable)
+     * @see #onFailure(Call, Throwable)
      */
     @NonNull
     static HttpError defaultConvert(Throwable t) {
