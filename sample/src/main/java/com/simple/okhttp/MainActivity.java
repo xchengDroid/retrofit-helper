@@ -13,7 +13,7 @@ import androidx.lifecycle.MutableLiveData;
 import com.simple.entity.Article;
 import com.simple.entity.LoginInfo;
 import com.simple.entity.WXArticle;
-import com.xcheng.retrofit.Callback;
+import com.xcheng.retrofit.DefaultCallback;
 import com.xcheng.retrofit.HttpError;
 import com.xcheng.retrofit.ProgressResponseBody;
 import com.xcheng.retrofit.RetrofitFactory;
@@ -102,7 +102,7 @@ public class MainActivity extends EasyActivity {
                     }
 
                     @Override
-                    public void onSuccess(Call<List<Article>> call, List<Article> response) {
+                    protected void onSuccess(Call<List<Article>> call, List<Article> articles) {
                         Toast.makeText(MainActivity.this, "获取首页列表成功", Toast.LENGTH_SHORT).show();
                     }
                 });
@@ -140,34 +140,26 @@ public class MainActivity extends EasyActivity {
 
         RetrofitFactory.create(ApiService.class)
                 .loadDouYinApk()
-                .enqueue(new Callback<ResponseBody>() {
+                .enqueue(new DefaultCallback<ResponseBody>() {
                     @Override
-                    public void onStart(Call<ResponseBody> call) {
-                        MainActivity.this.call = call;
+                    protected void onError(Call<ResponseBody> call, HttpError error) {
+
                     }
 
                     @Override
-                    public void onSuccess(Call<ResponseBody> call, ResponseBody responseBody) {
+                    protected void onSuccess(Call<ResponseBody> call, ResponseBody responseBody) {
                         try {
-                            File file = convert(call, responseBody);
+                            MainActivity.this.call = call;
+                            responseBody = new ProgressResponseBody(responseBody) {
+                                @Override
+                                protected void onDownload(long progress, long contentLength, boolean done) {
+                                    onProgress(call, progress, contentLength, done);
+                                }
+                            };
+                            Utils.writeToFile(responseBody, filePath);
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
-                    }
-
-                    @Override
-                    public void onCompleted(Call<ResponseBody> call, @Nullable Throwable t) {
-                    }
-
-                    public File convert(Call<ResponseBody> call, ResponseBody value) throws IOException {
-                        MainActivity.this.call = call;
-                        value = new ProgressResponseBody(value) {
-                            @Override
-                            protected void onDownload(long progress, long contentLength, boolean done) {
-                                onProgress(call, progress, contentLength, done);
-                            }
-                        };
-                        return Utils.writeToFile(value, filePath);
                     }
 
                     public void onProgress(Call<ResponseBody> call, long progress, long contentLength, boolean done) {
@@ -182,6 +174,16 @@ public class MainActivity extends EasyActivity {
                                 }
                             }
                         });
+                    }
+
+                    @Override
+                    public void onStart(Call<ResponseBody> call) {
+
+                    }
+
+                    @Override
+                    public void onCompleted(Call<ResponseBody> call) {
+
                     }
                 });
     }

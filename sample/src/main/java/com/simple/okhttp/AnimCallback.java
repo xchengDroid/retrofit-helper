@@ -1,10 +1,10 @@
 package com.simple.okhttp;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.google.gson.JsonSyntaxException;
-import com.xcheng.retrofit.HttpQueue;
-import com.xcheng.retrofit.Callback;
+import com.xcheng.retrofit.DefaultCallback;
 import com.xcheng.retrofit.HttpError;
 import com.xcheng.view.controller.ILoadingView;
 
@@ -13,7 +13,7 @@ import retrofit2.Call;
 /**
  * Created by chengxin on 2017/9/24.
  */
-public abstract class AnimCallback<T> implements Callback<T> {
+public abstract class AnimCallback<T> extends DefaultCallback<T> {
     private ILoadingView mLoadingView;
 
     public AnimCallback(@Nullable ILoadingView loadingView) {
@@ -26,20 +26,18 @@ public abstract class AnimCallback<T> implements Callback<T> {
             mLoadingView.showLoading();
     }
 
+    @NonNull
     @Override
-    public void onCompleted(Call<T> call, @Nullable Throwable t) {
-        if (mLoadingView != null)
-            mLoadingView.hideLoading();
-        if (t != null) {
-            HttpError filter;
-            if (t instanceof JsonSyntaxException) {
-                filter = new HttpError("解析异常", t);
-            } else {
-                filter = Callback.defaultConvert(t);
-            }
-            onError(call, filter);
+    protected HttpError parseThrowable(Call<T> call, Throwable t) {
+        if (t instanceof JsonSyntaxException) {
+            return new HttpError("解析异常", t);
         }
+        return super.parseThrowable(call, t);
     }
 
-    public abstract void onError(Call<T> call, HttpError error);
+    @Override
+    public void onCompleted(Call<T> call) {
+        if (mLoadingView != null)
+            mLoadingView.hideLoading();
+    }
 }

@@ -2,7 +2,6 @@ package com.xcheng.retrofit;
 
 import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.LifecycleOwner;
@@ -11,6 +10,7 @@ import androidx.lifecycle.OnLifecycleEvent;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import retrofit2.Call;
+import retrofit2.Response;
 
 /**
  * 创建时间：2020-07-29
@@ -50,16 +50,23 @@ final class LifecycleCallback<T> implements Callback<T>, LifecycleObserver {
     }
 
     @Override
-    public void onSuccess(Call<T> call, T t) {
+    public void onResponse(Call<T> call, Response<T> response) {
         if (!once.get()) {
-            delegate.onSuccess(call, t);
+            delegate.onResponse(call, response);
         }
     }
 
     @Override
-    public void onCompleted(Call<T> call, @Nullable Throwable t) {
+    public void onFailure(Call<T> call, Throwable t) {
         if (!once.get()) {
-            delegate.onCompleted(call, t);
+            delegate.onFailure(call, t);
+        }
+    }
+
+    @Override
+    public void onCompleted(Call<T> call) {
+        if (!once.get()) {
+            delegate.onCompleted(call);
             owner.getLifecycle().removeObserver(this);
         }
     }
