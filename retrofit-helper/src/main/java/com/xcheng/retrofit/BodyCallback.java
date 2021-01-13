@@ -23,7 +23,7 @@ import retrofit2.Response;
  *
  * @param <T> Successful response body type.
  */
-public abstract class DefaultCallback<T> implements Callback<T> {
+public abstract class BodyCallback<T> implements Callback<T> {
     @Override
     public final void onResponse(Call<T> call, Response<T> response) {
         T body = response.body();

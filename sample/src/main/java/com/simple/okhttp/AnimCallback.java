@@ -4,7 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.google.gson.JsonSyntaxException;
-import com.xcheng.retrofit.DefaultCallback;
+import com.xcheng.retrofit.BodyCallback;
 import com.xcheng.retrofit.HttpError;
 import com.xcheng.view.controller.ILoadingView;
 
@@ -13,7 +13,7 @@ import retrofit2.Call;
 /**
  * Created by chengxin on 2017/9/24.
  */
-public abstract class AnimCallback<T> extends DefaultCallback<T> {
+public abstract class AnimCallback<T> extends BodyCallback<T> {
     private ILoadingView mLoadingView;
 
     public AnimCallback(@Nullable ILoadingView loadingView) {

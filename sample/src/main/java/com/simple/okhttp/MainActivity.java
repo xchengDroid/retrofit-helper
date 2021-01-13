@@ -13,7 +13,7 @@ import androidx.lifecycle.MutableLiveData;
 import com.simple.entity.Article;
 import com.simple.entity.LoginInfo;
 import com.simple.entity.WXArticle;
-import com.xcheng.retrofit.DefaultCallback;
+import com.xcheng.retrofit.BodyCallback;
 import com.xcheng.retrofit.HttpError;
 import com.xcheng.retrofit.ProgressResponseBody;
 import com.xcheng.retrofit.RetrofitFactory;
@@ -140,7 +140,7 @@ public class MainActivity extends EasyActivity {
 
         RetrofitFactory.create(ApiService.class)
                 .loadDouYinApk()
-                .enqueue(new DefaultCallback<ResponseBody>() {
+                .enqueue(new BodyCallback<ResponseBody>() {
                     @Override
                     protected void onError(Call<ResponseBody> call, HttpError error) {
 
