@@ -13,10 +13,9 @@ import androidx.lifecycle.MutableLiveData;
 import com.simple.entity.Article;
 import com.simple.entity.LoginInfo;
 import com.simple.entity.WXArticle;
-import com.xcheng.retrofit.Call;
-import com.xcheng.retrofit.DownloadCall;
-import com.xcheng.retrofit.DownloadCallback;
+import com.xcheng.retrofit.Callback;
 import com.xcheng.retrofit.HttpError;
+import com.xcheng.retrofit.ProgressResponseBody;
 import com.xcheng.retrofit.RetrofitFactory;
 import com.xcheng.retrofit.Utils;
 import com.xcheng.view.controller.EasyActivity;
@@ -27,6 +26,7 @@ import java.io.IOException;
 import java.util.List;
 
 import okhttp3.ResponseBody;
+import retrofit2.Call;
 
 public class MainActivity extends EasyActivity {
     ProgressView progressView;
@@ -125,7 +125,7 @@ public class MainActivity extends EasyActivity {
     }
 
     int count;
-    DownloadCall<File> call;
+    Call<ResponseBody> call;
 
     public void download(View view) {
         final Button button = (Button) view;
@@ -140,31 +140,48 @@ public class MainActivity extends EasyActivity {
 
         RetrofitFactory.create(ApiService.class)
                 .loadDouYinApk()
-                .enqueue(new DownloadCallback<File>() {
-                    @Nullable
+                .enqueue(new Callback<ResponseBody>() {
                     @Override
-                    public File convert(DownloadCall<File> call, ResponseBody value) throws IOException {
+                    public void onStart(Call<ResponseBody> call) {
                         MainActivity.this.call = call;
+                    }
+
+                    @Override
+                    public void onSuccess(Call<ResponseBody> call, ResponseBody responseBody) {
+                        try {
+                            File file = convert(call, responseBody);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void onCompleted(Call<ResponseBody> call, @Nullable Throwable t) {
+                    }
+
+                    public File convert(Call<ResponseBody> call, ResponseBody value) throws IOException {
+                        MainActivity.this.call = call;
+                        value = new ProgressResponseBody(value) {
+                            @Override
+                            protected void onDownload(long progress, long contentLength, boolean done) {
+                                onProgress(call, progress, contentLength, done);
+                            }
+                        };
                         return Utils.writeToFile(value, filePath);
                     }
 
-                    @Override
-                    public void onProgress(DownloadCall<File> call, long progress, long contentLength, boolean done) {
-                        count++;
-                        Log.e("print", "onDownLoad:" + count);
-                        progressView.setProgress((int) (progress * 100f / contentLength), false);
-                    }
-
-                    @Override
-                    public void onError(DownloadCall<File> call, Throwable t) {
-                        progressView.setProgress(0);
-                        Log.e("print", "", t);
-                        Toast.makeText(MainActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-
-                    @Override
-                    public void onSuccess(DownloadCall<File> call, File file) {
-                        button.setText("下载完成");
+                    public void onProgress(Call<ResponseBody> call, long progress, long contentLength, boolean done) {
+                        RetrofitFactory.DEFAULT.callbackExecutor().execute(new Runnable() {
+                            @Override
+                            public void run() {
+                                count++;
+                                Log.e("print", progress + "onDownLoad:" + contentLength + done);
+                                progressView.setProgress((int) (progress * 100f / contentLength), false);
+                                if (done) {
+                                    button.setText("下载完成");
+                                }
+                            }
+                        });
                     }
                 });
     }

@@ -5,10 +5,11 @@ import com.simple.entity.LoginInfo;
 import com.simple.entity.WXArticle;
 import com.xcheng.retrofit.HttpQueue;
 
-import java.io.File;
 import java.util.List;
 
 import okhttp3.FormBody;
+import okhttp3.ResponseBody;
+import retrofit2.SkipCallbackExecutor;
 import retrofit2.http.Body;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
@@ -31,6 +32,7 @@ public interface ApiService {
     // @Headers("BaseUrlName:baidu")
     @POST("user/login")
     HttpQueue<LoginInfo> getLogin(@Field("username") String username, @Field("password") String password);
+
     @FormUrlEncoded
     @POST
     HttpQueue<LoginInfo> getLogin(@Url String url, @Field("username") String username, @Field("password") String password);
@@ -47,11 +49,12 @@ public interface ApiService {
     @GET("article/list/0/json")
     HttpQueue<List<Article>> getArticle0();
 
-//    //下载文件
-//    @Streaming
-//    @Headers("LogLevel:BASIC")
-//    @GET("http://shouji.360tpcdn.com/181115/4dc46bd86bef036da927bc59680f514f/com.ss.android.ugc.aweme_330.apk")
-//    DownloadHttpQueue<File> loadDouYinApk();
+    //下载文件
+    @Streaming
+    @SkipCallbackExecutor
+    @Headers("LogLevel:BASIC")
+    @GET("http://shouji.360tpcdn.com/181115/4dc46bd86bef036da927bc59680f514f/com.ss.android.ugc.aweme_330.apk")
+    HttpQueue<ResponseBody> loadDouYinApk();
 }
 
 
