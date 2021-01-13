@@ -37,7 +37,7 @@ public interface Callback<T> {
     /**
      * Log.w(RetrofitFactory.TAG, "onCompleted-->\n" + call.request() + '\n' + Utils.getStackTraceString(t));
      *
-     * @param t 请求失败的错误信息，如果为null表示请求成功了.
+     * @param t 请求失败的错误信息，如果为{@code null},则表示请求成功，且调用了{@link #onSuccess(Call, Object)}方法，否则不调用。
      */
     void onCompleted(Call<T> call, @Nullable Throwable t);
 
