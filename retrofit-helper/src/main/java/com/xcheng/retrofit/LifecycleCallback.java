@@ -17,6 +17,7 @@ import retrofit2.Response;
  * 编写人： chengxin
  * 功能描述：生命周期回调
  */
+@MainThread
 final class LifecycleCallback<T> implements Callback<T>, LifecycleObserver {
     private final HttpQueue<T> httpQueue;
     private final Callback<T> delegate;
@@ -27,7 +28,6 @@ final class LifecycleCallback<T> implements Callback<T>, LifecycleObserver {
      */
     private final AtomicBoolean once = new AtomicBoolean();
 
-    @MainThread
     LifecycleCallback(HttpQueue<T> httpQueue, Callback<T> delegate, LifecycleOwner owner) {
         this.httpQueue = httpQueue;
         this.delegate = delegate;
