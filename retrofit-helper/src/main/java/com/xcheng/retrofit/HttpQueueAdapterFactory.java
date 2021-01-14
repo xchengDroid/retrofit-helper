@@ -1,5 +1,7 @@
 package com.xcheng.retrofit;
 
+import androidx.annotation.NonNull;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -38,11 +40,13 @@ public final class HttpQueueAdapterFactory extends CallAdapter.Factory {
                 ? null
                 : retrofit.callbackExecutor();
         return new CallAdapter<Object, HttpQueue<?>>() {
+            @NonNull
             @Override
             public Type responseType() {
                 return responseType;
             }
 
+            @NonNull
             @Override
             public HttpQueue<Object> adapt(retrofit2.Call<Object> call) {
                 return new RealHttpQueue<>(executor != null ? executor : OptionalExecutor.get(), call);
