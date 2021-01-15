@@ -15,7 +15,7 @@ import retrofit2.Response;
 /**
  * 创建时间：2020-07-29
  * 编写人： chengxin
- * 功能描述：生命周期回调
+ * 功能描述：生命周期回调,所有的方法都必须在主线程调用
  */
 @MainThread
 final class LifecycleCallback<T> implements Callback<T>, LifecycleObserver {
