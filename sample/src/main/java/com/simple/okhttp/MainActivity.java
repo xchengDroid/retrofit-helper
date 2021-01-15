@@ -1,5 +1,6 @@
 package com.simple.okhttp;
 
+import android.annotation.SuppressLint;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
@@ -8,12 +9,12 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
+import androidx.arch.core.executor.ArchTaskExecutor;
 import androidx.lifecycle.MutableLiveData;
 
 import com.simple.entity.Article;
 import com.simple.entity.LoginInfo;
 import com.simple.entity.WXArticle;
-import com.xcheng.retrofit.BodyCallback;
 import com.xcheng.retrofit.HttpError;
 import com.xcheng.retrofit.ProgressResponseBody;
 import com.xcheng.retrofit.RetrofitFactory;
@@ -22,11 +23,11 @@ import com.xcheng.view.controller.EasyActivity;
 import com.xcheng.view.widget.ProgressView;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.List;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
+import retrofit2.Response;
 
 public class MainActivity extends EasyActivity {
     ProgressView progressView;
@@ -127,6 +128,7 @@ public class MainActivity extends EasyActivity {
     int count;
     Call<ResponseBody> call;
 
+    @SuppressLint("RestrictedApi")
     public void download(View view) {
         final Button button = (Button) view;
         if (call != null) {
@@ -137,55 +139,31 @@ public class MainActivity extends EasyActivity {
         }
         button.setText("取消下载");
         final String filePath = new File(getContext().getExternalCacheDir(), "test_douyin.apk").getPath();
-
-        RetrofitFactory.create(ApiService.class)
-                .loadDouYinApk()
-                .enqueue(new BodyCallback<ResponseBody>() {
-                    @Override
-                    protected void onError(Call<ResponseBody> call, HttpError error) {
-
-                    }
-
-                    @Override
-                    protected void onSuccess(Call<ResponseBody> call, ResponseBody responseBody) {
-                        try {
-                            MainActivity.this.call = call;
-                            responseBody = new ProgressResponseBody(responseBody) {
-                                @Override
-                                protected void onDownload(long progress, long contentLength, boolean done) {
-                                    onProgress(call, progress, contentLength, done);
-                                }
-                            };
-                            Utils.writeToFile(responseBody, filePath);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-
-                    public void onProgress(Call<ResponseBody> call, long progress, long contentLength, boolean done) {
-                        RetrofitFactory.DEFAULT.callbackExecutor().execute(new Runnable() {
-                            @Override
-                            public void run() {
+        ArchTaskExecutor.getInstance().executeOnDiskIO(() -> {
+            call = RetrofitFactory.create(ApiService.class).loadDouYinApk();
+            try {
+                Response<ResponseBody> response = call.execute();
+                ResponseBody body = response.body();
+                if (body != null) {
+                    body = new ProgressResponseBody(body) {
+                        @Override
+                        protected void onDownload(long progress, long contentLength, boolean done) {
+                            runOnUiThread(() -> {
                                 count++;
                                 Log.e("print", progress + "onDownLoad:" + contentLength + done);
                                 progressView.setProgress((int) (progress * 100f / contentLength), false);
                                 if (done) {
                                     button.setText("下载完成");
                                 }
-                            }
-                        });
-                    }
-
-                    @Override
-                    public void onStart(Call<ResponseBody> call) {
-
-                    }
-
-                    @Override
-                    public void onCompleted(Call<ResponseBody> call) {
-
-                    }
-                });
+                            });
+                        }
+                    };
+                    File file = Utils.writeToFile(body, filePath);
+                }
+            } catch (Throwable e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     @Override

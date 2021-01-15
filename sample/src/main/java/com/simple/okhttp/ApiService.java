@@ -9,6 +9,7 @@ import java.util.List;
 
 import okhttp3.FormBody;
 import okhttp3.ResponseBody;
+import retrofit2.Call;
 import retrofit2.SkipCallbackExecutor;
 import retrofit2.http.Body;
 import retrofit2.http.Field;
@@ -33,6 +34,7 @@ public interface ApiService {
     @POST("user/login")
     HttpQueue<LoginInfo> getLogin(@Field("username") String username, @Field("password") String password);
 
+    @SkipCallbackExecutor
     @FormUrlEncoded
     @POST
     HttpQueue<LoginInfo> getLogin(@Url String url, @Field("username") String username, @Field("password") String password);
@@ -54,7 +56,7 @@ public interface ApiService {
     @SkipCallbackExecutor
     @Headers("LogLevel:BASIC")
     @GET("http://shouji.360tpcdn.com/181115/4dc46bd86bef036da927bc59680f514f/com.ss.android.ugc.aweme_330.apk")
-    HttpQueue<ResponseBody> loadDouYinApk();
+    Call<ResponseBody> loadDouYinApk();
 }
 
 
