@@ -31,10 +31,10 @@ final class LifecycleCallback<T> implements Callback<T>, LifecycleObserver {
     private final AtomicBoolean once = new AtomicBoolean();
 
     LifecycleCallback(HttpQueue<T> httpQueue, Callback<T> delegate, LifecycleOwner owner) {
-        assertMainThread("LifecycleCallback Constructor");
         this.httpQueue = httpQueue;
         this.delegate = delegate;
         this.owner = owner;
+        assertMainThread("LifecycleCallback Constructor");
         if (owner.getLifecycle().getCurrentState() == Lifecycle.State.DESTROYED) {
             //发起请求的时候Owner是否已经销毁了
             //此时注册生命周期监听不会回调了onDestroy Event
