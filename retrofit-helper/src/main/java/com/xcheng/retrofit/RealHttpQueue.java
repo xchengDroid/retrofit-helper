@@ -24,7 +24,7 @@ final class RealHttpQueue<T> implements HttpQueue<T> {
     public void enqueue(@Nullable LifecycleOwner owner, Callback<T> callback) {
         Objects.requireNonNull(callback, "callback==null");
         if (owner != null) {
-            if (OptionalExecutor.isMainThread()) {
+            if (!OptionalExecutor.isMainThread()) {
                 throw new IllegalStateException("Cannot invoke enqueue with LifecycleOwner on a background"
                         + " thread");
             }

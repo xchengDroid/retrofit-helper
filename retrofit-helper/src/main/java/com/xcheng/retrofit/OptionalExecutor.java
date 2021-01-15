@@ -16,12 +16,19 @@ public final class OptionalExecutor implements Executor {
     private static final OptionalExecutor EXECUTOR = new OptionalExecutor();
     private static final MainThreadExecutor MAIN_THREAD_EXECUTOR = new MainThreadExecutor();
 
-    public static Executor getExecutor() {
+    static Executor getExecutor() {
         return EXECUTOR;
     }
 
     public static Executor getMainThreadExecutor() {
         return MAIN_THREAD_EXECUTOR;
+    }
+
+    /**
+     * 是否为主线程
+     */
+    public static boolean isMainThread() {
+        return Looper.getMainLooper().getThread() == Thread.currentThread();
     }
 
     private OptionalExecutor() {
@@ -39,12 +46,5 @@ public final class OptionalExecutor implements Executor {
         public void execute(Runnable command) {
             handler.post(command);
         }
-    }
-
-    /**
-     * 是否为主线程
-     */
-    public static boolean isMainThread() {
-        return Looper.getMainLooper().getThread() == Thread.currentThread();
     }
 }
