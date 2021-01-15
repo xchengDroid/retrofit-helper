@@ -4,8 +4,6 @@ import androidx.annotation.MainThread;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LifecycleOwner;
 
-import java.util.Objects;
-
 import retrofit2.Call;
 
 /**
@@ -33,8 +31,5 @@ public interface HttpQueue<T> {
      *                 不会调用任何回调函数
      */
     @MainThread
-    default void enqueue(@Nullable LifecycleOwner owner, Callback<T> callback) {
-        Objects.requireNonNull(callback, "callback==null");
-        enqueue(owner != null ? new LifecycleCallback<>(this, callback, owner) : callback);
-    }
+    void enqueue(@Nullable LifecycleOwner owner, Callback<T> callback);
 }

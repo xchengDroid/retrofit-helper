@@ -36,9 +36,9 @@ public final class HttpQueueAdapterFactory extends CallAdapter.Factory {
         }
         final Type responseType = getParameterUpperBound(0, (ParameterizedType) returnType);
         //支持SkipCallbackExecutor
-        final Executor executor = Utils.isAnnotationPresent(annotations, SkipCallbackExecutor.class)
-                ? null
-                : retrofit.callbackExecutor();
+        @NonNull final Executor executor = Utils.isAnnotationPresent(annotations, SkipCallbackExecutor.class)
+                ? OptionalExecutor.getExecutor()
+                : OptionalExecutor.getMainThreadExecutor();
         return new CallAdapter<Object, HttpQueue<?>>() {
             @NonNull
             @Override
@@ -49,7 +49,7 @@ public final class HttpQueueAdapterFactory extends CallAdapter.Factory {
             @NonNull
             @Override
             public HttpQueue<Object> adapt(retrofit2.Call<Object> call) {
-                return new RealHttpQueue<>(executor != null ? executor : OptionalExecutor.get(), call);
+                return new RealHttpQueue<>(executor, call);
             }
         };
     }

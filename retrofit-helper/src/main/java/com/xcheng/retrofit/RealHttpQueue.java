@@ -1,6 +1,8 @@
 package com.xcheng.retrofit;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.lifecycle.LifecycleOwner;
 
 import java.io.IOException;
 import java.util.Objects;
@@ -16,6 +18,22 @@ final class RealHttpQueue<T> implements HttpQueue<T> {
     RealHttpQueue(Executor callbackExecutor, retrofit2.Call<T> delegate) {
         this.callbackExecutor = callbackExecutor;
         this.delegate = delegate;
+    }
+
+    @Override
+    public void enqueue(@Nullable LifecycleOwner owner, Callback<T> callback) {
+        Objects.requireNonNull(callback, "callback==null");
+        if (owner != null) {
+            if (OptionalExecutor.isMainThread()) {
+                throw new IllegalStateException("Cannot invoke enqueue with LifecycleOwner on a background"
+                        + " thread");
+            }
+            if (callbackExecutor != OptionalExecutor.getMainThreadExecutor()) {
+                throw new IllegalStateException("callbackExecutor must be a MainThreadExecutor");
+            }
+            callback = new LifecycleCallback<>(this, callback, owner);
+        }
+        enqueue(callback);
     }
 
     @Override
