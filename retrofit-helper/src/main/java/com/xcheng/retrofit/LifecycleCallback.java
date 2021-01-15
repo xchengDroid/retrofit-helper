@@ -1,5 +1,7 @@
 package com.xcheng.retrofit;
 
+import android.os.Looper;
+
 import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.Lifecycle;
@@ -29,6 +31,7 @@ final class LifecycleCallback<T> implements Callback<T>, LifecycleObserver {
     private final AtomicBoolean once = new AtomicBoolean();
 
     LifecycleCallback(HttpQueue<T> httpQueue, Callback<T> delegate, LifecycleOwner owner) {
+        assertMainThread("LifecycleCallback Constructor");
         this.httpQueue = httpQueue;
         this.delegate = delegate;
         this.owner = owner;
@@ -44,6 +47,7 @@ final class LifecycleCallback<T> implements Callback<T>, LifecycleObserver {
 
     @Override
     public void onStart(Call<T> call) {
+        assertMainThread("onStart");
         if (!once.get()) {
             delegate.onStart(call);
         }
@@ -51,6 +55,7 @@ final class LifecycleCallback<T> implements Callback<T>, LifecycleObserver {
 
     @Override
     public void onResponse(Call<T> call, Response<T> response) {
+        assertMainThread("onResponse");
         if (!once.get()) {
             delegate.onResponse(call, response);
         }
@@ -58,6 +63,7 @@ final class LifecycleCallback<T> implements Callback<T>, LifecycleObserver {
 
     @Override
     public void onFailure(Call<T> call, Throwable t) {
+        assertMainThread("onFailure");
         if (!once.get()) {
             delegate.onFailure(call, t);
         }
@@ -65,9 +71,17 @@ final class LifecycleCallback<T> implements Callback<T>, LifecycleObserver {
 
     @Override
     public void onCompleted(Call<T> call) {
+        assertMainThread("onCompleted");
         if (!once.get()) {
             delegate.onCompleted(call);
             owner.getLifecycle().removeObserver(this);
+        }
+    }
+
+    private static void assertMainThread(String methodName) {
+        if (Looper.getMainLooper().getThread() != Thread.currentThread()) {
+            throw new IllegalStateException("Cannot invoke " + methodName + " on a background"
+                    + " thread");
         }
     }
 
