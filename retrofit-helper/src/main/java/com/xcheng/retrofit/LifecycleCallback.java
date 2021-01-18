@@ -30,17 +30,14 @@ final class LifecycleCallback<T> implements Callback<T>, LifecycleObserver {
         this.httpQueue = httpQueue;
         this.delegate = delegate;
         this.owner = owner;
-        OptionalExecutor.get().executeOnMainThread(new Runnable() {
-            @Override
-            public void run() {
-                if (owner.getLifecycle().getCurrentState() == Lifecycle.State.DESTROYED) {
-                    //发起请求的时候Owner是否已经销毁了
-                    //此时注册生命周期监听不会回调了onDestroy Event
-                    once.set(true);
-                    httpQueue.delegate().cancel();
-                } else {
-                    owner.getLifecycle().addObserver(LifecycleCallback.this);
-                }
+        OptionalExecutor.get().executeOnMainThread(() -> {
+            if (owner.getLifecycle().getCurrentState() == Lifecycle.State.DESTROYED) {
+                //发起请求的时候Owner是否已经销毁了
+                //此时注册生命周期监听不会回调了onDestroy Event
+                once.set(true);
+                httpQueue.delegate().cancel();
+            } else {
+                owner.getLifecycle().addObserver(LifecycleCallback.this);
             }
         });
     }
@@ -70,12 +67,8 @@ final class LifecycleCallback<T> implements Callback<T>, LifecycleObserver {
     public void onCompleted(Call<T> call) {
         if (!once.get()) {
             delegate.onCompleted(call);
-            OptionalExecutor.get().executeOnMainThread(new Runnable() {
-                @Override
-                public void run() {
-                    owner.getLifecycle().removeObserver(LifecycleCallback.this);
-                }
-            });
+            OptionalExecutor.get().executeOnMainThread(() ->
+                    owner.getLifecycle().removeObserver(LifecycleCallback.this));
         }
     }
 
