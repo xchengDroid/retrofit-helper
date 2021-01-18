@@ -14,24 +14,32 @@ import java.util.concurrent.Executor;
  */
 public final class OptionalExecutor implements Executor {
     private static final OptionalExecutor EXECUTOR = new OptionalExecutor();
-    private static final MainThreadExecutor MAIN_THREAD_EXECUTOR = new MainThreadExecutor();
+    private final Handler handler = new Handler(Looper.getMainLooper());
 
-    static Executor getExecutor() {
+    private OptionalExecutor() {
+    }
+
+    public static OptionalExecutor get() {
         return EXECUTOR;
     }
 
-    public static Executor getMainThreadExecutor() {
-        return MAIN_THREAD_EXECUTOR;
+    /**
+     * Executes the given task on the main thread.
+     * <p>
+     * If the current thread is a main thread, immediately runs the given runnable.
+     *
+     * @param runnable The runnable to run on the main thread.
+     */
+    public void executeOnMainThread(@NonNull Runnable runnable) {
+        if (isMainThread()) {
+            runnable.run();
+        } else {
+            handler.post(runnable);
+        }
     }
 
-    /**
-     * 是否为主线程
-     */
     public static boolean isMainThread() {
         return Looper.getMainLooper().getThread() == Thread.currentThread();
-    }
-
-    private OptionalExecutor() {
     }
 
     @Override
@@ -39,12 +47,7 @@ public final class OptionalExecutor implements Executor {
         command.run();
     }
 
-    static final class MainThreadExecutor implements Executor {
-        private final Handler handler = new Handler(Looper.getMainLooper());
-
-        @Override
-        public void execute(Runnable command) {
-            handler.post(command);
-        }
+    public void postToMainThread(@NonNull Runnable runnable) {
+        handler.post(runnable);
     }
 }
