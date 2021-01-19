@@ -5,7 +5,12 @@ import android.os.Looper;
 
 import androidx.annotation.NonNull;
 
+import java.util.Locale;
 import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * 创建时间：2019-09-11
@@ -14,7 +19,18 @@ import java.util.concurrent.Executor;
  */
 public final class OptionalExecutor implements Executor {
     private static final OptionalExecutor EXECUTOR = new OptionalExecutor();
-    private final Handler handler = new Handler(Looper.getMainLooper());
+    private final Handler mMainHandler = new Handler(Looper.getMainLooper());
+    private final ExecutorService mDiskIO = Executors.newFixedThreadPool(2, new ThreadFactory() {
+        private static final String THREAD_NAME_STEM = "optional_disk_io_%d";
+        private final AtomicInteger mThreadId = new AtomicInteger(0);
+
+        @Override
+        public Thread newThread(Runnable r) {
+            Thread t = new Thread(r);
+            t.setName(String.format(Locale.getDefault(), THREAD_NAME_STEM, mThreadId.getAndIncrement()));
+            return t;
+        }
+    });
 
     private OptionalExecutor() {
     }
@@ -34,8 +50,17 @@ public final class OptionalExecutor implements Executor {
         if (isMainThread()) {
             runnable.run();
         } else {
-            handler.post(runnable);
+            mMainHandler.post(runnable);
         }
+    }
+
+    /**
+     * Executes the given task in the disk IO thread pool.
+     *
+     * @param runnable The runnable to run in the disk IO thread pool.
+     */
+    public void executeOnDiskIO(@NonNull Runnable runnable) {
+        mDiskIO.execute(runnable);
     }
 
     public static boolean isMainThread() {
@@ -47,7 +72,12 @@ public final class OptionalExecutor implements Executor {
         command.run();
     }
 
+    /**
+     * Posts the given task to the main thread.
+     *
+     * @param runnable The runnable to run on the main thread.
+     */
     public void postToMainThread(@NonNull Runnable runnable) {
-        handler.post(runnable);
+        mMainHandler.post(runnable);
     }
 }

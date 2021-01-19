@@ -24,10 +24,14 @@ public interface AsyncCallback<T, E> {
     /**
      * 线程调度，发送成功到主线程
      */
-    void postGet(@NonNull T t);
+    default void postGet(@NonNull T t) {
+        OptionalExecutor.get().postToMainThread(() -> onGet(t));
+    }
 
     /**
      * 线程调度，发送失败到的主线程
      */
-    void postFailure(@NonNull E e);
+    default void postFailure(@NonNull E e) {
+        OptionalExecutor.get().postToMainThread(() -> onFailure(e));
+    }
 }
