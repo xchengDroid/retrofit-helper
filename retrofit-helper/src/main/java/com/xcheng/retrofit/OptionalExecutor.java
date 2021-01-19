@@ -18,8 +18,11 @@ import java.util.concurrent.atomic.AtomicInteger;
  * 功能描述：默认的Executor，不做任何操作 like retrofit2.Platform
  */
 public final class OptionalExecutor implements Executor {
+
     private static final OptionalExecutor EXECUTOR = new OptionalExecutor();
+
     private final Handler mMainHandler = new Handler(Looper.getMainLooper());
+
     private final ExecutorService mDiskIO = Executors.newFixedThreadPool(2, new ThreadFactory() {
         private static final String THREAD_NAME_STEM = "optional_disk_io_%d";
         private final AtomicInteger mThreadId = new AtomicInteger(0);
