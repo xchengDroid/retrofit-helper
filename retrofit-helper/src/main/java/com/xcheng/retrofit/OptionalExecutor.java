@@ -21,16 +21,16 @@ public final class OptionalExecutor implements Executor {
 
     private static final OptionalExecutor EXECUTOR = new OptionalExecutor();
 
-    private final Handler mMainHandler = new Handler(Looper.getMainLooper());
+    private final Handler mainHandler = new Handler(Looper.getMainLooper());
 
-    private final ExecutorService mDiskIO = Executors.newFixedThreadPool(2, new ThreadFactory() {
+    private final ExecutorService diskIO = Executors.newFixedThreadPool(2, new ThreadFactory() {
         private static final String THREAD_NAME_STEM = "optional_disk_io_%d";
-        private final AtomicInteger mThreadId = new AtomicInteger(0);
+        private final AtomicInteger threadId = new AtomicInteger(0);
 
         @Override
         public Thread newThread(Runnable r) {
             Thread t = new Thread(r);
-            t.setName(String.format(Locale.getDefault(), THREAD_NAME_STEM, mThreadId.getAndIncrement()));
+            t.setName(String.format(Locale.getDefault(), THREAD_NAME_STEM, threadId.getAndIncrement()));
             return t;
         }
     });
@@ -53,7 +53,7 @@ public final class OptionalExecutor implements Executor {
         if (isMainThread()) {
             runnable.run();
         } else {
-            mMainHandler.post(runnable);
+            mainHandler.post(runnable);
         }
     }
 
@@ -63,7 +63,7 @@ public final class OptionalExecutor implements Executor {
      * @param runnable The runnable to run in the disk IO thread pool.
      */
     public void executeOnDiskIO(@NonNull Runnable runnable) {
-        mDiskIO.execute(runnable);
+        diskIO.execute(runnable);
     }
 
     public static boolean isMainThread() {
@@ -81,6 +81,6 @@ public final class OptionalExecutor implements Executor {
      * @param runnable The runnable to run on the main thread.
      */
     public void postToMainThread(@NonNull Runnable runnable) {
-        mMainHandler.post(runnable);
+        mainHandler.post(runnable);
     }
 }
