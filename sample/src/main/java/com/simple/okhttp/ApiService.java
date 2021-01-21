@@ -34,7 +34,6 @@ public interface ApiService {
     @POST("user/login")
     HttpQueue<LoginInfo> getLogin(@Field("username") String username, @Field("password") String password);
 
-    @SkipCallbackExecutor
     @FormUrlEncoded
     @POST
     HttpQueue<LoginInfo> getLogin(@Url String url, @Field("username") String username, @Field("password") String password);
