@@ -5,6 +5,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.concurrent.Executor;
 
+import retrofit2.Call;
 import retrofit2.CallAdapter;
 import retrofit2.Retrofit;
 import retrofit2.SkipCallbackExecutor;
@@ -44,7 +45,7 @@ public final class HttpQueueAdapterFactory extends CallAdapter.Factory {
             }
 
             @Override
-            public HttpQueue<Object> adapt(retrofit2.Call<Object> call) {
+            public HttpQueue<?> adapt(Call<Object> call) {
                 return new RealHttpQueue<>(executor != null ? executor : OptionalExecutor.get(), call);
             }
         };
