@@ -52,4 +52,10 @@ final class RealHttpQueue<T> implements HttpQueue<T> {
     public Call<T> delegate() {
         return delegate;
     }
+
+    @SuppressWarnings("MethodDoesntCallSuperMethod")
+    @Override
+    public HttpQueue<T> clone() {
+        return new RealHttpQueue<>(callbackExecutor, delegate.clone());
+    }
 }

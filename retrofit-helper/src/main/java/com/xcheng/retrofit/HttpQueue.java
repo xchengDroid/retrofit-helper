@@ -14,7 +14,7 @@ import retrofit2.Call;
  *
  * @param <T> Successful response body type.
  */
-public interface HttpQueue<T> {
+public interface HttpQueue<T> extends Cloneable {
 
     Call<T> delegate();
 
@@ -23,6 +23,8 @@ public interface HttpQueue<T> {
      * occurred talking to the server, creating the request, or processing the response.
      */
     void enqueue(Callback<T> callback);
+
+    HttpQueue<T> clone();
 
     /**
      * default event is {@link androidx.lifecycle.Lifecycle.Event#ON_DESTROY}
