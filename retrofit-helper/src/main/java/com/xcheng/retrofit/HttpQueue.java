@@ -24,8 +24,6 @@ public interface HttpQueue<T> extends Cloneable {
      */
     void enqueue(Callback<T> callback);
 
-    HttpQueue<T> clone();
-
     /**
      * default event is {@link androidx.lifecycle.Lifecycle.Event#ON_DESTROY}
      *
@@ -37,4 +35,10 @@ public interface HttpQueue<T> extends Cloneable {
         Objects.requireNonNull(callback, "callback==null");
         enqueue(owner != null ? new LifecycleCallback<>(this, callback, owner) : callback);
     }
+
+    /**
+     * Create a new, identical httpQueue to this one which can be enqueued even if this httpQueue
+     * has already been.
+     */
+    HttpQueue<T> clone();
 }
