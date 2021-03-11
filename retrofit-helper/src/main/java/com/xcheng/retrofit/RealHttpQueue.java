@@ -9,7 +9,7 @@ import java.util.concurrent.Executor;
 import retrofit2.Call;
 import retrofit2.Response;
 
-final class RealHttpQueue<T> implements HttpQueue<T> {
+public final class RealHttpQueue<T> implements HttpQueue<T> {
     private final Executor callbackExecutor;
     private final retrofit2.Call<T> delegate;
 
