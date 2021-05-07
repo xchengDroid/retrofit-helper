@@ -2,6 +2,7 @@ package com.xcheng.proxy;
 
 import android.os.Handler;
 import android.os.Looper;
+import android.os.Message;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -13,26 +14,20 @@ import java.lang.reflect.Method;
 /**
  * Created by chengxin on 2020/05/07.
  */
-final class ProxyInvocationHandler implements InvocationHandler, ProxyInterceptor {
+final class ProxyInvocationHandler implements InvocationHandler, ProxyInterceptor, Handler.Callback {
     @NonNull
     private final Object subject;
     @Nullable
     private final ProxyInterceptor interceptor;
-
     private final boolean weakRef;
+    @Nullable
+    private final Handler handler;
 
-    private final boolean postUI;
-
-    private static final Handler UI_HANDLER = new Handler(Looper.getMainLooper(), msg -> {
-        ProxyBulk.invoke(msg.obj);
-        return true;
-    });
-
-    ProxyInvocationHandler(@NonNull Object subject, @Nullable ProxyInterceptor interceptor, boolean weakRef, boolean postUI) {
+    ProxyInvocationHandler(@NonNull Object subject, @Nullable ProxyInterceptor interceptor, boolean weakRef, @Nullable Looper looper) {
         this.weakRef = weakRef;
         this.interceptor = interceptor;
-        this.postUI = postUI;
         this.subject = weakRef ? new WeakReference<>(subject) : subject;
+        this.handler = looper != null ? new Handler(looper, this) : null;
     }
 
     @Override
@@ -40,10 +35,10 @@ final class ProxyInvocationHandler implements InvocationHandler, ProxyIntercepto
         Object subject = getObject();
         if (!onIntercept(subject, method, args)) {
             ProxyBulk bulk = new ProxyBulk(subject, method, args);
-            if (!postUI) {
+            if (handler == null) {
                 return bulk.invoke();
             }
-            UI_HANDLER.obtainMessage(0, bulk).sendToTarget();
+            handler.obtainMessage(0, bulk).sendToTarget();
             return null;
         }
         return null;
@@ -64,5 +59,12 @@ final class ProxyInvocationHandler implements InvocationHandler, ProxyIntercepto
         } else {
             return subject;
         }
+    }
+
+    @Override
+    public boolean handleMessage(Message msg) {
+        // TODO Auto-generated method stub
+        ProxyBulk.invoke(msg.obj);
+        return true;
     }
 }
