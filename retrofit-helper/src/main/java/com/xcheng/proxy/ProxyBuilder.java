@@ -1,6 +1,6 @@
 package com.xcheng.proxy;
 
-import android.os.Handler;
+import android.os.Looper;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -18,7 +18,8 @@ public final class ProxyBuilder {
     private ProxyInterceptor interceptor;
     private boolean weakRef;
     private boolean postUI;
-    private Handler handler;
+    @Nullable
+    private Looper looper;
     @Nullable
     private Class<?>[] interfaces;
 
@@ -34,8 +35,18 @@ public final class ProxyBuilder {
         return this;
     }
 
-    public ProxyBuilder postUi() {
-        this.postUI = true;
+    public ProxyBuilder toLooper(@Nullable Looper looper) {
+        this.looper = looper;
+        return this;
+    }
+
+    public ProxyBuilder toMainLooper() {
+        toLooper(Looper.getMainLooper());
+        return this;
+    }
+
+    public ProxyBuilder toMyLooper() {
+        toLooper(Looper.myLooper());
         return this;
     }
 
@@ -60,6 +71,6 @@ public final class ProxyBuilder {
             interfaces = subject.getClass().getInterfaces();
         }
         return (T) Proxy.newProxyInstance(subject.getClass().getClassLoader(),
-                interfaces, new ProxyInvocationHandler(subject, interceptor, weakRef, postUI));
+                interfaces, new ProxyInvocationHandler(subject, interceptor, weakRef, looper));
     }
 }
