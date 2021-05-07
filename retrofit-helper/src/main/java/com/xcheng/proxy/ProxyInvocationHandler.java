@@ -5,6 +5,8 @@ import android.os.Handler.Callback;
 import android.os.Looper;
 import android.os.Message;
 
+import androidx.annotation.NonNull;
+
 import java.lang.ref.WeakReference;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -14,15 +16,15 @@ import java.lang.reflect.Method;
  */
 public final class ProxyInvocationHandler implements InvocationHandler, ProxyInterceptor, Callback {
 
-    private Object subject;
+    private final Object subject;
 
-    private ProxyInterceptor interceptor;
+    private final ProxyInterceptor interceptor;
 
-    private boolean weakRef;
+    private final boolean weakRef;
 
-    private boolean postUI;
+    private final boolean postUI;
 
-    private Handler handler;
+    private final Handler handler;
 
     public ProxyInvocationHandler(Object subject) {
         this(subject, null);
@@ -40,35 +42,30 @@ public final class ProxyInvocationHandler implements InvocationHandler, ProxyInt
         this.weakRef = weakRef;
         this.interceptor = interceptor;
         this.postUI = postUI;
-        this.subject = getObject(subject);
+        this.subject = weakRef ? new WeakReference<>(subject) : subject;
         handler = new Handler(Looper.getMainLooper(), this);
     }
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         Object subject = getObject();
-
         if (!onIntercept(subject, method, args)) {
             ProxyBulk bulk = new ProxyBulk(subject, method, args);
-            return postUI ? postSafeInvoke(bulk) : safeInvoke(bulk);
+            if (!postUI) {
+                return bulk.invoke();
+            }
+            handler.obtainMessage(0, bulk).sendToTarget();
+            return null;
         }
         return null;
     }
 
     @Override
-    public boolean onIntercept(Object object, Method method, Object[] args) {
+    public boolean onIntercept(@NonNull Object object, @NonNull Method method, Object[] args) {
         if (interceptor != null) {
-            try {
-                return interceptor.onIntercept(object, method, args);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            return interceptor.onIntercept(object, method, args);
         }
         return false;
-    }
-
-    private Object getObject(Object object) {
-        return weakRef ? new WeakReference<Object>(object) : object;
     }
 
     @SuppressWarnings("unchecked")
@@ -80,23 +77,10 @@ public final class ProxyInvocationHandler implements InvocationHandler, ProxyInt
         }
     }
 
-    private Object postSafeInvoke(ProxyBulk bulk) {
-        handler.obtainMessage(0, bulk).sendToTarget();
-        return null;
-    }
-
-    private Object safeInvoke(ProxyBulk bulk) {
-        try {
-            return bulk.safeInvoke();
-        } catch (Throwable e) {
-        }
-        return null;
-    }
-
     @Override
     public boolean handleMessage(Message msg) {
         // TODO Auto-generated method stub
-        ProxyBulk.safeInvoke(msg.obj);
+        ProxyBulk.invoke(msg.obj);
         return true;
     }
 }
