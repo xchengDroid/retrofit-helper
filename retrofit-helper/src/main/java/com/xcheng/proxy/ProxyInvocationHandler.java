@@ -1,37 +1,38 @@
 package com.xcheng.proxy;
 
 import android.os.Handler;
-import android.os.Handler.Callback;
 import android.os.Looper;
-import android.os.Message;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.lang.ref.WeakReference;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 
 /**
- * Created by chengxin on 2016/9/18.
+ * Created by chengxin on 2020/05/07.
  */
-public final class ProxyInvocationHandler implements InvocationHandler, ProxyInterceptor, Callback {
-
+final class ProxyInvocationHandler implements InvocationHandler, ProxyInterceptor {
+    @NonNull
     private final Object subject;
-
+    @Nullable
     private final ProxyInterceptor interceptor;
 
     private final boolean weakRef;
 
     private final boolean postUI;
 
-    private final Handler handler;
+    private static final Handler UI_HANDLER = new Handler(Looper.getMainLooper(), msg -> {
+        ProxyBulk.invoke(msg.obj);
+        return true;
+    });
 
-    public ProxyInvocationHandler(Object subject, ProxyInterceptor interceptor, boolean weakRef, boolean postUI) {
+    ProxyInvocationHandler(@NonNull Object subject, @Nullable ProxyInterceptor interceptor, boolean weakRef, boolean postUI) {
         this.weakRef = weakRef;
         this.interceptor = interceptor;
         this.postUI = postUI;
         this.subject = weakRef ? new WeakReference<>(subject) : subject;
-        this.handler = new Handler(Looper.getMainLooper(), this);
     }
 
     @Override
@@ -42,7 +43,7 @@ public final class ProxyInvocationHandler implements InvocationHandler, ProxyInt
             if (!postUI) {
                 return bulk.invoke();
             }
-            handler.obtainMessage(0, bulk).sendToTarget();
+            UI_HANDLER.obtainMessage(0, bulk).sendToTarget();
             return null;
         }
         return null;
@@ -62,23 +63,6 @@ public final class ProxyInvocationHandler implements InvocationHandler, ProxyInt
             return ((WeakReference<Object>) subject).get();
         } else {
             return subject;
-        }
-    }
-
-    @Override
-    public boolean handleMessage(Message msg) {
-        // TODO Auto-generated method stub
-        ProxyBulk.invoke(msg.obj);
-        return true;
-    }
-
-    public static Builder newBuilder() {
-        return new Builder();
-    }
-
-    public static class Builder {
-
-        public Builder() {
         }
     }
 }
