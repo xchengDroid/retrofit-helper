@@ -26,24 +26,12 @@ public final class ProxyInvocationHandler implements InvocationHandler, ProxyInt
 
     private final Handler handler;
 
-    public ProxyInvocationHandler(Object subject) {
-        this(subject, null);
-    }
-
-    public ProxyInvocationHandler(Object subject, ProxyInterceptor interceptor) {
-        this(subject, interceptor, false);
-    }
-
-    public ProxyInvocationHandler(Object subject, ProxyInterceptor interceptor, boolean weakRef) {
-        this(subject, interceptor, weakRef, false);
-    }
-
     public ProxyInvocationHandler(Object subject, ProxyInterceptor interceptor, boolean weakRef, boolean postUI) {
         this.weakRef = weakRef;
         this.interceptor = interceptor;
         this.postUI = postUI;
         this.subject = weakRef ? new WeakReference<>(subject) : subject;
-        handler = new Handler(Looper.getMainLooper(), this);
+        this.handler = new Handler(Looper.getMainLooper(), this);
     }
 
     @Override
@@ -82,5 +70,15 @@ public final class ProxyInvocationHandler implements InvocationHandler, ProxyInt
         // TODO Auto-generated method stub
         ProxyBulk.invoke(msg.obj);
         return true;
+    }
+
+    public static Builder newBuilder() {
+        return new Builder();
+    }
+
+    public static class Builder {
+
+        public Builder() {
+        }
     }
 }
