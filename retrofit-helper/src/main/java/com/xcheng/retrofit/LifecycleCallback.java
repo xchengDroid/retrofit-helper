@@ -1,5 +1,6 @@
 package com.xcheng.retrofit;
 
+import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleObserver;
@@ -72,6 +73,7 @@ final class LifecycleCallback<T> implements Callback<T>, LifecycleObserver {
         }
     }
 
+    @MainThread
     @OnLifecycleEvent(Lifecycle.Event.ON_ANY)
     void onChanged(LifecycleOwner owner, @NonNull Lifecycle.Event event) {
         //事件ordinal小于等于当前调用？
