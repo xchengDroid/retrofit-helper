@@ -9,11 +9,11 @@ import java.util.concurrent.Executor;
 import retrofit2.Call;
 import retrofit2.Response;
 
-public final class RealHttpQueue<T> implements HttpQueue<T> {
+public final class RealCompletableCall<T> implements CompletableCall<T> {
     private final Executor callbackExecutor;
     private final retrofit2.Call<T> delegate;
 
-    RealHttpQueue(Executor callbackExecutor, retrofit2.Call<T> delegate) {
+    RealCompletableCall(Executor callbackExecutor, retrofit2.Call<T> delegate) {
         this.callbackExecutor = callbackExecutor;
         this.delegate = delegate;
     }
@@ -97,7 +97,7 @@ public final class RealHttpQueue<T> implements HttpQueue<T> {
 
     @SuppressWarnings("MethodDoesntCallSuperMethod")
     @Override
-    public HttpQueue<T> clone() {
-        return new RealHttpQueue<>(callbackExecutor, delegate.clone());
+    public CompletableCall<T> clone() {
+        return new RealCompletableCall<>(callbackExecutor, delegate.clone());
     }
 }

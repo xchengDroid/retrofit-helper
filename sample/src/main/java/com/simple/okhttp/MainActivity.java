@@ -169,7 +169,6 @@ public class MainActivity extends EasyActivity {
     @Override
     protected void onPause() {
         super.onPause();
-
     }
 
     @Override

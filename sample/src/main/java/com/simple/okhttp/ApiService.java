@@ -3,7 +3,7 @@ package com.simple.okhttp;
 import com.simple.entity.Article;
 import com.simple.entity.LoginInfo;
 import com.simple.entity.WXArticle;
-import com.xcheng.retrofit.HttpQueue;
+import com.xcheng.retrofit.CompletableCall;
 
 import java.util.List;
 
@@ -32,23 +32,23 @@ public interface ApiService {
     @FormUrlEncoded
     // @Headers("BaseUrlName:baidu")
     @POST("user/login")
-    HttpQueue<LoginInfo> getLogin(@Field("username") String username, @Field("password") String password);
+    CompletableCall<LoginInfo> getLogin(@Field("username") String username, @Field("password") String password);
 
     @FormUrlEncoded
     @POST
-    HttpQueue<LoginInfo> getLogin(@Url String url, @Field("username") String username, @Field("password") String password);
+    CompletableCall<LoginInfo> getLogin(@Url String url, @Field("username") String username, @Field("password") String password);
 
     //@FormUrlEncoded
     @POST("user/login")
-    HttpQueue<LoginInfo> getLogin(@Body FormBody body);
+    CompletableCall<LoginInfo> getLogin(@Body FormBody body);
 
     //获取微信公众号列表
     @GET("wxarticle/chapters/json")
-    HttpQueue<List<WXArticle>> getWXarticle();
+    CompletableCall<List<WXArticle>> getWXarticle();
 
     //获取首页文章列表
     @GET("article/list/0/json")
-    HttpQueue<List<Article>> getArticle0();
+    CompletableCall<List<Article>> getArticle0();
 
     //下载文件
     @Streaming

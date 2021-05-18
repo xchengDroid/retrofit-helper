@@ -14,7 +14,7 @@ import retrofit2.Call;
  *
  * @param <T> Successful response body type.
  */
-public interface HttpQueue<T> extends Cloneable {
+public interface CompletableCall<T> extends Cloneable {
 
     Call<T> delegate();
 
@@ -40,5 +40,5 @@ public interface HttpQueue<T> extends Cloneable {
      * Create a new, identical httpQueue to this one which can be enqueued even if this httpQueue
      * has already been.
      */
-    HttpQueue<T> clone();
+    CompletableCall<T> clone();
 }

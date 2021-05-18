@@ -18,7 +18,7 @@ import retrofit2.Response;
  * 功能描述：生命周期回调
  */
 final class LifecycleCallback<T> implements Callback<T>, LifecycleObserver {
-    private final HttpQueue<T> httpQueue;
+    private final CompletableCall<T> completableCall;
     private final Callback<T> delegate;
     private final LifecycleOwner owner;
     /**
@@ -27,8 +27,8 @@ final class LifecycleCallback<T> implements Callback<T>, LifecycleObserver {
      */
     private final AtomicBoolean once = new AtomicBoolean();
 
-    LifecycleCallback(HttpQueue<T> httpQueue, Callback<T> delegate, LifecycleOwner owner) {
-        this.httpQueue = httpQueue;
+    LifecycleCallback(CompletableCall<T> completableCall, Callback<T> delegate, LifecycleOwner owner) {
+        this.completableCall = completableCall;
         this.delegate = delegate;
         this.owner = owner;
         OptionalExecutor.get().executeOnMainThread(() -> {
@@ -36,7 +36,7 @@ final class LifecycleCallback<T> implements Callback<T>, LifecycleObserver {
                 //发起请求的时候Owner是否已经销毁了
                 //此时注册生命周期监听不会回调了onDestroy Event
                 once.set(true);
-                httpQueue.delegate().cancel();
+                completableCall.delegate().cancel();
             } else {
                 owner.getLifecycle().addObserver(LifecycleCallback.this);
             }
@@ -79,7 +79,7 @@ final class LifecycleCallback<T> implements Callback<T>, LifecycleObserver {
         //事件ordinal小于等于当前调用？
         //liveData 也会在onDestroy时释放所有的Observer
         if (event == Lifecycle.Event.ON_DESTROY && once.compareAndSet(false, true)) {
-            httpQueue.delegate().cancel();
+            completableCall.delegate().cancel();
             owner.getLifecycle().removeObserver(this);
         }
     }

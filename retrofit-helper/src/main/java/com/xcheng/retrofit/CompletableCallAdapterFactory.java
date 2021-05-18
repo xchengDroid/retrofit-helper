@@ -12,10 +12,10 @@ import retrofit2.CallAdapter;
 import retrofit2.Retrofit;
 import retrofit2.SkipCallbackExecutor;
 
-public final class HttpQueueAdapterFactory extends CallAdapter.Factory {
-    public static final CallAdapter.Factory INSTANCE = new HttpQueueAdapterFactory();
+public final class CompletableCallAdapterFactory extends CallAdapter.Factory {
+    public static final CallAdapter.Factory INSTANCE = new CompletableCallAdapterFactory();
 
-    private HttpQueueAdapterFactory() {
+    private CompletableCallAdapterFactory() {
     }
 
     /**
@@ -28,19 +28,19 @@ public final class HttpQueueAdapterFactory extends CallAdapter.Factory {
 
     @Override
     public CallAdapter<?, ?> get(@NonNull Type returnType, @NonNull Annotation[] annotations, @NonNull Retrofit retrofit) {
-        if (getRawType(returnType) != HttpQueue.class) {
+        if (getRawType(returnType) != CompletableCall.class) {
             return null;
         }
         if (!(returnType instanceof ParameterizedType)) {
-            throw new IllegalArgumentException("HttpQueue return type must be parameterized " +
-                    "as HttpQueue<Foo> or HttpQueue<? extends Foo>");
+            throw new IllegalArgumentException("CompletableCall return type must be parameterized " +
+                    "as CompletableCall<Foo> or CompletableCall<? extends Foo>");
         }
         final Type responseType = getParameterUpperBound(0, (ParameterizedType) returnType);
         //支持SkipCallbackExecutor
         final Executor executor = Utils.isAnnotationPresent(annotations, SkipCallbackExecutor.class)
                 ? null
                 : retrofit.callbackExecutor();
-        return new CallAdapter<Object, HttpQueue<?>>() {
+        return new CallAdapter<Object, CompletableCall<?>>() {
             @NonNull
             @Override
             public Type responseType() {
@@ -49,8 +49,8 @@ public final class HttpQueueAdapterFactory extends CallAdapter.Factory {
 
             @NonNull
             @Override
-            public HttpQueue<?> adapt(Call<Object> call) {
-                return new RealHttpQueue<>(executor != null ? executor : OptionalExecutor.get(), call);
+            public CompletableCall<?> adapt(Call<Object> call) {
+                return new RealCompletableCall<>(executor != null ? executor : OptionalExecutor.get(), call);
             }
         };
     }
