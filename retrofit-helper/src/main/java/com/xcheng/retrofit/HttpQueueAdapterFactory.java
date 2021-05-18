@@ -1,5 +1,7 @@
 package com.xcheng.retrofit;
 
+import androidx.annotation.NonNull;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -25,7 +27,7 @@ public final class HttpQueueAdapterFactory extends CallAdapter.Factory {
     }
 
     @Override
-    public CallAdapter<?, ?> get(Type returnType, Annotation[] annotations, Retrofit retrofit) {
+    public CallAdapter<?, ?> get(@NonNull Type returnType, @NonNull Annotation[] annotations, @NonNull Retrofit retrofit) {
         if (getRawType(returnType) != HttpQueue.class) {
             return null;
         }
