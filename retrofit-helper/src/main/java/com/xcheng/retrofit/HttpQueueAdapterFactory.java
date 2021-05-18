@@ -41,11 +41,13 @@ public final class HttpQueueAdapterFactory extends CallAdapter.Factory {
                 ? null
                 : retrofit.callbackExecutor();
         return new CallAdapter<Object, HttpQueue<?>>() {
+            @NonNull
             @Override
             public Type responseType() {
                 return responseType;
             }
 
+            @NonNull
             @Override
             public HttpQueue<?> adapt(Call<Object> call) {
                 return new RealHttpQueue<>(executor != null ? executor : OptionalExecutor.get(), call);
