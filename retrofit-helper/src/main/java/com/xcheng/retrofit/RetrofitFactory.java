@@ -1,9 +1,5 @@
 package com.xcheng.retrofit;
 
-import java.util.Map;
-import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
-
 import retrofit2.Retrofit;
 
 /**
@@ -12,16 +8,14 @@ import retrofit2.Retrofit;
  * 功能描述：管理全局的Retrofit实例,外观模式
  */
 public final class RetrofitFactory {
-    static final String TAG = "RHLogger";
-    /**
-     * 缓存不同配置的retrofit集合，如不同的url ,converter等
-     */
-    public static final Map<String, Retrofit> OTHERS = new ConcurrentHashMap<>(2);
+    static final String TAG = "Retrofit";
     /**
      * 全局的Retrofit对象,like Charset#bugLevel,HttpLoggingInterceptor#level,
      * AsyncTask#mStatus,facebook->stetho->LogRedirector#sLogger,Timber->forestAsArray
+     * CopyOnWriteArrayList==
      */
     public static volatile Retrofit DEFAULT;
+    public static volatile Retrofit OTHER;
 
     private RetrofitFactory() {
         throw new AssertionError("No instances.");
@@ -36,14 +30,10 @@ public final class RetrofitFactory {
         return retrofit.create(service);
     }
 
-    /**
-     * @param name 获取 OTHERS 中指定名字的retrofit
-     */
-    public static <T> T create(String name, Class<T> service) {
-        Objects.requireNonNull(name, "name == null");
-        Retrofit retrofit = OTHERS.get(name);
+    public static <T> T other(Class<T> service) {
+        Retrofit retrofit = OTHER;
         if (retrofit == null) {
-            throw new IllegalStateException(String.format("retrofit named with '%s' was not found , have you put it in OTHERS ?", name));
+            throw new IllegalStateException("OTHER == null");
         }
         return retrofit.create(service);
     }
