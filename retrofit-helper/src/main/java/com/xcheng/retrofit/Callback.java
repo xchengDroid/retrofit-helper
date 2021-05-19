@@ -12,6 +12,7 @@ import retrofit2.Call;
  * <p>
  *
  * @param <T> Successful response body type.
+ *            NOTE:拓展 retrofit2.Callback的方法,支持开始和结束监听
  */
 public interface Callback<T> extends retrofit2.Callback<T> {
     /**
