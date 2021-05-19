@@ -14,7 +14,6 @@ import androidx.lifecycle.MutableLiveData;
 import com.simple.entity.Article;
 import com.simple.entity.LoginInfo;
 import com.simple.entity.WXArticle;
-import com.xcheng.retrofit.Callback;
 import com.xcheng.retrofit.CompletableCall;
 import com.xcheng.retrofit.FileCallback;
 import com.xcheng.retrofit.HttpError;
@@ -29,7 +28,6 @@ import java.util.List;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
-import retrofit2.Response;
 
 public class MainActivity extends EasyActivity {
     ProgressView progressView;
@@ -142,11 +140,8 @@ public class MainActivity extends EasyActivity {
         button.setText("取消下载");
         final String filePath = new File(getContext().getExternalCacheDir(), "test_douyin.apk").getPath();
 
-
-
-
         call = RetrofitFactory.create(ApiService.class).loadDouYinApk();
-        call.enqueue(new FileCallback(true, 0.2f) {
+        call.enqueue(new FileCallback(true, 0.01f) {
             @Override
             protected void onStart() {
                 Log.e("print", "onStart:");
@@ -177,8 +172,8 @@ public class MainActivity extends EasyActivity {
 
             @Override
             protected void onProgress(long progress, long contentLength, boolean done) {
-               // Log.e("print", progress + "onDownLoad:" + contentLength + done);
-                if (done){
+                // Log.e("print", progress + "onDownLoad:" + contentLength + done);
+                if (done) {
                     Log.e("print", progress + "onDownLoad:" + contentLength);
                 }
                 progressView.setProgress((int) (progress * 100f / contentLength), false);
@@ -192,6 +187,12 @@ public class MainActivity extends EasyActivity {
     @Override
     protected void onPause() {
         super.onPause();
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        Log.e("print", "onWindowFocusChanged:" + hasFocus);
     }
 
     @Override

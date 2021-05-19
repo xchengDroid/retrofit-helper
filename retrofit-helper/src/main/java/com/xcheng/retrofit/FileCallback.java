@@ -45,25 +45,28 @@ public abstract class FileCallback implements Callback<ResponseBody> {
         boolean signalledCallback = false;
         try {
             final ResponseBody body = response.body();
-            if (body != null) {
-                ResponseBody responseBody = new ProgressResponseBody(body) {
-                    long lastProgress;
-
-                    @Override
-                    protected void onDownload(long progress, long contentLength, boolean done) {
-                        if (progress - lastProgress > increaseOfProgress * contentLength || done) {
-                            lastProgress = progress;
-                            post(() -> onProgress(progress, contentLength, done));
-                        }
-                    }
-                };
-                File file = onConvert(responseBody);
+            if (body == null) {
                 signalledCallback = true;
-                if (file != null) {
-                    post(() -> onResponse(file));
-                } else {
-                    post(() -> onFailure(new IllegalArgumentException("下载异常")));
+                post(() -> onFailure(new IllegalArgumentException("下载异常")));
+                return;
+            }
+            ResponseBody responseBody = new ProgressResponseBody(body) {
+                long lastProgress;
+
+                @Override
+                protected void onDownload(long progress, long contentLength, boolean done) {
+                    if (progress - lastProgress > increaseOfProgress * contentLength || done) {
+                        lastProgress = progress;
+                        post(() -> onProgress(progress, contentLength, done));
+                    }
                 }
+            };
+            File file = onConvert(responseBody);
+            signalledCallback = true;
+            if (file != null) {
+                post(() -> onResponse(file));
+            } else {
+                post(() -> onFailure(new IllegalArgumentException("下载异常")));
             }
         } catch (Throwable t) {
             if (!signalledCallback) {
