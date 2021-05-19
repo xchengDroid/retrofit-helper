@@ -49,7 +49,7 @@ public final class CompletableCallAdapterFactory extends CallAdapter.Factory {
 
             @NonNull
             @Override
-            public CompletableCall<?> adapt(Call<Object> call) {
+            public CompletableCall<?> adapt(@NonNull Call<Object> call) {
                 return new RealCompletableCall<>(executor != null ? executor : OptionalExecutor.get(), call);
             }
         };
