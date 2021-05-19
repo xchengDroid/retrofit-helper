@@ -55,7 +55,7 @@ public interface ApiService {
     @SkipCallbackExecutor
     @Headers("LogLevel:BASIC")
     @GET("http://shouji.360tpcdn.com/181115/4dc46bd86bef036da927bc59680f514f/com.ss.android.ugc.aweme_330.apk")
-    Call<ResponseBody> loadDouYinApk();
+    CompletableCall<ResponseBody> loadDouYinApk();
 }
 
 

@@ -9,20 +9,22 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
-import androidx.arch.core.executor.ArchTaskExecutor;
 import androidx.lifecycle.MutableLiveData;
 
 import com.simple.entity.Article;
 import com.simple.entity.LoginInfo;
 import com.simple.entity.WXArticle;
+import com.xcheng.retrofit.Callback;
+import com.xcheng.retrofit.CompletableCall;
+import com.xcheng.retrofit.FileCallback;
 import com.xcheng.retrofit.HttpError;
-import com.xcheng.retrofit.ProgressResponseBody;
 import com.xcheng.retrofit.RetrofitFactory;
 import com.xcheng.retrofit.Utils;
 import com.xcheng.view.controller.EasyActivity;
 import com.xcheng.view.widget.ProgressView;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 import okhttp3.ResponseBody;
@@ -126,42 +128,63 @@ public class MainActivity extends EasyActivity {
     }
 
     int count;
-    Call<ResponseBody> call;
+    CompletableCall<ResponseBody> call;
 
     @SuppressLint("RestrictedApi")
     public void download(View view) {
         final Button button = (Button) view;
         if (call != null) {
-            call.cancel();
+            call.delegate().cancel();
             call = null;
             button.setText("下载抖音apk");
             return;
         }
         button.setText("取消下载");
         final String filePath = new File(getContext().getExternalCacheDir(), "test_douyin.apk").getPath();
-        ArchTaskExecutor.getInstance().executeOnDiskIO(() -> {
-            call = RetrofitFactory.create(ApiService.class).loadDouYinApk();
-            try {
-                Response<ResponseBody> response = call.execute();
-                ResponseBody body = response.body();
-                if (body != null) {
-                    body = new ProgressResponseBody(body) {
-                        @Override
-                        protected void onDownload(long progress, long contentLength, boolean done) {
-                            runOnUiThread(() -> {
-                                count++;
-                                Log.e("print", progress + "onDownLoad:" + contentLength + done);
-                                progressView.setProgress((int) (progress * 100f / contentLength), false);
-                                if (done) {
-                                    button.setText("下载完成");
-                                }
-                            });
-                        }
-                    };
-                    File file = Utils.writeToFile(body, filePath);
+
+
+
+
+        call = RetrofitFactory.create(ApiService.class).loadDouYinApk();
+        call.enqueue(new FileCallback(true, 0.2f) {
+            @Override
+            protected void onStart() {
+                Log.e("print", "onStart:");
+            }
+
+            @Override
+            protected void onCompleted() {
+                Log.e("print", "onCompleted:");
+            }
+
+            @Override
+            protected void onResponse(File file) {
+                Log.e("print", "onResponse:");
+
+            }
+
+            @Override
+            protected void onFailure(Throwable t) {
+                t.printStackTrace();
+            }
+
+            @Nullable
+            @Override
+            protected File onConvert(ResponseBody value) throws IOException {
+                Log.e("print", "onConvert:");
+                return Utils.writeToFile(value, filePath);
+            }
+
+            @Override
+            protected void onProgress(long progress, long contentLength, boolean done) {
+               // Log.e("print", progress + "onDownLoad:" + contentLength + done);
+                if (done){
+                    Log.e("print", progress + "onDownLoad:" + contentLength);
                 }
-            } catch (Throwable e) {
-                e.printStackTrace();
+                progressView.setProgress((int) (progress * 100f / contentLength), false);
+                if (done) {
+                    button.setText("下载完成");
+                }
             }
         });
     }
