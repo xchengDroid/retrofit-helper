@@ -30,9 +30,10 @@ public abstract class BodyCallback<T> implements Callback<T> {
         if (body != null) {
             onSuccess(call, body);
         } else {
-            HttpError error = parseThrowable(call, new HttpException(response));
-            Objects.requireNonNull(error);
-            onError(call, error);
+            //HttpError error = parseThrowable(call, new HttpException(response));
+            //Objects.requireNonNull(error);
+            //onError(call, error);
+            onFailure(call, new HttpException(response));
         }
     }
 
