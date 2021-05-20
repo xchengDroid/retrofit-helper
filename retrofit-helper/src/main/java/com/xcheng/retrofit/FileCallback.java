@@ -80,7 +80,7 @@ public abstract class FileCallback implements Callback<ResponseBody> {
         post(() -> onFailure(t));
     }
 
-    public void post(Runnable runnable) {
+    private void post(Runnable runnable) {
         if (postToMain) {
             OptionalExecutor.get().postToMainThread(runnable);
         } else {
