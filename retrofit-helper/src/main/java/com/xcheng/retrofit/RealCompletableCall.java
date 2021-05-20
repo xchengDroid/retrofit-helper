@@ -9,7 +9,7 @@ import java.util.concurrent.Executor;
 import retrofit2.Call;
 import retrofit2.Response;
 
-public final class RealCompletableCall<T> implements CompletableCall<T> {
+final class RealCompletableCall<T> implements CompletableCall<T> {
     private final Executor callbackExecutor;
     private final retrofit2.Call<T> delegate;
 
@@ -17,7 +17,7 @@ public final class RealCompletableCall<T> implements CompletableCall<T> {
         this.callbackExecutor = callbackExecutor;
         this.delegate = delegate;
     }
-    
+
     @Override
     public void enqueue(final Callback<T> callback) {
         Objects.requireNonNull(callback, "callback==null");
