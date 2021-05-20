@@ -42,15 +42,6 @@ public final class HttpError extends RuntimeException {
         this.body = body;
     }
 
-//    public HttpError(String msg, @Nullable Throwable t) {
-//        this(msg, t, null);
-//    }
-//
-//    public HttpError(@NonNull String msg, @Nullable Throwable t, @Nullable Object body) {
-//        super(msg, t);
-//        this.body = body;
-//    }
-
     /**
      * {@link okhttp3.Request#tag(Class)}
      * {@link android.os.Bundle#getInt(String)}
