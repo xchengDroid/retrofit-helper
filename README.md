@@ -10,9 +10,9 @@ retrofit-helper
   | -------------------------------- | ------------------------------------------------------------ |
   | 丰富的回调接口                   | `onSuccess(Call<T> call, T response)`  `onError(Call<T> call, HttpError error)` `onStart(Call<T> call)`  和`onCompleted(Call<T> call, @Nullable Throwable t)`等 |
   | 动态替换retrofit 的baseUrl       | CallFactoryProxy 采用代理的方式灵活简单                      |
-  | 绑定Activity或者Fragment生命周期 | `LifeCall<T> bindToLifecycle(LifecycleProvider provider, Lifecycle.Event event)` |
-  | 下载文件进度监听                 | `DownloadCall` 、`DownloadCallback`灵活易用，无需在`Interceptor`全局拦截 |
-  | 单独指定某个请求的日志级别       | `FullLoggingInterceptor`支持单独指定日志级别，且避免多个请求并行导致日志错乱问题 |
+  | 绑定Activity或者Fragment生命周期 | `CompletableCall<T> enqueue(LifecycleOwner owner, Callback<T> callback)` |
+  | 下载文件进度监听                 | `FileCallback` 监听文件下载、灵活易用，无需在`Interceptor`全局拦截 |
+  | 单独指定某个请求的日志级别       | `LogInterceptor`支持单独指定日志级别，且避免多个请求并行导致日志错乱问题 |
   
 - #### 2. 使用
 
@@ -21,36 +21,16 @@ retrofit-helper
      监听开始、成功、失败、结束等。[点击查看详解](https://www.jianshu.com/p/aeea4fe91102)
 
     ```java
-    public interface Callback<T> {
+    public interface Callback<T> extends retrofit2.Callback<T> {
         /**
          * @param call The {@code Call} that was started
          */
         void onStart(Call<T> call);
     
         /**
-         * @param call The {@code Call} that has thrown exception
-         * @param t    统一解析throwable对象转换为HttpError对象，如果throwable为{@link HttpError}
-         *             <li>则为{@link retrofit2.Converter#convert(Object)}内抛出的异常</li>
-         *             如果为{@link retrofit2.HttpException}
-         *             <li>则为{@link Response#body()}为null的时候抛出的</li>
+         * @param call The {@code Call} that was completed
          */
-        @NonNull
-        HttpError parseThrowable(Call<T> call, Throwable t);
-    
-        /**
-         * 过滤一次数据,如剔除List中的null等,默认可以返回t
-         */
-        @NonNull
-        T transform(Call<T> call, T t);
-    
-        void onError(Call<T> call, HttpError error);
-    
-        void onSuccess(Call<T> call, T t);
-    
-        /**
-         * @param t 请求失败的错误信息
-         */
-        void onCompleted(Call<T> call, @Nullable Throwable t);
+        void onCompleted(Call<T> call);
     }
     ```
     
@@ -61,7 +41,7 @@ retrofit-helper
             .build();
     Retrofit retrofit = new Retrofit.Builder()
             .baseUrl("https://wanandroid.com/")
-            .addCallAdapterFactory(CallAdapterFactory.INSTANCE)
+            .addCallAdapterFactory(CompletableCallAdapterFactory.INSTANCE)
             .addConverterFactory(GsonConverterFactory.create())
             .build();
     RetrofitFactory.DEFAULT = retrofit;
@@ -74,7 +54,7 @@ retrofit-helper
     ```java
     @FormUrlEncoded
     @POST("user/login")
-    Call<LoginInfo> getLogin(@Field("username") String username, @Field("password") String password);
+    CompletableCall<LoginInfo> getLogin(@Field("username") String username, @Field("password") String password);
     ```
     
     发起请求
@@ -82,19 +62,19 @@ retrofit-helper
     ```java
     RetrofitFactory.create(ApiService.class)
             .getLogin("xxxxxx", "123456")
-            .enqueue(new DefaultCallback<LoginInfo>() {
+            .enqueue(new BodyCallback<LoginInfo>() {
                 @Override
                 public void onStart(Call<LoginInfo> call) {
                     showLoading();
                 }
     
                 @Override
-                public void onError(Call<LoginInfo> call, HttpError error) {
+                protected void onError(Call<LoginInfo> call, HttpError error) {
                     Toast.makeText(MainActivity.this, "登录失败", Toast.LENGTH_SHORT).show();
                 }
     
                 @Override
-                public void onSuccess(Call<LoginInfo> call, LoginInfo loginInfo) {
+                protected void onSuccess(Call<LoginInfo> call, LoginInfo loginInfo) {
                     Toast.makeText(MainActivity.this, "登录成功", Toast.LENGTH_SHORT).show();
                 }
     
@@ -108,9 +88,8 @@ retrofit-helper
     ​       
     
   - 2.2 LifeCall支持绑定生命周期，当触发指定的生命周期将不会执行回调方法，并且请求被取消。保证页面销毁等不会导致错误
-
+  
     ```java
-    LifecycleProvider provider = AndroidLifecycle.createLifecycleProvider(this);
     
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -119,252 +98,146 @@ retrofit-helper
         
         RetrofitFactory.create(ApiService.class)
                 .getLogin("xxxxxx", "123456")
-                .bindToLifecycle(provider, Lifecycle.Event.ON_DESTROY)
-                .enqueue(new DefaultCallback<LoginInfo>() {
-                    @Override
-                    public void onStart(Call<LoginInfo> call) {
-                        showLoading();
-                    }
-    
-                    @Override
-                    public void onError(Call<LoginInfo> call, HttpError error) {
-                        Toast.makeText(MainActivity.this, "登录失败", Toast.LENGTH_SHORT).show();
-                    }
-    
-                    @Override
-                    public void onSuccess(Call<LoginInfo> call, LoginInfo loginInfo) {
-                        Toast.makeText(MainActivity.this, "登录成功", Toast.LENGTH_SHORT).show();
-                    }
-    
-                    @Override
-                    public void onCompleted(Call<LoginInfo> call, @Nullable Throwable t){
-                        hideLoading();
-                    }
-                });
+          			//传入LifeOwner 即当前的this 对象
+                .enqueue(this, callback)
+                
     ```
-
+    
   - 2.3 动态替换retrofit 的baseUrl
-
+  
      [点击查看原理](https://blog.csdn.net/issingleman/article/details/100542499)  并不是通过Interceptor 拦截器实现，而是采用代理CallFactory实现 `ReplaceUrlCallFactory`
-
+  
      
 
   - 2.4  下载文件进度监听
-
-    ​       在回调函数处监听下载进度，避免通过Interceptor监听影响灵活性。注意需要在构建retrofit是添加 `DownloadCallAdapterFactory.INSTANCE`
-
-    ```java
-    //日志框架，可支持单独设置某个请求的日志级别，下文有详解
-    FullLoggingInterceptor fullLoggingInterceptor = new FullLoggingInterceptor(new HttpLoggingInterceptor.Logger() {
-        @Override
-        public void log(String message) {
-            Logger.d(message);
-        }
-    });
-    
-    fullLoggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-    OkHttpClient client = new OkHttpClient.Builder()
-            .addNetworkInterceptor(fullLoggingInterceptor)
-            .build();
-    Retrofit retrofit = new Retrofit.Builder()
-            .baseUrl("https://wanandroid.com/")
-            .addCallAdapterFactory(CallAdapterFactory.INSTANCE)
-            .addCallAdapterFactory(DownloadCallAdapterFactory.INSTANCE)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build();
-    RetrofitFactory.DEFAULT = retrofit;
-    ```
-
+  
+    ​       在回调函数处监听下载进度，避免通过Interceptor监听影响灵活性。注意需要在调用FileCallback即可
+  
     ```java
     //下载文件,大文件下防止内存溢出添加此注解
     @Streaming
     //防止打印文件导致内存溢出，单独设置日志级别
     @Headers("LogLevel:BASIC")
     @GET("http://shouji.360tpcdn.com/181115/4dc46bd86bef036da927bc59680f514f/com.ss.android.ugc.aweme_330.apk")
-    DownloadCall<File> loadDouYinApk();
+    CompletableCall<ResponseBody> loadDouYinApk();
     ```
-
+    
     ```java
     final String filePath = new File(getContext().getExternalCacheDir(), "test_douyin.apk").getPath();
     RetrofitFactory.create(ApiService.class)
             .loadDouYinApk()
-            .enqueue(new DownloadCallback<File>() {
-                @Nullable
+            .enqueue(new FileCallback(true, 0.01f) {
                 @Override
-                public File convert(DownloadCall<File> call, ResponseBody value) throws IOException {
+                protected void onStart() {
+                    Log.e("print", "onStart:");
+                }
+    
+                @Override
+                protected void onCompleted() {
+                  Log.e("print", "onCompleted:");
+                }
+    
+                @Override
+                protected void onResponse(File file) {
+                    Log.e("print", "onResponse:");
+    
+                }
+  
+              @Override
+              protected void onFailure(Throwable t) {
+                    t.printStackTrace();
+              }
+    
+              @Nullable
+                @Override
+              protected File onConvert(ResponseBody value) throws IOException {
+                    Log.e("print", "onConvert:");
+                	//自行对文件流进行处理
                     return Utils.writeToFile(value, filePath);
                 }
     
                 @Override
-                public void onProgress(DownloadCall<File> call, long progress, long contentLength, boolean done) {
+                protected void onProgress(long progress, long contentLength, boolean done) {
+                    // Log.e("print", progress + "onDownLoad:" + contentLength + done);
+                    if (done) {
+                        Log.e("print", progress + "onDownLoad:" + contentLength);
+                    }
                     progressView.setProgress((int) (progress * 100f / contentLength), false);
-                }
-    
-                @Override
-                public void onError(DownloadCall<File> call, Throwable t) {
-                    progressView.setProgress(0);
-                    Toast.makeText(MainActivity.this, "下载失败", Toast.LENGTH_SHORT).show();
-                }
-    
-                @Override
-                public void onSuccess(DownloadCall<File> call, File file) {
-                    Toast.makeText(MainActivity.this, "下载成功", Toast.LENGTH_SHORT).show();
+                    if (done) {
+                        button.setText("下载完成");
+                    }
                 }
             });
     ```
-
     
-
-  - 2.5  灵活的日志拦截`FullLoggingInterceptor`
-
-    支持单独指定某个请求的日志级别，并且避免多线程情况下日志错乱的问题
-
+    
+    
+  - 2.5  灵活的日志拦截`LogInterceptor`
+  
+  支持单独指定某个请求的日志级别，并且避免多线程情况下日志错乱的问题
+  
     使用方式
-
+  
     ```java
-    FullLoggingInterceptor fullLoggingInterceptor = new FullLoggingInterceptor(new HttpLoggingInterceptor.Logger() {
+    FullLogInterceptor fullLogInterceptor = new FullLogInterceptor(new fullLogInterceptor.Logger() {
         @Override
         public void log(String message) {
             Logger.d(message);
-        }
+      }
     });
-    fullLoggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+    fullLogInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
     OkHttpClient client = new OkHttpClient.Builder()
-            .addNetworkInterceptor(fullLoggingInterceptor)
+            .addNetworkInterceptor(fullLogInterceptor)
             .build();
     Retrofit retrofit = new Retrofit.Builder()
             .baseUrl("https://wanandroid.com/")
             .addCallAdapterFactory(CallAdapterFactory.INSTANCE)
-            .addCallAdapterFactory(DownloadCallAdapterFactory.INSTANCE)
             .addConverterFactory(GsonConverterFactory.create())
             .build();
     RetrofitFactory.DEFAULT = retrofit;
     ```
-
-    单独指定某个请求的日志级别 @Headers("LogLevel:NONE") 或 @Headers("LogLevel:BASIC") 或 @Headers("LogLevel:HEADERS") 或@Headers("LogLevel:BODY")
-
-    ```java
+    
+  单独指定某个请求的日志级别 @Headers("LogLevel:NONE") 或 @Headers("LogLevel:BASIC") 或 @Headers("LogLevel:HEADERS") 或@Headers("LogLevel:BODY")
+    
+  ```java
     //  @Headers("LogLevel:NONE")
     //  @Headers("LogLevel:HEADERS")
     //  @Headers("LogLevel:BASIC")
         @Headers("LogLevel:BODY")
         @FormUrlEncoded
         @POST("user/login")
-        Call<LoginInfo> getLogin(@Field("username") String username, @Field("password") String password);
+        CompletableCall<LoginInfo> getLogin(@Field("username") String username, @Field("password") String password);
     ```
-
-    效果图
-
-    ![日志](https://github.com/xchengDroid/retrofit-helper/blob/master/screenshots/logstyle.png)
-
     
-
-    采用代理的方式拦截 HttpLoggingInterceptor的处理方式
-
-    ```java
-    /**
-     * 创建时间：2019/9/25
-     * 编写人： chengxin
-     * 功能描述：打印完整的日志，防止多线程情况下导致的日志分散错乱的问题
-     */
-    public final class FullLoggingInterceptor implements Interceptor {
-        private static final int JSON_INDENT = 2;
-        private static final String LOG_LEVEL = "LogLevel";
-        private final Logger logger;
-        private volatile Level level = Level.NONE;
+  效果图
     
-        public FullLoggingInterceptor() {
-            this(Logger.DEFAULT);
-        }
-    
-        public FullLoggingInterceptor(Logger logger) {
-            this.logger = logger;
-        }
-    
-        /**
-         * Change the level at which this interceptor logs.
-         */
-        public FullLoggingInterceptor setLevel(Level level) {
-            if (level == null) throw new NullPointerException("level == null. Use Level.NONE instead.");
-            this.level = level;
-            return this;
-        }
-    
-        public Level getLevel() {
-            return level;
-        }
-    
-        @Override
-        public Response intercept(Chain chain) throws IOException {
-            final StringBuilder builder = new StringBuilder();
-            HttpLoggingInterceptor httpLoggingInterceptor = new HttpLoggingInterceptor(new Logger() {
-                @Override
-                public void log(String message) {
-                    append(builder, message);
-                }
-            });
-            //可以单独为某个请求设置日志的级别，避免全局设置的局限性
-            httpLoggingInterceptor.setLevel(findLevel(chain.request()));
-            Response response = httpLoggingInterceptor.intercept(chain);
-            logger.log(builder.toString());
-            return response;
-        }
-    
-        @NonNull
-        private Level findLevel(Request request) {
-            //可以单独为某个请求设置日志的级别，避免全局设置的局限性
-            String logLevel = request.header(LOG_LEVEL);
-            if (logLevel != null) {
-                if (logLevel.equalsIgnoreCase("NONE")) {
-                    return Level.NONE;
-                } else if (logLevel.equalsIgnoreCase("BASIC")) {
-                    return Level.BASIC;
-                } else if (logLevel.equalsIgnoreCase("HEADERS")) {
-                    return Level.HEADERS;
-                } else if (logLevel.equalsIgnoreCase("BODY")) {
-                    return Level.BODY;
-                }
-            }
-            return level;
-        }
-    
-        private static void append(StringBuilder builder, String message) {
-            if (TextUtils.isEmpty(message)) {
-                return;
-            }
-            try {
-                // 以{}或者[]形式的说明是响应结果的json数据，需要进行格式化
-                if (message.startsWith("{") && message.endsWith("}")) {
-                    JSONObject jsonObject = new JSONObject(message);
-                    message = jsonObject.toString(JSON_INDENT);
-                } else if (message.startsWith("[") && message.endsWith("]")) {
-                    JSONArray jsonArray = new JSONArray(message);
-                    message = jsonArray.toString(JSON_INDENT);
-                }
-            } catch (JSONException ignored) {
-            }
-            builder.append(message).append('\n');
-        }
-    }
-    ```
-
-    
-
+  ![日志](https://github.com/xchengDroid/retrofit-helper/blob/master/screenshots/logstyle.png)
+  
+  
 - #### 3.注意事项
 
-  - 4.1 构建retrofit是需要CallAdapterFactory实例，否则无法处理返回为Call的服务接口
+  - 4.1 构建retrofit是需要CompletableCallAdapterFactory实例，否则无法处理返回为Call的服务接口
 
   - 4.2 `Callback`的回调函数均在主线程执行，如果Call绑定了生命周期触发了`cancel()`方法
 
-    UI回调方法均不会执行，如果要监听那些请求被取消了，可以通过`onCompleted(Call<T> call, @Nullable Throwable t)` 回调中 t是否为 `DisposedException`来判断
+    UI回调方法均不会执行。
     
   
 - #### 4.下载
 
   ```groovy
-  dependencies {
-       implementation 'com.xcheng:retrofit-helper:1.6.1'
+  //项目根目录build.gradle 添加仓库地址
+   allprojects {
+      repositories {
+        	//.....
+          maven { url "https://jitpack.io" }
+      }
   }
+  //引入依赖
+  dependencies {
+        implementation 'com.github.xchengDroid:retrofit-helper:3.2.1'
+  }
+  
   ```
   
 
