@@ -10,7 +10,7 @@ import androidx.annotation.UiThread;
  */
 public interface AsyncCallback<T, E> {
     /**
-     * 成功回调
+     * 成功回调的函数
      */
     @UiThread
     void onGet(@NonNull T t);
