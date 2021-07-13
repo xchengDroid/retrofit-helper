@@ -3,9 +3,11 @@ package com.xcheng.retrofit;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LifecycleOwner;
 
+import java.io.IOException;
 import java.util.Objects;
 
 import retrofit2.Call;
+import retrofit2.Response;
 
 /**
  * 创建时间：2018/4/8
@@ -17,6 +19,11 @@ import retrofit2.Call;
 public interface CompletableCall<T> extends Cloneable {
 
     Call<T> delegate();
+
+    /**
+     * @see Call#execute()
+     */
+    Response<T> execute() throws IOException;
 
     /**
      * Asynchronously send the request and notify {@code callback} of its response or if an error

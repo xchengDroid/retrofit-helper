@@ -19,6 +19,11 @@ final class RealCompletableCall<T> implements CompletableCall<T> {
     }
 
     @Override
+    public Response<T> execute() throws IOException {
+        return delegate.execute();
+    }
+
+    @Override
     public void enqueue(final Callback<T> callback) {
         Objects.requireNonNull(callback, "callback==null");
         callbackExecutor.execute(() -> callback.onStart(delegate));
