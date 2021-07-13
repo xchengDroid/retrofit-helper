@@ -83,4 +83,8 @@ public final class OptionalExecutor implements Executor {
     public void postToMainThread(@NonNull Runnable runnable) {
         mainHandler.post(runnable);
     }
+
+    public void postToMainThreadDelayed(@NonNull Runnable runnable, long delayMillis) {
+        mainHandler.postDelayed(runnable, delayMillis);
+    }
 }
