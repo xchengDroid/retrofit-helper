@@ -4,6 +4,9 @@ import android.os.Handler;
 import android.os.Looper;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleOwner;
 
 import java.util.Locale;
 import java.util.concurrent.Executor;
@@ -84,7 +87,16 @@ public final class OptionalExecutor implements Executor {
         mainHandler.post(runnable);
     }
 
-    public void postToMainThreadDelayed(@NonNull Runnable runnable, long delayMillis) {
-        mainHandler.postDelayed(runnable, delayMillis);
+    public void postToMainThreadDelayed(@NonNull Runnable runnable, @Nullable LifecycleOwner owner, long delayMillis) {
+        if (owner == null) {
+            mainHandler.postDelayed(runnable, delayMillis);
+        } else {
+            mainHandler.postDelayed(() -> {
+                //主线程判断是否已经销毁
+                if (owner.getLifecycle().getCurrentState() != Lifecycle.State.DESTROYED) {
+                    runnable.run();
+                }
+            }, delayMillis);
+        }
     }
 }
