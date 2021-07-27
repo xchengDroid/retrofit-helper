@@ -2,6 +2,7 @@ package com.xcheng.retrofit;
 
 import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.LifecycleOwner;
@@ -21,15 +22,17 @@ final class LifecycleCallback<T> implements Callback<T>, LifecycleObserver {
     private final CompletableCall<T> completableCall;
     private final Callback<T> delegate;
     private final LifecycleOwner owner;
+    private final Lifecycle.Event event;
     /**
      * LifeCall是否被释放了
      * like rxAndroid MainThreadDisposable or rxJava ObservableUnsubscribeOn, IoScheduler
      */
     private final AtomicBoolean once = new AtomicBoolean();
 
-    LifecycleCallback(CompletableCall<T> completableCall, Callback<T> delegate, LifecycleOwner owner) {
+    LifecycleCallback(CompletableCall<T> completableCall, Callback<T> delegate, LifecycleOwner owner, @Nullable Lifecycle.Event event) {
         this.completableCall = completableCall;
         this.delegate = delegate;
+        this.event = event == null ? Lifecycle.Event.ON_DESTROY : event;
         this.owner = owner;
         OptionalExecutor.get().executeOnMainThread(() -> {
             if (owner.getLifecycle().getCurrentState() == Lifecycle.State.DESTROYED) {
@@ -78,7 +81,7 @@ final class LifecycleCallback<T> implements Callback<T>, LifecycleObserver {
     void onChanged(LifecycleOwner owner, @NonNull Lifecycle.Event event) {
         //事件ordinal小于等于当前调用？
         //liveData 也会在onDestroy时释放所有的Observer
-        if (event == Lifecycle.Event.ON_DESTROY && once.compareAndSet(false, true)) {
+        if (event.compareTo(this.event) >= 0 && once.compareAndSet(false, true)) {
             completableCall.delegate().cancel();
             owner.getLifecycle().removeObserver(this);
         }

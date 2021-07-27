@@ -1,6 +1,7 @@
 package com.xcheng.retrofit;
 
 import androidx.annotation.Nullable;
+import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleOwner;
 
 import java.io.IOException;
@@ -39,8 +40,19 @@ public interface CompletableCall<T> extends Cloneable {
      *                 不会调用任何回调函数
      */
     default void enqueue(@Nullable LifecycleOwner owner, Callback<T> callback) {
+        enqueue(owner, Lifecycle.Event.ON_DESTROY, callback);
+    }
+
+    /**
+     * default event is {@link androidx.lifecycle.Lifecycle.Event#ON_DESTROY}
+     *
+     * @param callback 回调函数
+     * @param owner    LifecycleOwner ,当owner当前的状态为{@link androidx.lifecycle.Lifecycle.State#DESTROYED}
+     *                 不会调用任何回调函数
+     */
+    default void enqueue(@Nullable LifecycleOwner owner, @Nullable Lifecycle.Event event, Callback<T> callback) {
         Objects.requireNonNull(callback, "callback==null");
-        enqueue(owner != null ? new LifecycleCallback<>(this, callback, owner) : callback);
+        enqueue(owner != null ? new LifecycleCallback<>(this, callback, owner, event) : callback);
     }
 
     /**
