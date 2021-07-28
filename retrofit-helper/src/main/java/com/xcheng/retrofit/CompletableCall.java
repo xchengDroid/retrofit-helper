@@ -47,6 +47,7 @@ public interface CompletableCall<T> extends Cloneable {
      * default event is {@link androidx.lifecycle.Lifecycle.Event#ON_DESTROY}
      *
      * @param callback 回调函数
+     * @param event    指定取消请求的生命周期事件
      * @param owner    LifecycleOwner ,当owner当前的状态为{@link androidx.lifecycle.Lifecycle.State#DESTROYED}
      *                 不会调用任何回调函数
      */
