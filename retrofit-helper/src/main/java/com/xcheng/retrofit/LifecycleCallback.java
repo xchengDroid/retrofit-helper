@@ -79,7 +79,7 @@ final class LifecycleCallback<T> implements Callback<T>, LifecycleObserver {
     @MainThread
     @OnLifecycleEvent(Lifecycle.Event.ON_ANY)
     void onChanged(LifecycleOwner owner, @NonNull Lifecycle.Event event) {
-        //事件ordinal小于等于当前调用？
+        //事件ordinal小于等于当前调用，确定顺序是正确的哦
         //liveData 也会在onDestroy时释放所有的Observer
         if (event.compareTo(this.event) >= 0 && once.compareAndSet(false, true)) {
             Call<T> call = completableCall.delegate();
