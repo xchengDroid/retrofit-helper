@@ -188,13 +188,7 @@ public class MainActivity extends EasyActivity {
     protected void onPause() {
         super.onPause();
     }
-
-    @Override
-    public void onWindowFocusChanged(boolean hasFocus) {
-        super.onWindowFocusChanged(hasFocus);
-        Log.e("print", "onWindowFocusChanged:" + hasFocus);
-    }
-
+    
     @Override
     protected void onDestroy() {
         super.onDestroy();
