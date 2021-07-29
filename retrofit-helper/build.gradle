@@ -39,6 +39,8 @@ dependencies {
     compileOnly 'androidx.lifecycle:lifecycle-common:2.1.0'
     api 'com.squareup.retrofit2:retrofit:2.9.0'
     api 'com.squareup.okhttp3:logging-interceptor:3.14.9'
+    //api 'com.trello.rxlifecycle4:rxlifecycle-android-lifecycle:4.0.2'
+
 }
 //https://jitpack.io/#xchengDroid/retrofit-helper
 //---------------------------------------------下面的必加，加上下面的作用是在上传后会带上注释，不然会发现没有注释
