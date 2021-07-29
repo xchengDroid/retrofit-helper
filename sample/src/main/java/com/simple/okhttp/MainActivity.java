@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
+import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.MutableLiveData;
 
 import com.simple.entity.Article;
@@ -62,7 +63,7 @@ public class MainActivity extends EasyActivity {
             RetrofitFactory.create(ApiService.class)
                     // .getLogin("singleman", "123456")
                     .getLogin("user/login", "singleman", "123456")
-                    .enqueue(this, new AnimCallback<LoginInfo>(this) {
+                    .enqueue(this, Lifecycle.Event.ON_START, new AnimCallback<LoginInfo>(this) {
                         @Override
                         public void onError(Call<LoginInfo> call2, HttpError error) {
                             Toast.makeText(MainActivity.this, error.msg, Toast.LENGTH_SHORT).show();
@@ -71,6 +72,12 @@ public class MainActivity extends EasyActivity {
                         @Override
                         public void onSuccess(Call<LoginInfo> call2, LoginInfo response) {
                             Toast.makeText(MainActivity.this, "登录成功", Toast.LENGTH_SHORT).show();
+                        }
+
+                        @Override
+                        public void onLifecycleEvent(Call<LoginInfo> call, Lifecycle.Event event) {
+                            Log.e("print", event + "===" + call.isCanceled());
+                            hideLoading();
                         }
                     });
         }
@@ -188,7 +195,7 @@ public class MainActivity extends EasyActivity {
     protected void onPause() {
         super.onPause();
     }
-    
+
     @Override
     protected void onDestroy() {
         super.onDestroy();

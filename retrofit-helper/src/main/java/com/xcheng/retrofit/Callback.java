@@ -1,5 +1,9 @@
 package com.xcheng.retrofit;
 
+import androidx.annotation.MainThread;
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleOwner;
+
 import retrofit2.Call;
 
 /**
@@ -24,4 +28,16 @@ public interface Callback<T> extends retrofit2.Callback<T> {
      * @param call The {@code Call} that was completed
      */
     void onCompleted(Call<T> call);
+
+    /**
+     * 关联的生命周期事件触发,请求被取消,回调也不会执行
+     *
+     * @param event 生命周期事件
+     * @see CompletableCall#enqueue(LifecycleOwner, Lifecycle.Event, Callback)
+     * @see LifecycleCallback#onChanged(LifecycleOwner, Lifecycle.Event)
+     */
+    @MainThread
+    default void onLifecycleEvent(Call<T> call, Lifecycle.Event event) {
+
+    }
 }

@@ -82,8 +82,10 @@ final class LifecycleCallback<T> implements Callback<T>, LifecycleObserver {
         //事件ordinal小于等于当前调用？
         //liveData 也会在onDestroy时释放所有的Observer
         if (event.compareTo(this.event) >= 0 && once.compareAndSet(false, true)) {
-            completableCall.delegate().cancel();
+            Call<T> call = completableCall.delegate();
+            call.cancel();
             owner.getLifecycle().removeObserver(this);
+            delegate.onLifecycleEvent(call, event);
         }
     }
 }
