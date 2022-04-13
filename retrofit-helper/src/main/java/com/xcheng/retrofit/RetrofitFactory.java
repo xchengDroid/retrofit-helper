@@ -13,6 +13,7 @@ public final class RetrofitFactory {
      * 全局的Retrofit对象,like Charset#bugLevel,HttpLoggingInterceptor#level,
      * AsyncTask#mStatus,facebook->stetho->LogRedirector#sLogger,Timber->forestAsArray
      * CopyOnWriteArrayList==
+     * BufferedInputStream#buf,in
      */
     public static volatile Retrofit DEFAULT;
     public static volatile Retrofit OTHER;
